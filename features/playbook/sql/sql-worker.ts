@@ -52,13 +52,10 @@ async function init_sql_module() {
 			},
 		})
 	} catch (err) {
-		if (!is_csp_wasm_compile_error(err)) throw err
-
-		// Fallback for strict CSP environments that block WebAssembly compilation.
-		// @ts-expect-error sql.js module has no types
-		const sql_asm_module = await import("sql.js/dist/sql-asm.js")
-		const init_sql_asm = sql_asm_module.default || sql_asm_module
-		return await init_sql_asm()
+		if (is_csp_wasm_compile_error(err)) {
+			throw new Error("WebAssembly is blocked by Content Security Policy. Add 'wasm-unsafe-eval' to script-src.")
+		}
+		throw err
 	}
 }
 

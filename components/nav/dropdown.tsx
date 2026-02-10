@@ -24,6 +24,7 @@ export type DropdownItem<V extends string> = {
 	value: V
 	label: React.ReactNode
 	inlineChoices?: readonly { label: React.ReactNode; value: V }[]
+	inlineChoicesOnly?: boolean
 	icon?: React.ComponentType<{ className?: string }>
 	disabled?: boolean
 }
@@ -178,6 +179,7 @@ export function Dropdown<V extends string>({
 	const trigger_ref = React.useRef<HTMLButtonElement | null>(null)
 	const menu_ref = React.useRef<HTMLDivElement | null>(null)
 	const item_refs = React.useRef<Array<HTMLButtonElement | null>>([])
+	const should_focus_menu_on_open_ref = React.useRef(false)
 
 	const [open, set_open] = React.useState(false)
 	const [active_index, set_active_index] = React.useState(-1)
@@ -190,7 +192,17 @@ export function Dropdown<V extends string>({
 		set_open(false)
 		set_active_index(-1)
 	}, [])
-	const toggle = React.useCallback(() => set_open((v) => !v), [])
+	const toggle = React.useCallback(() => {
+		should_focus_menu_on_open_ref.current = false
+		set_open((v) => {
+			const next = !v
+			if (next) {
+				// Pointer/touch open should not keep trigger focus, which can cause viewport jumps on mobile.
+				requestAnimationFrame(() => trigger_ref.current?.blur())
+			}
+			return next
+		})
+	}, [])
 
 	useDropdownSuspendTooltips(open, suspendTooltipsWhenOpen)
 
@@ -262,7 +274,8 @@ export function Dropdown<V extends string>({
 		}
 
 		const on_resize = () => measure()
-		const on_scroll = () => close() // unfurl on any scroll
+		// Keep the menu anchored during scroll instead of force-closing.
+		const on_scroll = () => measure()
 
 		document.addEventListener("keydown", on_key)
 		document.addEventListener("pointerdown", on_pointer, { capture: true })
@@ -285,7 +298,9 @@ export function Dropdown<V extends string>({
 		if (!open) return
 		const next_index = resolve_active_index()
 		set_active_index(next_index)
-		requestAnimationFrame(() => focus_item(next_index))
+		const should_focus = should_focus_menu_on_open_ref.current
+		should_focus_menu_on_open_ref.current = false
+		if (should_focus) requestAnimationFrame(() => focus_item(next_index))
 	}, [focus_item, open, resolve_active_index])
 
 	const on_menu_key_down = React.useCallback(
@@ -343,6 +358,7 @@ export function Dropdown<V extends string>({
 	const on_key_down = React.useCallback((e: React.KeyboardEvent<HTMLButtonElement>) => {
 		if (e.key !== "ArrowDown" && e.key !== "Enter" && e.key !== " ") return
 		e.preventDefault()
+		should_focus_menu_on_open_ref.current = true
 		set_open(true)
 	}, [])
 
@@ -405,12 +421,75 @@ export function Dropdown<V extends string>({
 											if (behavior === "close") close()
 										}
 										const inline_choices = item.inlineChoices ?? []
+										const inline_choices_only = item.inlineChoicesOnly === true
 										const inline_choice_width_px = 92
 										const inline_choice_gap_px = 4
 										const inline_right_pad_px = 4
 										const inline_group_width_px =
 											inline_choices.length * inline_choice_width_px + Math.max(0, inline_choices.length - 1) * inline_choice_gap_px
 										const inline_group_slot_px = inline_group_width_px + inline_right_pad_px
+
+										if (inline_choices.length > 0 && inline_choices_only) {
+											return (
+												<div
+													key={item.value}
+													className={cn("group flex w-full items-stretch gap-1", ui.nav.control.height, itemClassName, item.disabled ? "pointer-events-none opacity-50" : null)}
+													role="option"
+													aria-selected={is_active}
+													id={`${listbox_id}-option-${index}`}
+													tabIndex={-1}
+													onMouseEnter={() => {
+														if (!item.disabled) set_active_index(index)
+													}}
+												>
+													<motion.div
+														initial={reduce_motion ? false : { opacity: 0, x: 8 }}
+														animate={{ opacity: 1, x: 0 }}
+														transition={inline_reveal_transition}
+														className="inline-flex h-full w-full items-stretch gap-1"
+													>
+														{inline_choices.map((choice, choice_idx) => (
+															<motion.button
+																key={`${item.value}__${String(choice.value)}`}
+																type="button"
+																initial={reduce_motion ? false : { opacity: 0, x: 10 }}
+																animate={{ opacity: 1, x: 0 }}
+																transition={
+																	reduce_motion
+																		? inline_reveal_transition
+																		: {
+																				...inline_reveal_transition,
+																				delay: choice_idx * uiMotion.frameworks.dropdownInline.stagger,
+																			}
+																}
+																className={cn(
+																	"inline-flex h-full min-w-0 flex-1 items-center justify-center",
+																	ui.nav.control.padX,
+																	inline_segment_chrome,
+																	ui.typography.label,
+																	choice.value === value ? ui.component.outline.activeStatic : null
+																)}
+																onMouseDown={(e) => {
+																	e.preventDefault()
+																	e.stopPropagation()
+																}}
+																onPointerDown={(e) => {
+																	e.preventDefault()
+																	e.stopPropagation()
+																}}
+																onClick={(e) => {
+																	e.preventDefault()
+																	e.stopPropagation()
+																	run_select(choice.value)
+																}}
+															>
+																{choice.label}
+															</motion.button>
+														))}
+													</motion.div>
+												</div>
+											)
+										}
 
 										if (inline_choices.length > 0) {
 											return (
@@ -436,6 +515,12 @@ export function Dropdown<V extends string>({
 														transition={inline_shrink_transition}
 														onClick={() => {
 															run_select(item.value)
+														}}
+														onMouseDown={(e) => {
+															e.preventDefault()
+														}}
+														onPointerDown={(e) => {
+															e.preventDefault()
 														}}
 														className={cn(
 															"min-w-0 flex-none overflow-hidden text-left",
@@ -492,6 +577,10 @@ export function Dropdown<V extends string>({
 																	e.preventDefault()
 																	e.stopPropagation()
 																}}
+																onPointerDown={(e) => {
+																	e.preventDefault()
+																	e.stopPropagation()
+																}}
 																onClick={(e) => {
 																	e.preventDefault()
 																	e.stopPropagation()
@@ -516,6 +605,12 @@ export function Dropdown<V extends string>({
 												disabled={!!item.disabled}
 												onClick={() => {
 													run_select(item.value)
+												}}
+												onMouseDown={(e) => {
+													e.preventDefault()
+												}}
+												onPointerDown={(e) => {
+													e.preventDefault()
 												}}
 												onMouseEnter={() => {
 													if (!item.disabled) set_active_index(index)

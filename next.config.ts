@@ -5,6 +5,7 @@ const is_prod = process.env.NODE_ENV === "production"
 const script_src = [
 	"'self'",
 	"'unsafe-inline'",
+	"'wasm-unsafe-eval'",
 	...(is_prod ? [] : ["'unsafe-eval'"]),
 ].join(" ")
 

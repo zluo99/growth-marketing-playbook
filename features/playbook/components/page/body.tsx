@@ -105,10 +105,6 @@ function useActiveTabFromUrl(default_tab: TabId) {
 		if (window.location.pathname !== next) window.history.replaceState(window.history.state, "", next)
 	}, [active_tab])
 
-	React.useEffect(() => {
-		if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "auto" })
-	}, [active_tab])
-
 	const push_tab = React.useCallback(
 		(id: TabId) => {
 			if (active_tab_ref.current === id) return
