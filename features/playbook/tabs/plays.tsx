@@ -481,17 +481,11 @@ function FieldDropdown({
 			const base_label = info ? <Renderer.Help.Text label={text} description={info} className={help_underline_hover_class} /> : text
 			const show_inline_choices = pendingVariantFor != null && item.value === pendingVariantFor && requires_segment_variant(item.value)
 			const variant_field: SegmentVariantFieldId | null = show_inline_choices ? pendingVariantFor : null
-			const select_type_label = (
-				<span className="inline-flex min-w-0 items-center gap-1">
-					<span>Select</span>
-					{info ? <Renderer.Help.Text label={text} description={info} className={help_underline_hover_class} /> : <span>{text}</span>}
-					<span>type:</span>
-				</span>
-			)
 			out.push({
 				...item,
 				value: item.value,
-				label: show_inline_choices ? select_type_label : base_label,
+				label: base_label,
+				inlineChoicesOnly: !!variant_field,
 				inlineChoices: variant_field
 					? [
 							{ label: "B2B", value: make_variant_value(variant_field, "b2b") },

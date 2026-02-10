@@ -17,7 +17,7 @@ import { MotionPillIndicator, PillList, PillRoot, PillTrigger, useMotionPillRail
 import { cn, stableKeyFromText } from "@/lib/utils"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
-import { PbBullet, PbCard, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbFocus, PbPanel, PbReveal, PbStack, PbSubtleText, PbTabIntro, PbText } from "@/features/playbook/components/ui/ui"
+import { PbBullet, PbCard, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbPanel, PbReveal, PbStack, PbSubtleText, PbTabIntro, PbText } from "@/features/playbook/components/ui/ui"
 import { FrameworkFilterOptions, FrameworkInfoCopy, FrameworksUiCopy, type FrameworkFilterValue } from "@/features/playbook/copy/frameworks"
 import { FrameworkDefinitions, FrameworkPillarKey, type Framework, type FrameworkIcon, type FrameworkPillar, type FrameworkThemeKey } from "@/features/playbook/definitions/frameworks"
 import { TabById } from "@/features/playbook/definitions/tabs"
@@ -596,12 +596,6 @@ export default function TabFrameworks() {
 	}, [filter])
 	const rows = React.useMemo(() => chunk(frameworks, effective_cols), [frameworks, effective_cols])
 
-	const focus_offset_px = 12
-	const top_stick_px = 24
-	const bottom_stick_px = 24
-	const inactive_opacity = 0.22
-	const near_opacity = 0.36
-	const out_of_view_opacity = 0.03
 	const grid_style = React.useMemo<React.CSSProperties>(() => ({ gridTemplateColumns: `repeat(${effective_cols}, minmax(0, 1fr))` }), [effective_cols])
 
 	return (
@@ -612,15 +606,7 @@ export default function TabFrameworks() {
 
 			<FrameworksBar value={filter} onChange={on_filter_change} cols={cols} onChangeCols={on_cols_change} col_options={col_options} />
 
-			<PbFocus
-				className={cn("flex flex-col", ui.gap.sm)}
-				focusOffsetPx={focus_offset_px}
-				topStickPx={top_stick_px}
-				bottomStickPx={bottom_stick_px}
-				inactiveOpacity={inactive_opacity}
-				nearOpacity={near_opacity}
-				outOfViewOpacity={out_of_view_opacity}
-			>
+			<div className={cn("flex flex-col", ui.gap.sm)}>
 				{rows.map((row, i) => (
 					<PbReveal key={`${filter}-${effective_cols}-row-${i}`} className="w-full">
 						<div style={grid_style} className={cn("grid", ui.gap.sm)}>
@@ -629,7 +615,7 @@ export default function TabFrameworks() {
 									key={fw.id}
 									data-search-target={`framework:${fw.id}`}
 									data-search-align="focus"
-									data-search-focus-offset={focus_offset_px}
+									data-search-focus-offset={12}
 									className="w-full"
 								>
 									<FrameworkCard fw={fw} is_open={is_open} on_toggle_pillar={toggle_pillar} transition={collapse_transition} />
@@ -641,7 +627,7 @@ export default function TabFrameworks() {
 						</div>
 					</PbReveal>
 				))}
-			</PbFocus>
+			</div>
 		</div>
 	)
 }
