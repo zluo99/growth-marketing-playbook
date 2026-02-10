@@ -11,10 +11,11 @@ import { motion, useMotionValue, useSpring } from "framer-motion"
 
 import { ui } from "@/components/tokens/design"
 import { uiMotion, useRafThrottle, useReducedMotionBool } from "@/components/tokens/motion"
-import { Bar, BarRail, BarScroller } from "@/components/nav/bar"
+import { Bar, BarRail, BarScroller, BarScrollButton } from "@/components/nav/bar"
 import { Dropdown, type DropdownItem } from "@/components/nav/dropdown"
 import { MotionPillIndicator, PillList, PillRoot, PillTrigger, useMotionPillRail } from "@/components/nav/pill"
 import { clamp_value, cn } from "@/lib/utils"
+import { useTapFeedback } from "@/lib/hooks/use-tap-feedback"
 
 import { TabById, TabOrder, type TabId, type TabMeta, PlaybookTabs } from "../../definitions/tabs"
 import { Renderer } from "../ui/renderer"
@@ -280,6 +281,8 @@ export const HoverMorphArrow = React.memo(function HoverMorphArrow({
 })
 
 function HomeButton({ onGoToTab }: { onGoToTab: (id: TabId) => void }) {
+	const { isTapActive, tapFeedbackProps } = useTapFeedback<HTMLAnchorElement>()
+
 	const on_click = React.useCallback(
 		(event: React.MouseEvent<HTMLAnchorElement>) => {
 			event.preventDefault()
@@ -289,7 +292,23 @@ function HomeButton({ onGoToTab }: { onGoToTab: (id: TabId) => void }) {
 	)
 
 	return (
-		<Link href="/overview" aria-label={PageCopy.headerNavigation.homeButtonAria} onClick={on_click} className={cn(ui.nav.iconButton.chrome)}>
+		<Link
+			href="/overview"
+			aria-label={PageCopy.headerNavigation.homeButtonAria}
+			onClick={on_click}
+			data-pressed={isTapActive ? "true" : undefined}
+			onPointerDown={tapFeedbackProps.onPointerDown}
+			onPointerUp={tapFeedbackProps.onPointerUp}
+			onPointerCancel={tapFeedbackProps.onPointerCancel}
+			onPointerLeave={tapFeedbackProps.onPointerLeave}
+			onBlur={tapFeedbackProps.onBlur}
+			className={cn(
+				ui.nav.iconButton.chrome,
+				"data-[pressed=true]:bg-[color:var(--surface-bg-hover)]",
+				"data-[pressed=true]:border-[color:var(--border-hover)]",
+				"data-[pressed=true]:[box-shadow:var(--shadow-md)]"
+			)}
+		>
 			<span className={cn(ui.nav.iconButton.contentChrome, "h-full w-full")}>
 				<Image
 					src="/favicon.ico"
@@ -297,7 +316,12 @@ function HomeButton({ onGoToTab }: { onGoToTab: (id: TabId) => void }) {
 					width={ui.brand.homeMarkPx}
 					height={ui.brand.homeMarkPx}
 					priority
-					className={cn(ui.brand.homeMarkClass, "opacity-60 group-hover:opacity-100", "dark:invert", ui.motion.duration)}
+					className={cn(
+						ui.brand.homeMarkClass,
+						isTapActive ? "opacity-100" : "opacity-60 group-hover:opacity-100",
+						"dark:invert",
+						ui.motion.duration
+					)}
 				/>
 			</span>
 		</Link>
@@ -393,19 +417,18 @@ const TabsBarRail = React.memo(function TabsBarRail({ activeTab, onGoToTab, redu
 							transition={uiMotion.tabs.arrowTransition}
 							style={{ left: ui.nav.arrow.insetRem, pointerEvents: canScrollLeft ? "auto" : "none" }}
 						>
-							<button
-								type="button"
+							<BarScrollButton
+								dir="left"
 								onClick={() => scrollByPage("left")}
-								aria-label={PageCopy.headerNavigation.scrollLeftAria}
-								aria-controls={scroller_id}
+								ariaLabel={PageCopy.headerNavigation.scrollLeftAria}
+								controlsId={scroller_id}
 								onMouseEnter={() => setHoverLeft(true)}
 								onMouseLeave={() => setHoverLeft(false)}
 								onFocus={() => setHoverLeft(true)}
 								onBlur={() => setHoverLeft(false)}
-								className={cn(ui.nav.arrow.buttonChrome, "group")}
 							>
 								<HoverMorphArrow dir="left" hovered={hoverLeft} />
-							</button>
+							</BarScrollButton>
 						</motion.div>
 
 						<motion.div
@@ -415,19 +438,18 @@ const TabsBarRail = React.memo(function TabsBarRail({ activeTab, onGoToTab, redu
 							transition={uiMotion.tabs.arrowTransition}
 							style={{ right: ui.nav.arrow.insetRem, pointerEvents: canScrollRight ? "auto" : "none" }}
 						>
-							<button
-								type="button"
+							<BarScrollButton
+								dir="right"
 								onClick={() => scrollByPage("right")}
-								aria-label={PageCopy.headerNavigation.scrollRightAria}
-								aria-controls={scroller_id}
+								ariaLabel={PageCopy.headerNavigation.scrollRightAria}
+								controlsId={scroller_id}
 								onMouseEnter={() => setHoverRight(true)}
 								onMouseLeave={() => setHoverRight(false)}
 								onFocus={() => setHoverRight(true)}
 								onBlur={() => setHoverRight(false)}
-								className={cn(ui.nav.arrow.buttonChrome, "group")}
 							>
 								<HoverMorphArrow dir="right" hovered={hoverRight} />
-							</button>
+							</BarScrollButton>
 						</motion.div>
 
 						<BarScroller id={scroller_id} scrollerRef={scrollerRef} canScrollLeft={canScrollLeft} canScrollRight={canScrollRight}>

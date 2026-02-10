@@ -35,6 +35,33 @@ function resolve_wasm_url(filename: string) {
 	return new URL(`/${filename}`, self.location.href).toString()
 }
 
+function is_csp_wasm_compile_error(err: unknown) {
+	const message = err instanceof Error ? err.message : String(err)
+	return /content security policy|csp/i.test(message) && /webassembly|instantiate|compileerror/i.test(message)
+}
+
+async function init_sql_module() {
+	try {
+		// @ts-expect-error sql.js module has no types
+		const sql_js_module = await import("sql.js/dist/sql-wasm.js")
+		const init_sql_js = sql_js_module.default || sql_js_module
+		return await init_sql_js({
+			locateFile: (file: string) => {
+				// sql.js asks for "sql-wasm.wasm" (or similar) here
+				return resolve_wasm_url(file)
+			},
+		})
+	} catch (err) {
+		if (!is_csp_wasm_compile_error(err)) throw err
+
+		// Fallback for strict CSP environments that block WebAssembly compilation.
+		// @ts-expect-error sql.js module has no types
+		const sql_asm_module = await import("sql.js/dist/sql-asm.js")
+		const init_sql_asm = sql_asm_module.default || sql_asm_module
+		return await init_sql_asm()
+	}
+}
+
 async function ensure_db(): Promise<SqlJsDb> {
 	if (db) return db
 
@@ -46,17 +73,7 @@ async function ensure_db(): Promise<SqlJsDb> {
 
 	init_promise = (async () => {
 		try {
-			// Import sql.js - webpack will bundle this properly for the worker
-			// @ts-expect-error sql.js module has no types
-			const sql_js_module = await import("sql.js/dist/sql-wasm.js")
-			const init_sql_js = sql_js_module.default || sql_js_module
-
-			const sql_module = await init_sql_js({
-				locateFile: (file: string) => {
-					// sql.js asks for "sql-wasm.wasm" (or similar) here
-					return resolve_wasm_url(file)
-				},
-			})
+			const sql_module = await init_sql_module()
 
 			const database = new sql_module.Database() as unknown as SqlJsDb
 			seedSpoofData(database, { clearExisting: true })

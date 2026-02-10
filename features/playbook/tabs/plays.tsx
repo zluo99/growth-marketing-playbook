@@ -13,7 +13,7 @@ import { ui } from "@/components/tokens/design"
 import { uiMotion, useReducedMotionBool } from "@/components/tokens/motion"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Dropdown, type DropdownItem } from "@/components/nav/dropdown"
-import { Bar } from "@/components/nav/bar"
+import { Bar, BarRail, BarScroller, BarScrollButton } from "@/components/nav/bar"
 import { MotionPillIndicator, PillList, PillRoot, PillTrigger, useMotionPillRail } from "@/components/nav/pill"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { cn, stableKeyFromText } from "@/lib/utils"
@@ -580,9 +580,11 @@ function SourceL3Tooltip({ label, description }: { label: string; description: s
 type SpendBarItem = { id: SpendPanel["id"]; title: string; body: string }
 
 const spend_bar_tabs = SpendCopy.panels.map((p) => ({ id: p.id, title: p.title, body: p.body })) as readonly SpendBarItem[]
+const spend_scroller_id = "plays-spend-scroller"
 
 function SpendBar({ value, onChange }: { value: SpendPanel["id"]; onChange: (v: SpendPanel["id"]) => void }) {
 	const rail = useMotionPillRail<SpendPanel["id"]>({ activeKey: value, spring: uiMotion.nav.pillSpring })
+	const spend_tab_order = React.useMemo(() => spend_bar_tabs.map((tab) => tab.id), [])
 
 	const on_change = React.useCallback(
 		(next: string) => {
@@ -591,36 +593,107 @@ function SpendBar({ value, onChange }: { value: SpendPanel["id"]; onChange: (v: 
 		[onChange]
 	)
 
+	const ensure_visible = React.useCallback(
+		(id: SpendPanel["id"], behavior: ScrollBehavior = "smooth") => {
+			const btn = rail.triggerRefs.current[id]
+			if (!btn) return
+			btn.scrollIntoView({ block: "nearest", inline: "center", behavior })
+			rail.pill.measureRaf()
+		},
+		[rail.pill, rail.triggerRefs]
+	)
+
+	React.useEffect(() => {
+		ensure_visible(value, "smooth")
+	}, [ensure_visible, value])
+
+	const on_key_down = React.useCallback(
+		(e: React.KeyboardEvent) => {
+			if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Home" && e.key !== "End") return
+			e.preventDefault()
+
+			const idx = spend_tab_order.indexOf(value)
+			if (idx < 0) return
+
+			const next =
+				e.key === "Home"
+					? spend_tab_order[0]
+					: e.key === "End"
+						? spend_tab_order[spend_tab_order.length - 1]
+						: e.key === "ArrowLeft"
+							? spend_tab_order[Math.max(0, idx - 1)]
+							: spend_tab_order[Math.min(spend_tab_order.length - 1, idx + 1)]
+
+			if (!next || next === value) return
+			onChange(next)
+
+			requestAnimationFrame(() => {
+				rail.triggerRefs.current[next]?.focus?.()
+				ensure_visible(next, "auto")
+			})
+		},
+		[ensure_visible, onChange, rail.triggerRefs, spend_tab_order, value]
+	)
+
 	return (
 		<PillRoot value={value} onValueChange={on_change} className="w-full">
 			<Bar variant="shell" ariaLabel={SpendCopy.ui.spendBarLabel} className="w-full">
-				{() => (
-					<div className={cn("flex items-stretch", ui.nav.pad)} role="group" aria-label={SpendCopy.ui.spendBarLabel}>
-						<PillList ref={rail.listRef} chrome={false} className={cn(ui.nav.rail.listChrome, ui.nav.control.height, "items-center w-full")}>
-							<MotionPillIndicator className={cn(ui.nav.rail.indicatorChrome, ui.nav.control.height, ui.radius.control)} pill={rail.pill} transition={uiMotion.nav.pillTween} />
+				{({ scrollerRef, canScrollLeft, canScrollRight, scrollByPage }) => (
+					<>
+						{canScrollLeft ? (
+							<div className="absolute left-[0.35rem] top-1/2 z-30 -translate-y-1/2">
+								<BarScrollButton
+									dir="left"
+									onClick={() => scrollByPage("left")}
+									ariaLabel={`${SpendCopy.ui.spendBarLabel}: scroll left`}
+									controlsId={spend_scroller_id}
+								/>
+							</div>
+						) : null}
 
-							{spend_bar_tabs.map((t) => {
-								const is_active = value === t.id
-								const text_tone = is_active ? ui.text.default.fg : ui.text.interactive.all
+						{canScrollRight ? (
+							<div className="absolute right-[0.35rem] top-1/2 z-30 -translate-y-1/2">
+								<BarScrollButton
+									dir="right"
+									onClick={() => scrollByPage("right")}
+									ariaLabel={`${SpendCopy.ui.spendBarLabel}: scroll right`}
+									controlsId={spend_scroller_id}
+								/>
+							</div>
+						) : null}
 
-								return (
-									<PillTrigger
-										key={t.id}
-										value={t.id}
-										ref={rail.getTriggerRef(t.id)}
-										className={cn(ui.nav.rail.triggerChrome, "shrink-0")}
-										title={t.body}
-										aria-label={t.body ? `${t.title}. ${t.body}` : t.title}
-										onPointerDown={() => rail.pill.measureRaf()}
-									>
-										<span className={cn("relative z-10", ui.typography.label, ui.motion.duration, text_tone)}>
-											<Renderer.Copy.InlineText text={t.title} keyPrefix={`${plays_key_prefix}-spend-tab-${t.id}`} />
-										</span>
-									</PillTrigger>
-								)
-							})}
-						</PillList>
-					</div>
+						<BarScroller id={spend_scroller_id} scrollerRef={scrollerRef} canScrollLeft={canScrollLeft} canScrollRight={canScrollRight}>
+							<BarRail className={ui.nav.pad}>
+								<PillList ref={rail.listRef} onKeyDown={on_key_down} chrome={false} className={cn(ui.nav.rail.listChrome, ui.nav.control.height, "items-center")}>
+									<MotionPillIndicator className={cn(ui.nav.rail.indicatorChrome, ui.nav.control.height, ui.radius.control)} pill={rail.pill} transition={uiMotion.nav.pillTween} />
+
+									{spend_bar_tabs.map((t) => {
+										const is_active = value === t.id
+										const text_tone = is_active ? ui.text.default.fg : ui.text.interactive.all
+
+										return (
+											<PillTrigger
+												key={t.id}
+												value={t.id}
+												ref={rail.getTriggerRef(t.id)}
+												className={cn(ui.nav.rail.triggerChrome, "shrink-0")}
+												title={t.body}
+												aria-label={t.body ? `${t.title}. ${t.body}` : t.title}
+												onPointerDown={() => {
+													ensure_visible(t.id, "auto")
+													rail.pill.measureRaf()
+												}}
+											>
+												<span className={cn("relative z-10", ui.typography.label, ui.motion.duration, text_tone)}>
+													<Renderer.Copy.InlineText text={t.title} keyPrefix={`${plays_key_prefix}-spend-tab-${t.id}`} />
+												</span>
+											</PillTrigger>
+										)
+									})}
+								</PillList>
+							</BarRail>
+						</BarScroller>
+					</>
 				)}
 			</Bar>
 		</PillRoot>

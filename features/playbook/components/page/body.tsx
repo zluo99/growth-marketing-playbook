@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation"
 import { ui } from "@/components/tokens/design"
 import { useReducedMotionBool } from "@/components/tokens/motion"
 import { Button } from "@/components/ui/button"
+import { useTapFeedback } from "@/lib/hooks/use-tap-feedback"
 import { cn } from "@/lib/utils"
 import { PillContent, PillRoot } from "@/components/nav/pill"
 
@@ -151,29 +152,42 @@ function BottomTabNavButtons() {
 		"bg-background",
 		ui.surface.state.hover.bg,
 		ui.surface.state.hover.border,
-		ui.surface.state.hover.shadowMd
+		ui.surface.state.hover.shadowMd,
+		"data-[pressed=true]:bg-[color:var(--surface-bg-hover)]",
+		"data-[pressed=true]:border-[color:var(--border-hover)]",
+		"data-[pressed=true]:[box-shadow:var(--shadow-md)]"
 	)
 
 	const NavBtn = ({ dir, onClick }: { dir: "prev" | "next"; onClick: () => void }) => {
 		const [hovered, set_hovered] = React.useState(false)
+		const { isTapActive, tapFeedbackProps } = useTapFeedback<HTMLButtonElement>()
 		const is_prev = dir === "prev"
+		const is_active = hovered || isTapActive
 
 		return (
 			<Button
 				size="default"
 				variant="outline"
 				onClick={onClick}
+				data-pressed={isTapActive ? "true" : undefined}
 				onMouseEnter={() => set_hovered(true)}
 				onMouseLeave={() => set_hovered(false)}
 				onFocus={() => set_hovered(true)}
-				onBlur={() => set_hovered(false)}
+				onBlur={(event) => {
+					set_hovered(false)
+					tapFeedbackProps.onBlur(event)
+				}}
+				onPointerDown={tapFeedbackProps.onPointerDown}
+				onPointerUp={tapFeedbackProps.onPointerUp}
+				onPointerCancel={tapFeedbackProps.onPointerCancel}
+				onPointerLeave={tapFeedbackProps.onPointerLeave}
 				className={nav_btn_class}
 			>
-				{is_prev ? <HoverMorphArrow dir="left" hovered={hovered} /> : null}
-				<span className={cn(ui.motion.duration, ui.text.interactive.all)}>
+				{is_prev ? <HoverMorphArrow dir="left" hovered={is_active} /> : null}
+				<span className={cn(ui.motion.duration, ui.text.interactive.all, isTapActive ? "text-foreground" : null)}>
 					{is_prev ? PageCopy.headerTabsNav.prevLabel : PageCopy.headerTabsNav.nextLabel}
 				</span>
-				{!is_prev ? <HoverMorphArrow dir="right" hovered={hovered} /> : null}
+				{!is_prev ? <HoverMorphArrow dir="right" hovered={is_active} /> : null}
 			</Button>
 		)
 	}

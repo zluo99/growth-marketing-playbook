@@ -12,7 +12,7 @@ import { BarChart3, Coins, EyeOff, FlaskConical, Handshake, Layers, LogIn, Megap
 import { ui, type TypographyKey } from "@/components/tokens/design"
 import { uiMotion, useReducedMotionBool } from "@/components/tokens/motion"
 import { Badge } from "@/components/ui/badge"
-import { Bar } from "@/components/nav/bar"
+import { Bar, BarRail, BarScroller, BarScrollButton } from "@/components/nav/bar"
 import { MotionPillIndicator, PillList, PillRoot, PillTrigger, useMotionPillRail } from "@/components/nav/pill"
 import { cn, stableKeyFromText } from "@/lib/utils"
 
@@ -60,6 +60,7 @@ const frameworks_filter_items = FrameworkFilterOptions.map((o) => ({
 })) as readonly { value: FrameworkFilterValue; label: string }[]
 
 const frameworks_key_prefix = "frameworks"
+const frameworks_filter_scroller_id = "frameworks-filter-scroller"
 const by_alias = (a: Framework, b: Framework) => a.alias.localeCompare(b.alias)
 
 /* -------------------------------------------------------------------------- */
@@ -194,44 +195,118 @@ function FrameworksBar({
 		[onChangeCols]
 	)
 
+	const filter_order = React.useMemo(() => frameworks_filter_items.map((item) => item.value), [])
+
+	const ensure_filter_visible = React.useCallback(
+		(id: FrameworkFilterValue, behavior: ScrollBehavior = "smooth") => {
+			const btn = left.triggerRefs.current[id]
+			if (!btn) return
+			btn.scrollIntoView({ block: "nearest", inline: "center", behavior })
+			left.pill.measureRaf()
+		},
+		[left.pill, left.triggerRefs]
+	)
+
+	React.useEffect(() => {
+		ensure_filter_visible(value, "smooth")
+	}, [ensure_filter_visible, value])
+
+	const on_filter_key_down = React.useCallback(
+		(e: React.KeyboardEvent) => {
+			if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Home" && e.key !== "End") return
+			e.preventDefault()
+
+			const idx = filter_order.indexOf(value)
+			if (idx < 0) return
+
+			const next =
+				e.key === "Home"
+					? filter_order[0]
+					: e.key === "End"
+						? filter_order[filter_order.length - 1]
+						: e.key === "ArrowLeft"
+							? filter_order[Math.max(0, idx - 1)]
+							: filter_order[Math.min(filter_order.length - 1, idx + 1)]
+
+			if (!next || next === value) return
+			onChange(next)
+
+			requestAnimationFrame(() => {
+				left.triggerRefs.current[next]?.focus?.()
+				ensure_filter_visible(next, "auto")
+			})
+		},
+		[ensure_filter_visible, filter_order, left.triggerRefs, onChange, value]
+	)
+
 	return (
 		<div className={cn("flex items-stretch", ui.gap.xs)} role="group" aria-label={FrameworksUiCopy.filtersGroupLabel}>
 			<PillRoot value={value} onValueChange={on_change_filter} className="min-w-0 flex-1">
 				<Bar variant="shell" ariaLabel={FrameworksUiCopy.filterBarLabel} className="min-w-0">
-					{() => (
-						<div className={cn("flex items-stretch", ui.nav.pad)}>
-							<PillList
-								ref={left.listRef}
-								chrome={false}
-								className={cn(ui.nav.rail.listChrome, ui.nav.control.height, "items-center w-full")}
-							>
-								<MotionPillIndicator
-									className={cn(ui.nav.rail.indicatorChrome, ui.nav.control.height, ui.radius.control)}
-									pill={left.pill}
-									transition={uiMotion.nav.pillTween}
-								/>
+					{({ scrollerRef, canScrollLeft, canScrollRight, scrollByPage }) => (
+						<>
+							{canScrollLeft ? (
+								<div className="absolute left-[0.35rem] top-1/2 z-30 -translate-y-1/2">
+									<BarScrollButton
+										dir="left"
+										onClick={() => scrollByPage("left")}
+										ariaLabel={`${FrameworksUiCopy.filterBarLabel}: scroll left`}
+										controlsId={frameworks_filter_scroller_id}
+									/>
+								</div>
+							) : null}
 
-								{frameworks_filter_items.map((item) => {
-									const is_active = value === item.value
-									// match header.tsx: inactive uses interactive tokens (hover -> fg)
-									const label_tone = is_active ? ui.text.default.fg : ui.text.interactive.all
+							{canScrollRight ? (
+								<div className="absolute right-[0.35rem] top-1/2 z-30 -translate-y-1/2">
+									<BarScrollButton
+										dir="right"
+										onClick={() => scrollByPage("right")}
+										ariaLabel={`${FrameworksUiCopy.filterBarLabel}: scroll right`}
+										controlsId={frameworks_filter_scroller_id}
+									/>
+								</div>
+							) : null}
 
-									return (
-										<PillTrigger
-											key={item.value}
-											value={item.value}
-											ref={left.getTriggerRef(item.value)}
-											className={cn(ui.nav.rail.triggerChrome, "shrink-0")}
-											onPointerDown={() => left.pill.measureRaf()}
-										>
-											<span className={cn("relative z-10", ui.typography.label, ui.motion.duration, label_tone)}>
-												{Renderer.Copy.renderInlineText(item.label, { keyPrefix: `${frameworks_key_prefix}-filter-${item.value}` })}
-											</span>
-										</PillTrigger>
-									)
-								})}
-							</PillList>
-						</div>
+							<BarScroller id={frameworks_filter_scroller_id} scrollerRef={scrollerRef} canScrollLeft={canScrollLeft} canScrollRight={canScrollRight}>
+								<BarRail className={ui.nav.pad}>
+									<PillList
+										ref={left.listRef}
+										onKeyDown={on_filter_key_down}
+										chrome={false}
+										className={cn(ui.nav.rail.listChrome, ui.nav.control.height, "items-center")}
+									>
+										<MotionPillIndicator
+											className={cn(ui.nav.rail.indicatorChrome, ui.nav.control.height, ui.radius.control)}
+											pill={left.pill}
+											transition={uiMotion.nav.pillTween}
+										/>
+
+										{frameworks_filter_items.map((item) => {
+											const is_active = value === item.value
+											// match header.tsx: inactive uses interactive tokens (hover -> fg)
+											const label_tone = is_active ? ui.text.default.fg : ui.text.interactive.all
+
+											return (
+												<PillTrigger
+													key={item.value}
+													value={item.value}
+													ref={left.getTriggerRef(item.value)}
+													className={cn(ui.nav.rail.triggerChrome, "shrink-0")}
+													onPointerDown={() => {
+														ensure_filter_visible(item.value, "auto")
+														left.pill.measureRaf()
+													}}
+												>
+													<span className={cn("relative z-10", ui.typography.label, ui.motion.duration, label_tone)}>
+														{Renderer.Copy.renderInlineText(item.label, { keyPrefix: `${frameworks_key_prefix}-filter-${item.value}` })}
+													</span>
+												</PillTrigger>
+											)
+										})}
+									</PillList>
+								</BarRail>
+							</BarScroller>
+						</>
 					)}
 				</Bar>
 			</PillRoot>

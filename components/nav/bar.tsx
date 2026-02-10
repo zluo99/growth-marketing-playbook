@@ -172,3 +172,39 @@ export function BarRail({ className, children }: { className?: string; children:
 	return <div className={cn("inline-flex w-max items-center", ui.nav.rail.itemGap, className)}>{children}</div>
 }
 
+export function BarScrollButton({
+	dir,
+	onClick,
+	ariaLabel,
+	controlsId,
+	className,
+	children,
+	...button_props
+}: {
+	dir: "left" | "right"
+	onClick: () => void
+	ariaLabel: string
+	controlsId?: string
+	className?: string
+	children?: React.ReactNode
+} & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type" | "onClick" | "aria-label" | "aria-controls">) {
+	const points = dir === "left" ? "12,5 8,9 12,13" : "8,5 12,9 8,13"
+
+	return (
+		<button
+			type="button"
+			onClick={onClick}
+			aria-label={ariaLabel}
+			aria-controls={controlsId}
+			className={cn(ui.nav.arrow.buttonChrome, "group", className)}
+			{...button_props}
+		>
+			{children ?? (
+				<svg className={ui.iconNude.sm} viewBox="0 0 20 20" fill="none" aria-hidden="true">
+					<polyline points={points} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+				</svg>
+			)}
+		</button>
+	)
+}
+

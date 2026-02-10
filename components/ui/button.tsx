@@ -34,6 +34,10 @@ const button_base_class = cn(
 	ui.surface.state.focus.ring
 )
 
+const hover_or_active_surface_bg = cn(ui.surface.state.hover.bg, "active:bg-[color:var(--surface-bg-hover)]")
+const hover_or_active_surface_border = cn(ui.surface.state.hover.border, "active:border-[color:var(--border-hover)]")
+const hover_or_active_shadow_md = cn(ui.surface.state.hover.shadowMd, "active:[box-shadow:var(--shadow-md)]")
+
 export const buttonVariants = cva(button_base_class, {
 	variants: {
 		size: {
@@ -43,22 +47,24 @@ export const buttonVariants = cva(button_base_class, {
 			sm: ui.button.size.sm,
 		},
 		variant: {
-			default: cn("bg-primary text-primary-foreground", "hover:bg-primary/90", ui.surface.state.hover.shadowMd),
-			destructive: cn("bg-destructive text-destructive-foreground", "hover:bg-destructive/90", ui.surface.state.hover.shadowMd),
+			default: cn("bg-primary text-primary-foreground", "hover:bg-primary/90 active:bg-primary/90", hover_or_active_shadow_md),
+			destructive: cn("bg-destructive text-destructive-foreground", "hover:bg-destructive/90 active:bg-destructive/90", hover_or_active_shadow_md),
 
-			ghost: cn(ui.control.ghost, ui.text.interactive.all, "bg-transparent", ui.surface.state.hover.bg, ui.surface.state.hover.shadowMd),
+			ghost: cn(ui.control.ghost, ui.text.interactive.all, "bg-transparent active:text-foreground", hover_or_active_surface_bg, hover_or_active_shadow_md),
 			link: "text-primary underline-offset-4 hover:underline",
-			outline: cn(ui.control.base, ui.text.interactive.all, "bg-background", ui.surface.state.hover.bg, ui.surface.state.hover.border, ui.surface.state.hover.shadowMd),
+			outline: cn(ui.control.base, ui.text.interactive.all, "bg-background active:text-foreground", hover_or_active_surface_bg, hover_or_active_surface_border, hover_or_active_shadow_md),
 
-			secondary: cn("bg-secondary text-secondary-foreground", "hover:bg-secondary/80", ui.surface.state.hover.shadowMd),
-			success: cn(ui.status.success.fill, ui.status.success.fillHover, ui.surface.state.hover.shadowMd),
+			secondary: cn("bg-secondary text-secondary-foreground", "hover:bg-secondary/80 active:bg-secondary/80", hover_or_active_shadow_md),
+			success: cn(ui.status.success.fill, ui.status.success.fillHover, "active:bg-[color:var(--accent-green-bg-hover)] active:border-[color:var(--accent-green-border-strong-hover)]", hover_or_active_shadow_md),
 
 			successOutline: cn(
 				ui.control.base,
 				ui.status.success.outline,
 				ui.status.success.outlineHover,
+				"active:border-[color:var(--accent-green-border-strong-hover)]",
 				ui.text.interactive.all,
-				ui.surface.state.hover.shadowMd
+				"active:text-foreground",
+				hover_or_active_shadow_md
 			),
 		},
 	},
