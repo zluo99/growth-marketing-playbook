@@ -1,0 +1,219 @@
+"use client"
+
+/* -------------------------------------------------------------------------- */
+/* Imports                                                                    */
+/* -------------------------------------------------------------------------- */
+
+import * as React from "react"
+import { ArrowRight, FlaskConical, Scale, Target } from "lucide-react"
+
+import { ui } from "@/components/tokens/design"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+
+import { Renderer } from "@/features/playbook/components/ui/renderer"
+import {
+	PbCard,
+	PbCardContent,
+	PbCardGlow,
+	PbCardHeader,
+	PbCardLayer,
+	PbFocus,
+	PbReveal,
+	PbSubtleText,
+	PbTabIntro,
+	PbTabPanel,
+} from "@/features/playbook/components/ui/ui"
+import { usePbTabsNav } from "@/features/playbook/components/context/context"
+import { GuideCopy } from "@/features/playbook/copy/overview-guide"
+import { TabById } from "@/features/playbook/definitions/tabs"
+import type { SpendId } from "@/features/playbook/definitions/spend"
+import { TenetsCopy } from "@/features/playbook/copy/overview-tenets"
+
+/* -------------------------------------------------------------------------- */
+/* Helpers                                                                    */
+/* -------------------------------------------------------------------------- */
+
+function tenet_icon(k: (typeof TenetsCopy.panels)[number]["icon"]) {
+	if (k === "scale") return <Scale className={ui.iconNude.lg} />
+	if (k === "target") return <Target className={ui.iconNude.lg} />
+	return <FlaskConical className={ui.iconNude.lg} />
+}
+
+const overview_key_prefix = "overview"
+
+function render_inline_text(txt: string, key_prefix: string) {
+	return Renderer.Copy.renderInlineText(txt, { keyPrefix: key_prefix })
+}
+
+function OverviewCard({
+	id,
+	title,
+	description,
+	children,
+	glowClassName,
+}: {
+	id: string
+	title: string
+	description: React.ReactNode
+	children: React.ReactNode
+	glowClassName?: string
+}) {
+	const rendered_title = <Renderer.Copy.InlineText text={title} keyPrefix={`${overview_key_prefix}-card-${id}-title`} />
+	const rendered_description =
+		typeof description === "string" ? <Renderer.Copy.InlineText text={description} keyPrefix={`${overview_key_prefix}-card-${id}-desc`} /> : description
+
+	return (
+		<PbCard hover shadow className="relative w-full overflow-hidden">
+			{glowClassName ? <PbCardGlow className={glowClassName} /> : null}
+			<PbCardLayer>
+				<PbCardHeader
+					title={<span className={ui.typography.title.lg}>{rendered_title}</span>}
+					description={<PbSubtleText size="body">{rendered_description}</PbSubtleText>}
+				/>
+				<PbCardContent className="relative">{children}</PbCardContent>
+			</PbCardLayer>
+		</PbCard>
+	)
+}
+
+type KickerProps = { id: string; icon: React.ReactNode; title: string; description: string; spendIds?: readonly SpendId[] }
+
+function Kicker({ id, icon, title, description, spendIds }: KickerProps) {
+	return (
+		<PbTabPanel>
+			<div className={cn("flex items-center", ui.gap.sm)}>
+				<span className={cn(ui.iconFrame.sm, "text-muted-foreground")}>{icon}</span>
+				<span className={cn("text-foreground", ui.typography.title.md)}>
+					<Renderer.Copy.InlineText text={title} keyPrefix={`${overview_key_prefix}-tenet-${id}-title`} />
+				</span>
+			</div>
+
+			<p className={cn(ui.margin.topXs, "leading-relaxed text-muted-foreground", ui.typography.body)}>
+				{render_inline_text(description, `${overview_key_prefix}-tenet-${id}-body`)}
+			</p>
+
+			{spendIds?.length ? (
+				<div className={cn(ui.margin.topSm, "flex flex-wrap items-center", ui.gap.sm)}>
+					{spendIds.map((id) => (
+						<Renderer.Spend.Pill key={id} id={id} />
+					))}
+				</div>
+			) : null}
+		</PbTabPanel>
+	)
+}
+
+function FlowTag({ text, onClick, icon, keyPrefix }: { text: string; onClick?: () => void; icon?: React.ReactNode; keyPrefix: string }) {
+	const is_interactive = Boolean(onClick)
+	const base_class = cn("inline-flex items-center", ui.gap.sm, ui.typography.label)
+
+	if (is_interactive) {
+		return (
+			<Button
+				size="sm"
+				variant="outline"
+				onClick={onClick}
+				className={cn(base_class, "h-auto", ui.spacing.chipSm, ui.surface.structure.border, "bg-background")}
+			>
+				{icon ? <span className="text-current">{icon}</span> : null}
+				<span className="text-current">
+					<Renderer.Copy.InlineText text={text} keyPrefix={keyPrefix} />
+				</span>
+			</Button>
+		)
+	}
+
+	return (
+		<span className={cn(base_class, ui.surface.structure.border, "bg-muted/30", ui.spacing.chipSm, "text-muted-foreground", ui.radius.control, ui.motion.duration)}>
+			{icon ? <span className="text-muted-foreground">{icon}</span> : null}
+			<span className="text-muted-foreground">
+				<Renderer.Copy.InlineText text={text} keyPrefix={keyPrefix} />
+			</span>
+		</span>
+	)
+}
+
+/* -------------------------------------------------------------------------- */
+/* Default export                                                             */
+/* -------------------------------------------------------------------------- */
+
+export default function TabOverview() {
+	const { goToTab } = usePbTabsNav()
+	const reveal_cards = true
+	const tab = TabById["overview"]
+
+	return (
+		<div className={cn("flex flex-col", ui.gap.lg)} data-search-target="tab:overview">
+			<PbTabIntro alias={tab.alias} description={tab.description} keyPrefix={`${overview_key_prefix}-intro`} />
+
+			<PbFocus className={cn("flex flex-col", ui.gap.lg)}>
+				<PbReveal enabled={reveal_cards} className="w-full" data-search-target="tenets-card">
+					<OverviewCard id={TenetsCopy.id} title={TenetsCopy.title} description={TenetsCopy.body} glowClassName={ui.glow.orange}>
+						<div className={cn("flex flex-col", ui.gap.sm)}>
+							<div className={cn("grid items-stretch md:grid-cols-3", ui.gap.sm)}>
+								{TenetsCopy.panels.map((t) => (
+									<Kicker key={t.id} id={t.id} icon={tenet_icon(t.icon)} title={t.title} description={t.body} spendIds={t.spend_ids} />
+								))}
+							</div>
+
+							<p className={cn("text-muted-foreground", ui.typography.caption)}>
+								{render_inline_text(TenetsCopy.footer, `${overview_key_prefix}-tenets-footer`)}
+							</p>
+						</div>
+					</OverviewCard>
+				</PbReveal>
+
+				<PbReveal enabled={reveal_cards} className="w-full" data-search-target="guide-card">
+					<OverviewCard id="guide" title={GuideCopy.title} description={GuideCopy.body}>
+						<div className={cn("flex flex-col", ui.gap.sm)}>
+							<div className={cn("grid items-stretch md:grid-cols-2", ui.gap.sm)}>
+								<PbTabPanel>
+									<div className={cn("text-foreground", ui.typography.title.md)}>
+										<Renderer.Copy.InlineText
+											text={GuideCopy.panels[0]?.title ?? ""}
+											keyPrefix={`${overview_key_prefix}-guide-panel-1-title`}
+										/>
+									</div>
+
+									<div className={cn(ui.margin.topSm, "flex flex-wrap items-center text-muted-foreground", ui.gap.sm)}>
+										{GuideCopy.panels[0]?.sequence?.map((s, idx, arr) => {
+											const next_tab = TabById[s.id]
+											const text = next_tab?.alias ?? s.title
+											const on_click = next_tab ? () => goToTab(next_tab.id) : undefined
+											const TabIcon = next_tab?.icon
+
+											return (
+												<React.Fragment key={s.id}>
+													<FlowTag
+														text={text}
+														onClick={on_click}
+														icon={TabIcon ? <TabIcon className={cn(ui.iconNude.xs, "opacity-70")} /> : undefined}
+														keyPrefix={`${overview_key_prefix}-guide-flow-${s.id}`}
+													/>
+													{idx < arr.length - 1 ? <ArrowRight className={cn(ui.iconNude.sm, "opacity-60")} aria-hidden="true" /> : null}
+												</React.Fragment>
+											)
+										})}
+									</div>
+
+									<p className={cn(ui.margin.topSm, "leading-snug text-muted-foreground", ui.typography.body)}>{render_inline_text(GuideCopy.panels[0]?.body ?? "", "overview-guide-sequence")}</p>
+								</PbTabPanel>
+
+								<PbTabPanel>
+									<div className={cn("text-foreground", ui.typography.title.md)}>
+										<Renderer.Copy.InlineText
+											text={GuideCopy.panels[1]?.title ?? ""}
+											keyPrefix={`${overview_key_prefix}-guide-panel-2-title`}
+										/>
+									</div>
+									<p className={cn(ui.margin.topSm, "leading-snug text-muted-foreground", ui.typography.body)}>{render_inline_text(GuideCopy.panels[1]?.body ?? "", "overview-guide-journey")}</p>
+								</PbTabPanel>
+							</div>
+						</div>
+					</OverviewCard>
+				</PbReveal>
+			</PbFocus>
+		</div>
+	)
+}

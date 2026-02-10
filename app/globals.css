@@ -1,0 +1,430 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* -------------------------------------------------------------------------- */
+/* Custom: Theme                                                              */
+/* -------------------------------------------------------------------------- */
+
+:root {
+	--font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+	--motion-duration-fast: 120ms;
+	--motion-duration-base: 150ms;
+	--motion-duration-slow: 240ms;
+
+	--motion-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+	--motion-ease-emphasis: cubic-bezier(0.25, 1, 0.3, 1);
+
+	--app-max-w: 80rem;
+	--app-pad-x: 1rem;
+	--app-pad-y: 1.25rem;
+
+	--radius: 0.625rem;
+	--radius-control: 0.5rem;
+
+	--surface-bg: oklch(1 0 0);
+	--surface-bg-hover: rgba(0, 0, 0, 0.04);
+	--surface-bg-muted: oklch(0.97 0 0);
+	--surface-fg: oklch(0.145 0 0);
+	--surface-fg-muted: oklch(0.556 0 0);
+	--surface-fg-muted-soft: color-mix(in oklch, var(--surface-fg-muted) 38%, var(--surface-bg) 62%);
+
+	--brand-bg: oklch(0.205 0 0);
+	--brand-fg: oklch(0.985 0 0);
+
+	--border: oklch(0.86 0 0);
+	--border-hover: rgba(0, 0, 0, 0.42);
+	--ring: oklch(0.708 0 0);
+
+	--shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
+	--shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+	--shadow-lg: 0 6px 18px rgba(0, 0, 0, 0.12);
+	--shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.14);
+
+	--accent-red: oklch(0.67 0.13 25);
+	--accent-orange: oklch(0.67 0.13 60);
+	--accent-yellow: oklch(0.82 0.13 95);
+	--accent-green: oklch(0.69 0.13 150);
+	--accent-blue: oklch(0.67 0.13 210);
+	--accent-indigo: oklch(0.67 0.13 275);
+	--accent-purple: oklch(0.69 0.13 300);
+	--accent-neutral: oklch(0.67 0.03 260);
+
+	--accent-mix-bg: 20%;
+	--accent-mix-bg-hover: 30%;
+	--accent-mix-border: 50%;
+	--accent-mix-border-hover: 80%;
+	--accent-mix-border-strong: 70%;
+	--accent-mix-border-strong-hover: 90%;
+	--accent-mix-fg: 50%;
+	--accent-tint-strength: 22%;
+
+	--accent-bg-base: white;
+	--accent-fg-base: black;
+
+	--accent-red-bg: color-mix(in oklch, var(--accent-red) var(--accent-mix-bg), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-red-bg-hover: color-mix(in oklch, var(--accent-red) var(--accent-mix-bg-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg-hover)));
+	--accent-red-border: color-mix(in oklch, var(--accent-red) var(--accent-mix-border), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-red-border-hover: color-mix(in oklch, var(--accent-red) var(--accent-mix-border-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-red-border-strong: color-mix(in oklch, var(--accent-red) var(--accent-mix-border-strong), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong)));
+	--accent-red-border-strong-hover: color-mix(in oklch, var(--accent-red) var(--accent-mix-border-strong-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong-hover)));
+	--accent-red-fg: color-mix(in oklch, var(--accent-red) var(--accent-mix-fg), var(--accent-fg-base) calc(100% - var(--accent-mix-fg)));
+
+	--accent-orange-bg: color-mix(in oklch, var(--accent-orange) var(--accent-mix-bg), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-orange-bg-hover: color-mix(in oklch, var(--accent-orange) var(--accent-mix-bg-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg-hover)));
+	--accent-orange-border: color-mix(in oklch, var(--accent-orange) var(--accent-mix-border), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-orange-border-hover: color-mix(in oklch, var(--accent-orange) var(--accent-mix-border-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-orange-border-strong: color-mix(in oklch, var(--accent-orange) var(--accent-mix-border-strong), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong)));
+	--accent-orange-border-strong-hover: color-mix(in oklch, var(--accent-orange) var(--accent-mix-border-strong-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong-hover)));
+	--accent-orange-fg: color-mix(in oklch, var(--accent-orange) var(--accent-mix-fg), var(--accent-fg-base) calc(100% - var(--accent-mix-fg)));
+
+	--accent-yellow-bg: color-mix(in oklch, var(--accent-yellow) var(--accent-mix-bg), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-yellow-bg-hover: color-mix(in oklch, var(--accent-yellow) var(--accent-mix-bg-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg-hover)));
+	--accent-yellow-border: color-mix(in oklch, var(--accent-yellow) var(--accent-mix-border), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-yellow-border-hover: color-mix(in oklch, var(--accent-yellow) var(--accent-mix-border-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-yellow-border-strong: color-mix(in oklch, var(--accent-yellow) var(--accent-mix-border-strong), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong)));
+	--accent-yellow-border-strong-hover: color-mix(in oklch, var(--accent-yellow) var(--accent-mix-border-strong-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong-hover)));
+	--accent-yellow-fg: color-mix(in oklch, var(--accent-yellow) var(--accent-mix-fg), var(--accent-fg-base) calc(100% - var(--accent-mix-fg)));
+	--accent-yellow-highlight-bg: color-mix(in oklch, var(--accent-yellow) 45%, var(--accent-bg-base) 55%);
+	--accent-yellow-highlight-fg: color-mix(in oklch, var(--accent-yellow) 75%, var(--accent-fg-base) 25%);
+
+	--accent-green-bg: color-mix(in oklch, var(--accent-green) var(--accent-mix-bg), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-green-bg-hover: color-mix(in oklch, var(--accent-green) var(--accent-mix-bg-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg-hover)));
+	--accent-green-border: color-mix(in oklch, var(--accent-green) var(--accent-mix-border), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-green-border-hover: color-mix(in oklch, var(--accent-green) var(--accent-mix-border-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-green-border-strong: color-mix(in oklch, var(--accent-green) var(--accent-mix-border-strong), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong)));
+	--accent-green-border-strong-hover: color-mix(in oklch, var(--accent-green) var(--accent-mix-border-strong-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong-hover)));
+	--accent-green-fg: color-mix(in oklch, var(--accent-green) var(--accent-mix-fg), var(--accent-fg-base) calc(100% - var(--accent-mix-fg)));
+
+	--accent-blue-bg: color-mix(in oklch, var(--accent-blue) var(--accent-mix-bg), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-blue-bg-hover: color-mix(in oklch, var(--accent-blue) var(--accent-mix-bg-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg-hover)));
+	--accent-blue-border: color-mix(in oklch, var(--accent-blue) var(--accent-mix-border), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-blue-border-hover: color-mix(in oklch, var(--accent-blue) var(--accent-mix-border-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-blue-border-strong: color-mix(in oklch, var(--accent-blue) var(--accent-mix-border-strong), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong)));
+	--accent-blue-border-strong-hover: color-mix(in oklch, var(--accent-blue) var(--accent-mix-border-strong-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong-hover)));
+	--accent-blue-fg: color-mix(in oklch, var(--accent-blue) var(--accent-mix-fg), var(--accent-fg-base) calc(100% - var(--accent-mix-fg)));
+	--accent-blue-pill-bg: color-mix(in oklch, var(--accent-blue) 20%, var(--accent-bg-base) 80%);
+	--accent-blue-pill-bg-hover: color-mix(in oklch, var(--accent-blue) 30%, var(--accent-bg-base) 70%);
+	--accent-blue-soft-border: #cfe6ff;
+	--accent-blue-soft-border-hover: #3fb2ff;
+	--accent-blue-soft-ring: #3fb2ff;
+	--accent-blue-soft-bg: #f8fbff;
+	--accent-blue-soft-row-hover: #f8fbff;
+
+
+	--accent-indigo-bg: color-mix(in oklch, var(--accent-indigo) var(--accent-mix-bg), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-indigo-bg-hover: color-mix(in oklch, var(--accent-indigo) var(--accent-mix-bg-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg-hover)));
+	--accent-indigo-border: color-mix(in oklch, var(--accent-indigo) var(--accent-mix-border), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-indigo-border-hover: color-mix(in oklch, var(--accent-indigo) var(--accent-mix-border-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-indigo-border-strong: color-mix(in oklch, var(--accent-indigo) var(--accent-mix-border-strong), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong)));
+	--accent-indigo-border-strong-hover: color-mix(in oklch, var(--accent-indigo) var(--accent-mix-border-strong-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong-hover)));
+	--accent-indigo-fg: color-mix(in oklch, var(--accent-indigo) var(--accent-mix-fg), var(--accent-fg-base) calc(100% - var(--accent-mix-fg)));
+
+	--accent-purple-bg: color-mix(in oklch, var(--accent-purple) var(--accent-mix-bg), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-purple-bg-hover: color-mix(in oklch, var(--accent-purple) var(--accent-mix-bg-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg-hover)));
+	--accent-purple-border: color-mix(in oklch, var(--accent-purple) var(--accent-mix-border), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-purple-border-hover: color-mix(in oklch, var(--accent-purple) var(--accent-mix-border-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-purple-border-strong: color-mix(in oklch, var(--accent-purple) var(--accent-mix-border-strong), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong)));
+	--accent-purple-border-strong-hover: color-mix(in oklch, var(--accent-purple) var(--accent-mix-border-strong-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong-hover)));
+	--accent-purple-fg: color-mix(in oklch, var(--accent-purple) var(--accent-mix-fg), var(--accent-fg-base) calc(100% - var(--accent-mix-fg)));
+
+	--accent-neutral-bg: color-mix(in oklch, var(--accent-neutral) var(--accent-mix-bg), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-neutral-bg-hover: color-mix(in oklch, var(--accent-neutral) var(--accent-mix-bg-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg-hover)));
+	--accent-neutral-border: color-mix(in oklch, var(--accent-neutral) var(--accent-mix-border), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-neutral-border-hover: color-mix(in oklch, var(--accent-neutral) var(--accent-mix-border-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
+	--accent-neutral-border-strong: color-mix(in oklch, var(--accent-neutral) var(--accent-mix-border-strong), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong)));
+	--accent-neutral-border-strong-hover: color-mix(in oklch, var(--accent-neutral) var(--accent-mix-border-strong-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong-hover)));
+	--accent-neutral-fg: color-mix(in oklch, var(--accent-neutral) var(--accent-mix-fg), var(--accent-fg-base) calc(100% - var(--accent-mix-fg)));
+
+	--glow-strength: 20%;
+
+	--glow-red: color-mix(in oklch, var(--accent-red) var(--glow-strength), transparent);
+	--glow-orange: color-mix(in oklch, var(--accent-orange) var(--glow-strength), transparent);
+	--glow-yellow: color-mix(in oklch, var(--accent-yellow) var(--glow-strength), transparent);
+	--glow-green: color-mix(in oklch, var(--accent-green) var(--glow-strength), transparent);
+	--glow-blue: color-mix(in oklch, var(--accent-blue) var(--glow-strength), transparent);
+	--glow-indigo: color-mix(in oklch, var(--accent-indigo) var(--glow-strength), transparent);
+	--glow-purple: color-mix(in oklch, var(--accent-purple) var(--glow-strength), transparent);
+	--glow-neutral: color-mix(in oklch, var(--accent-neutral) var(--glow-strength), transparent);
+
+	color-scheme: light;
+}
+
+@media (min-width: 640px) {
+	:root {
+		--app-pad-x: 1.5rem;
+		--app-pad-y: 1.5rem;
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+/* Custom: Theme                                                              */
+/* -------------------------------------------------------------------------- */
+
+.dark {
+	--surface-bg: oklch(0.145 0 0);
+	--surface-bg-hover: rgba(255, 255, 255, 0.1);
+	--surface-bg-muted: oklch(0.269 0 0);
+	--surface-fg: oklch(0.985 0 0);
+	--surface-fg-muted: oklch(0.708 0 0);
+	--surface-fg-muted-soft: color-mix(in oklch, var(--surface-fg-muted) 34%, var(--surface-bg) 66%);
+
+	--brand-bg: oklch(0.922 0 0);
+	--brand-fg: oklch(0.205 0 0);
+
+	--border: oklch(1 0 0 / 18%);
+	--border-hover: rgba(255, 255, 255, 0.34);
+	--ring: oklch(0.556 0 0);
+
+	--shadow-sm: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 3px 10px rgba(0, 0, 0, 0.42);
+	--shadow-md: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 5px 14px rgba(0, 0, 0, 0.46);
+	--shadow-lg: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 7px 18px rgba(0, 0, 0, 0.5);
+	--shadow-xl: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 9px 24px rgba(0, 0, 0, 0.54);
+
+	--accent-red: oklch(0.66 0.14 25);
+	--accent-orange: oklch(0.66 0.14 60);
+	--accent-yellow: oklch(0.74 0.16 95);
+	--accent-green: oklch(0.66 0.14 150);
+	--accent-blue: oklch(0.64 0.14 220);
+	--accent-indigo: oklch(0.66 0.14 275);
+	--accent-purple: oklch(0.66 0.14 300);
+	--accent-neutral: oklch(0.62 0.034 260);
+
+	--accent-mix-bg: 30%;
+	--accent-mix-bg-hover: 40%;
+	--accent-mix-border: 50%;
+	--accent-mix-border-hover: 80%;
+	--accent-mix-border-strong: 60%;
+	--accent-mix-border-strong-hover: 85%;
+	--accent-mix-fg: 50%;
+
+	--accent-bg-base: black;
+	--accent-fg-base: white;
+
+	--glow-strength: 20%;
+
+	--accent-blue-pill-bg: color-mix(in oklch, var(--accent-blue) 26%, var(--accent-bg-base) 74%);
+	--accent-blue-pill-bg-hover: color-mix(in oklch, var(--accent-blue) 36%, var(--accent-bg-base) 64%);
+	--accent-blue-soft-border: #19304a;
+	--accent-blue-soft-border-hover: #7ac8ff;
+	--accent-blue-soft-ring: #7ac8ff;
+	--accent-blue-soft-bg: rgba(26, 36, 52, 0.95);
+	--accent-blue-soft-row-hover: rgba(20, 38, 64, 0.78);
+	--accent-yellow-highlight-bg: rgba(255, 254, 210, 0.22);
+	--accent-yellow-highlight-fg: #fff8d8;
+
+	color-scheme: dark;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Custom: Theme                                                              */
+/* -------------------------------------------------------------------------- */
+
+@theme inline {
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+
+	--color-background: var(--surface-bg);
+	--color-foreground: var(--surface-fg);
+
+	--color-card: var(--surface-bg);
+	--color-card-foreground: var(--surface-fg);
+
+	--color-popover: var(--surface-bg);
+	--color-popover-foreground: var(--surface-fg);
+
+	--color-primary: var(--brand-bg);
+	--color-primary-foreground: var(--brand-fg);
+
+	--color-secondary: var(--surface-bg-muted);
+	--color-secondary-foreground: var(--surface-fg);
+
+	--color-muted: var(--surface-bg-muted);
+	--color-muted-foreground: var(--surface-fg-muted);
+	--color-muted-foreground-soft: var(--surface-fg-muted-soft);
+	--color-muted-foreground-na: var(--surface-fg-muted);
+
+	--color-border: var(--border);
+	--color-input: var(--border);
+
+	--color-ring: var(--ring);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Custom: Theme                                                              */
+/* -------------------------------------------------------------------------- */
+
+@layer base {
+	*,
+	*::before,
+	*::after {
+		@apply border-border;
+	}
+
+	html {
+		overflow-x: clip;
+		scrollbar-gutter: stable;
+		text-rendering: geometricPrecision;
+		-webkit-text-size-adjust: 100%;
+	}
+
+	@supports not (scrollbar-gutter: stable) {
+		body {
+			overflow-y: scroll;
+		}
+	}
+
+	body {
+		@apply bg-background text-foreground;
+		font-family: var(--font-sans);
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		overflow-x: clip;
+	}
+
+	::selection {
+		background: Highlight;
+		color: HighlightText;
+	}
+
+	:where(a) {
+		color: inherit;
+		text-decoration: inherit;
+	}
+
+	:where(img, svg, video, canvas) {
+		display: block;
+		max-width: 100%;
+	}
+
+	:where(pre, code, kbd, samp) {
+		font-variant-ligatures: none;
+	}
+
+	:where(pre) {
+		tab-size: 2;
+	}
+
+	:where(hr) {
+		border: 0;
+		border-top: 1px solid var(--border);
+	}
+
+	:where(table) {
+		border-collapse: collapse;
+		border-spacing: 0;
+	}
+
+	:where([hidden]) {
+		display: none !important;
+	}
+
+	:where(:focus-visible) {
+		outline: none;
+	}
+
+	:where(a, button, summary, [role="button"], input[type="button"], input[type="submit"], input[type="reset"]) {
+		cursor: pointer;
+	}
+
+	:where(button:disabled, [aria-disabled="true"]) {
+		cursor: not-allowed;
+	}
+
+	:where(summary) {
+		list-style: none;
+	}
+
+	:where(summary::-webkit-details-marker) {
+		display: none;
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+/* Custom: Theme                                                              */
+/* -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--motion-duration-fast: 70ms;
+		--motion-duration-base: 80ms;
+		--motion-duration-slow: 120ms;
+	}
+
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto !important;
+		transition-duration: var(--motion-duration-base) !important;
+		animation-duration: var(--motion-duration-base) !important;
+		animation-iteration-count: 1 !important;
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+/* Components                                                                 */
+/* -------------------------------------------------------------------------- */
+
+.app-shell {
+	min-height: 100svh;
+	padding-top: var(--app-pad-y);
+	padding-right: var(--app-pad-x);
+	padding-left: var(--app-pad-x);
+	padding-bottom: 0;
+}
+
+.app-container {
+	margin: 0 auto;
+	width: 100%;
+	max-width: var(--app-max-w);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Components                                                                 */
+/* -------------------------------------------------------------------------- */
+
+.ui-control,
+.ui-control-ghost {
+	border: 1px solid var(--border);
+	border-radius: var(--radius-control);
+	transition:
+		border-color var(--motion-duration-base),
+		box-shadow var(--motion-duration-base),
+		background-color var(--motion-duration-base),
+		color var(--motion-duration-base),
+		opacity var(--motion-duration-base),
+		transform var(--motion-duration-base);
+	transition-timing-function: var(--motion-ease-standard);
+}
+
+.ui-control {
+	background: transparent;
+	color: inherit;
+}
+
+.ui-control-ghost {
+	background: transparent;
+	border-color: transparent;
+	box-shadow: none;
+	color: inherit;
+}
+
+.ui-control:hover,
+.ui-control-ghost:hover {
+	background: var(--surface-bg-hover);
+	border-color: var(--border-hover);
+	box-shadow: var(--shadow-sm);
+	color: var(--surface-fg);
+}
+
+.ui-control:disabled,
+.ui-control-ghost:disabled,
+.ui-control[aria-disabled="true"],
+.ui-control-ghost[aria-disabled="true"] {
+	opacity: 0.55;
+	pointer-events: none;
+	transform: none;
+}

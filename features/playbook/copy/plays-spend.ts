@@ -1,0 +1,136 @@
+import type { SpendId } from "@/features/playbook/definitions/spend"
+
+export type SpendBullet = { text: string }
+
+export type SpendPillar = {
+	id: SpendId
+	title: string
+	body: string
+	bullets: readonly SpendBullet[]
+}
+
+export type SpendSection = {
+	id: SpendId
+	title: string
+	body?: string
+	bullets: readonly SpendBullet[]
+}
+
+export type SpendPanelId = `${number}`
+
+export type SpendPanel = {
+	id: SpendPanelId
+	title: string
+	body: string
+	sections?: readonly SpendSection[]
+}
+
+export type SpendCard = {
+	title: string
+	body: string
+	pillars: readonly SpendPillar[]
+	panels: readonly SpendPanel[]
+	footer: string
+	ui: {
+		spendBarLabel: string
+	}
+}
+
+const spend_overview_body =
+	"`brand` expands demand and lifts conversion over time. `performance` converts demand now. Run both on one scoreboard tied to `arr`."
+
+export const SpendCopy: SpendCard = {
+	title: "Spend Framework",
+	body: spend_overview_body,
+	pillars: [
+		{
+			id: "brand",
+			title: "Indirect incrementality",
+			body: "Invest to shape demand and improve unit economics over time. Proof is `incrementality`, not attribution.",
+			bullets: [
+				{ text: "Primary signals: `reach`, branded search, `cvr` trend" },
+				{ text: "Proof: `geo_test`, `holdout`, `matchback`, `matched_markets`" },
+				{ text: "Impact profile: delayed, then compounding" },
+			],
+		},
+		{
+			id: "performance",
+			title: "Direct return",
+			body: "Harvest in-market demand while protecting `cac` and `payback`.",
+			bullets: [
+				{ text: "Primary signals: `cac`, `roas`, `payback`" },
+				{ text: "Proof: on/off tests, audience holdouts, mix shifts" },
+				{ text: "Impact profile: fast, then saturating" },
+			],
+		},
+	],
+	panels: [
+		{
+			id: "1",
+			title: "Overview",
+			body: spend_overview_body,
+		},
+		{
+			id: "2",
+			title: "Strategy",
+			body: "Allocate across `brand` and `performance`, adjust to outcomes, constraints, and proof.",
+			sections: [
+				{
+					id: "brand",
+					title: "Brand",
+					body: "Build durable demand that lowers future `cac` and improves conversion.",
+					bullets: [
+						{ text: "Buy learning early: efficient signal (`cpm`, `cpc`) while testing concepts" },
+						{ text: "Build memory: consistent positioning and proof across touchpoints" },
+						{ text: "Make it decision-grade: ship `incremental_lift` in the readout" },
+					],
+				},
+				{
+					id: "performance",
+					title: "Performance",
+					body: "Scale capture without degrading conversion or Finance outcomes.",
+					bullets: [
+						{ text: "`cac` and `payback` stay within Finance bounds; `roas` clears threshold" },
+						{ text: "`arr` and stage rates hold as spend scales (`lead_to_opp_cvr`, `opp_to_deal_cvr`)" },
+						{ text: "Capacity keeps pace: routing, speed to lead, sales coverage" },
+					],
+				},
+			],
+		},
+		{
+			id: "3",
+			title: "Measurement",
+			body: "`brand` proves lift; `performance` runs on guardrails with time to stabilize.",
+			sections: [
+				{
+					id: "brand",
+					title: "Brand measurement",
+					body: "Attribution is context, not proof.",
+					bullets: [
+						{ text: "Decision metric: `incremental_lift` (treatment vs control) tied to outcomes" },
+						{ text: "Context: pathing and `mta` to explain how demand moved" },
+						{ text: "Learning loop: iterate on creative and audience, not just bids" },
+					],
+				},
+				{
+					id: "performance",
+					title: "Performance measurement",
+					bullets: [
+						{ text: "Guardrails: `roas` clears threshold and `cac` reconciles to Finance" },
+						{ text: "Avoid snap calls: require stable cohorts before declaring a winner" },
+						{ text: "Reconcile first: spend, `arr`, and cohorts match the `ssot` before reallocating" },
+					],
+				},
+			],
+		},
+		{
+			id: "4",
+			title: "Sources",
+			body: "Use the `source` taxonomy to sanity-check channel roles and map to `spend_type`. If it cannot reconcile to the `semantic_model`, treat it as directional.",
+		},
+	],
+	footer: "Rule: plan with `brand` and `performance`, prove with `incrementality`, and reconcile every decision to Finance on one `semantic_model` with shared `source` and `spend_type`.",
+	ui: {
+		spendBarLabel: "Choose spend section",
+	},
+} as const
