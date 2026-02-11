@@ -399,7 +399,11 @@ function AvailableTables() {
 	const sql_definitions_columns = DefinitionsCopy.panels.find((p) => p.id === "3")?.columns
 
 	return (
-		<Table headerTone="blue" className="w-full table-fixed" containerClassName={cn("overflow-hidden", ui.radius.base, ui.surface.structure.border)}>
+		<Table
+			headerTone="blue"
+			className="w-full min-w-[640px] table-fixed"
+			containerClassName={cn("overflow-x-auto overflow-y-hidden", ui.radius.base, ui.surface.structure.border)}
+		>
 			<colgroup>
 				<col className="w-1/3" />
 				<col className="w-1/3" />
@@ -656,6 +660,14 @@ export default function TabReportsSql() {
 	const total_row_count_label = React.useMemo(() => new Intl.NumberFormat("en-US").format(total_row_count), [total_row_count])
 	const shown_row_count_label = React.useMemo(() => new Intl.NumberFormat("en-US").format(shown_row_count), [shown_row_count])
 	const clamped_pane_height = drag.clamp_h(pane_height)
+	const editor_pane_height = is_desktop_playground ? pane_height : clamp_value(pane_height, 240, 320)
+	const viewer_pane_style: React.CSSProperties = is_desktop_playground
+		? { height: `${clamped_pane_height}px`, maxHeight: `${clamped_pane_height}px` }
+		: { minHeight: "18rem", maxHeight: "55svh" }
+	const results_table_container_class = is_desktop_playground
+		? "min-h-0 flex-1 max-w-full overflow-auto overscroll-contain [-webkit-overflow-scrolling:touch]"
+		: "min-h-0 flex-1 max-w-full overflow-x-auto overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]"
+	const results_table_class = cn(ui.typography.caption, is_desktop_playground ? "min-w-max" : "w-max min-w-full")
 	const viewer_status_copy = has_query_result
 		? `Showing ${shown_row_count_label} of ${total_row_count_label} rows in the viewer. CSV download still includes all rows.`
 		: PgCopy.labels.viewer_help
@@ -958,7 +970,7 @@ export default function TabReportsSql() {
 
 											<div
 												className={cn(ui.margin.topMd, "min-w-0 overflow-hidden bg-background", ui.surface.structure.border, ui.surface.structure.shadowNone, ui.radius.base)}
-												style={{ height: `${pane_height}px` }}
+												style={{ height: `${editor_pane_height}px` }}
 											>
 												<CodeTextarea
 													value={query}
@@ -1007,15 +1019,15 @@ export default function TabReportsSql() {
 												{viewer_status_copy}
 											</p>
 
-											<div className="mt-3 flex min-h-0 min-w-0 flex-1 flex-col" style={{ height: `${clamped_pane_height}px`, maxHeight: `${clamped_pane_height}px` }}>
+											<div className="mt-3 flex min-h-0 min-w-0 flex-1 flex-col" style={viewer_pane_style}>
 												<div className={cn("min-h-0 flex-1 overflow-hidden bg-background flex flex-col", ui.radius.base, ui.surface.structure.shadowNone, ui.surface.structure.border)}>
 													<div className="relative flex min-h-0 flex-1 flex-col">
 														<Table
-															stickyHeader
+															stickyHeader={is_desktop_playground}
 															headerTone="green"
 															groupedDividers
-															containerClassName="min-h-0 flex-1 max-w-full overflow-auto overscroll-auto [-webkit-overflow-scrolling:touch]"
-															className={cn("min-w-max", ui.typography.caption)}
+															containerClassName={results_table_container_class}
+															className={results_table_class}
 														>
 															<TableHeader>
 																<TableRow>
@@ -1093,32 +1105,34 @@ export default function TabReportsSql() {
 										</PbPanel>
 									</div>
 
-									<div
-										ref={drag_handle_ref}
-										className={cn(
-											"group flex h-3 select-none items-center justify-center",
-											"relative",
-											resize_tone_class,
-											ui.motion.duration,
-											ui.surface.state.focus.ring
-										)}
-										role="separator"
-										aria-orientation="horizontal"
-										tabIndex={0}
-										style={{ cursor: "row-resize" }}
-										aria-label={PgCopy.ui.resize.label}
-										aria-valuemin={pane_min}
-										aria-valuemax={pane_max}
-										aria-valuenow={pane_height}
-										onPointerDown={(e) => drag.on_pointer_down(drag_handle_ref.current, e)}
-										onPointerUp={(e) => (drag_handle_ref.current?.releasePointerCapture?.(e.pointerId), drag.stop())}
-										onKeyDown={drag.keydown}
-									>
-										<span className="pointer-events-none absolute inset-x-0 top-1/2 z-0 h-px -translate-y-1/2 bg-[color:var(--border)] transition-colors group-hover:bg-[color:var(--border-hover)] group-focus-visible:bg-[color:var(--border-hover)]" />
-										<span className="pointer-events-none relative z-10 inline-flex h-3 w-14 items-center justify-center rounded-full border border-border/70 bg-background px-1 text-current transition-colors group-hover:border-[color:var(--border-hover)] group-focus-visible:border-[color:var(--border-hover)]">
-											<GripHorizontal className="h-4 w-4 text-current" />
-										</span>
-									</div>
+									{is_desktop_playground ? (
+										<div
+											ref={drag_handle_ref}
+											className={cn(
+												"group flex h-3 select-none items-center justify-center",
+												"relative",
+												resize_tone_class,
+												ui.motion.duration,
+												ui.surface.state.focus.ring
+											)}
+											role="separator"
+											aria-orientation="horizontal"
+											tabIndex={0}
+											style={{ cursor: "row-resize" }}
+											aria-label={PgCopy.ui.resize.label}
+											aria-valuemin={pane_min}
+											aria-valuemax={pane_max}
+											aria-valuenow={pane_height}
+											onPointerDown={(e) => drag.on_pointer_down(drag_handle_ref.current, e)}
+											onPointerUp={(e) => (drag_handle_ref.current?.releasePointerCapture?.(e.pointerId), drag.stop())}
+											onKeyDown={drag.keydown}
+										>
+											<span className="pointer-events-none absolute inset-x-0 top-1/2 z-0 h-px -translate-y-1/2 bg-[color:var(--border)] transition-colors group-hover:bg-[color:var(--border-hover)] group-focus-visible:bg-[color:var(--border-hover)]" />
+											<span className="pointer-events-none relative z-10 inline-flex h-3 w-14 items-center justify-center rounded-full border border-border/70 bg-background px-1 text-current transition-colors group-hover:border-[color:var(--border-hover)] group-focus-visible:border-[color:var(--border-hover)]">
+												<GripHorizontal className="h-4 w-4 text-current" />
+											</span>
+										</div>
+									) : null}
 
 									{error_messages.map((message, idx) => (
 										<div key={`${reports_sql_key_prefix}-error-${idx}`} className={error_panel_class}>

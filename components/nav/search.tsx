@@ -769,6 +769,9 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 
 	React.useEffect(() => {
 		if (!isOpen) return
+		const can_dismiss_on_scroll = window.matchMedia("(hover: hover) and (pointer: fine)").matches
+		if (!can_dismiss_on_scroll) return
+
 		const handle_scroll = () => close({ preserveQuery: true })
 		window.addEventListener("scroll", handle_scroll, { passive: true })
 		return () => window.removeEventListener("scroll", handle_scroll)

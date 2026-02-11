@@ -531,18 +531,11 @@ export function PbHeader({
 		ui.motion.duration,
 		searchOpen ? "opacity-0 pointer-events-none w-0" : "opacity-100 pointer-events-auto w-full"
 	)
-	const on_go_to_tab_from_header = React.useCallback(
-		(id: TabId) => {
-			onGoToTab(id)
-			if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "auto" })
-		},
-		[onGoToTab]
-	)
 	const tabs_control = is_desktop ? (
-		<TabsBarRail activeTab={activeTab} onGoToTab={on_go_to_tab_from_header} reduceMotion={reduceMotion} />
+		<TabsBarRail activeTab={activeTab} onGoToTab={onGoToTab} reduceMotion={reduceMotion} />
 	) : (
 		<PillRoot value={activeTab} onValueChange={() => {}} className="w-full">
-			<TabsDropdown activeTab={activeTab} onGoToTab={on_go_to_tab_from_header} />
+			<TabsDropdown activeTab={activeTab} onGoToTab={onGoToTab} />
 		</PillRoot>
 	)
 
@@ -555,8 +548,8 @@ export function PbHeader({
 
 				<div className="w-full">
 					<div className={nav_gap_class}>
-						<HomeButton onGoToTab={on_go_to_tab_from_header} />
-						<Search onGoToTab={on_go_to_tab_from_header} onOpenChange={setSearchOpen} />
+						<HomeButton onGoToTab={onGoToTab} />
+						<Search onGoToTab={onGoToTab} onOpenChange={setSearchOpen} />
 						<div className={tabs_wrapper_class} aria-hidden={!showTabs}>
 							{showTabs ? tabs_control : null}
 						</div>
