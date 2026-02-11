@@ -43,3 +43,4 @@ temp.ps1
 *.tsbuildinfo
 next-env.d.ts
 .tmp-seed-tests/
+.env*.local
