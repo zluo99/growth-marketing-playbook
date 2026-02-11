@@ -11,6 +11,7 @@ import { ui } from "@/components/tokens/design"
 import { uiMotion } from "@/components/tokens/motion"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useMediaQuery } from "@/lib/hooks/use-media-query"
 import { clamp_value, cn, stableKeyFromParts, stableKeyFromText } from "@/lib/utils"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
@@ -163,21 +164,6 @@ function useWarmupOnVisible<T extends HTMLElement>(ref: React.RefObject<T | null
 		io.observe(el)
 		return () => io.disconnect()
 	}, [ref, trigger])
-}
-
-function useMediaQuery(query: string) {
-	const [matches, set_matches] = React.useState(false)
-
-	React.useEffect(() => {
-		if (typeof window === "undefined") return
-		const mq = window.matchMedia(query)
-		const apply = () => set_matches(mq.matches)
-		apply()
-		mq.addEventListener("change", apply)
-		return () => mq.removeEventListener("change", apply)
-	}, [query])
-
-	return matches
 }
 
 function useDragHeight({ height, set_height, min = 260, max = 720 }: { height: number; set_height: React.Dispatch<React.SetStateAction<number>>; min?: number; max?: number }) {

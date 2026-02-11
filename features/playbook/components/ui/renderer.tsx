@@ -8,11 +8,13 @@ import * as React from "react"
 
 import { ui } from "@/components/tokens/design"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
 import { MetricDefinitions, type MetricDefinition, type MetricFormula, type MetricId, type MetricTypeL1, type MetricTypeL2 } from "@/features/playbook/definitions/metrics"
 import { SpendById, SpendIds, type SpendId } from "@/features/playbook/definitions/spend"
+import { TabById, type TabId } from "@/features/playbook/definitions/tabs"
 import { TermDefinitions, TermTokens, getTermByToken } from "@/features/playbook/definitions/terms"
 
 /* -------------------------------------------------------------------------- */
@@ -35,8 +37,16 @@ type InlineRenderOptions = {
 	onUnknownToken?: (token: string) => React.ReactNode
 }
 
+type InlineTabTextProps = {
+	text: string
+	keyPrefix?: string
+	onUnknownToken?: (token: string) => React.ReactNode
+	onTabClick?: (tabId: TabId) => void
+}
+
 type MetricPillProps = { id: MetricId; className?: string; fadeMs?: number; children?: React.ReactNode }
 type SpendPillProps = { id: SpendId; className?: string; fadeMs?: number; children?: React.ReactNode }
+type TabChipProps = { id: TabId; className?: string; keyPrefix?: string; onClick?: (tabId: TabId) => void; showIcon?: boolean }
 
 type PillButtonProps = {
 	alias: string
@@ -330,6 +340,81 @@ function TermStrip({ ids, title, className }: { ids: readonly TermId[]; title?: 
 }
 
 const Terms = { Pill: TermPill, Strip: TermStrip, InlineText: InlineTermText, renderInlineText: render_inline_terms } as const
+
+/* -------------------------------------------------------------------------- */
+/* Custom: Tabs                                                               */
+/* -------------------------------------------------------------------------- */
+
+const normalize_tab_token = (token: string) => token.trim().toLowerCase().replace(/\s+/g, " ")
+const tab_token_re = /(\{[^{}]+\})/g
+
+const tab_token_to_id = Object.values(TabById).reduce<Record<string, TabId>>((acc, tab) => {
+	const id = tab.id
+	const alias = normalize_tab_token(tab.alias)
+	acc[normalize_tab_token(id)] = id
+	acc[normalize_tab_token(id.replace(/-/g, " "))] = id
+	acc[alias] = id
+	acc[`${alias} tab`] = id
+	return acc
+}, {})
+
+function resolve_tab_token(token: string): TabId | null {
+	const normalized = normalize_tab_token(token)
+	return normalized ? tab_token_to_id[normalized] ?? null : null
+}
+
+function TabChip({ id, className, keyPrefix = "tab-chip", onClick, showIcon = true }: TabChipProps) {
+	const tab = TabById[id]
+	const TabIcon = tab.icon
+	const base_class = cn("inline-flex items-center", ui.gap.sm, ui.typography.label)
+
+	if (onClick) {
+		return (
+			<Button
+				size="sm"
+				variant="outline"
+				onClick={() => onClick(id)}
+				className={cn(base_class, "h-auto", ui.spacing.chipSm, ui.surface.structure.border, "bg-background", ui.motion.duration, ui.surface.state.focus.ring, className)}
+			>
+				{showIcon ? <TabIcon className={cn(ui.iconNude.xs, "opacity-70")} aria-hidden="true" /> : null}
+				<span className="text-current">
+					{render_inline_copy(tab.alias, { keyPrefix: `${keyPrefix}-alias` })}
+				</span>
+			</Button>
+		)
+	}
+
+	return (
+		<span className={cn(base_class, ui.surface.structure.border, "bg-muted/30", ui.spacing.chipSm, "text-muted-foreground", ui.radius.control, ui.motion.duration, className)}>
+			{showIcon ? <TabIcon className={cn(ui.iconNude.xs, "opacity-70")} aria-hidden="true" /> : null}
+			<span className="text-muted-foreground">
+				{render_inline_copy(tab.alias, { keyPrefix: `${keyPrefix}-alias` })}
+			</span>
+		</span>
+	)
+}
+
+function render_inline_tab_text({ text, keyPrefix = "tab", onUnknownToken, onTabClick }: InlineTabTextProps) {
+	return (text ?? "")
+		.split(tab_token_re)
+		.filter(Boolean)
+		.map((part, idx) => {
+			const key = `${keyPrefix}-${idx}-${part}`
+			if (!part.startsWith("{") || !part.endsWith("}")) {
+				return <React.Fragment key={key}>{render_inline_copy(part, { keyPrefix: `${key}-copy`, onUnknownToken })}</React.Fragment>
+			}
+
+			const token = part.slice(1, -1).trim()
+			const tab_id = resolve_tab_token(token)
+			if (tab_id) return <TabChip key={key} id={tab_id} onClick={onTabClick} keyPrefix={`${key}-tab`} />
+
+			return <React.Fragment key={key}>{onUnknownToken ? onUnknownToken(token) : part}</React.Fragment>
+		})
+}
+
+function InlineTabText({ text, keyPrefix, onUnknownToken, onTabClick }: InlineTabTextProps) {
+	return <>{render_inline_tab_text({ text, keyPrefix, onUnknownToken, onTabClick })}</>
+}
 
 /* -------------------------------------------------------------------------- */
 /* Custom: Metrics                                                            */
@@ -678,8 +763,15 @@ const Copy = {
 	renderInlineText: render_inline_copy,
 	renderInlineMarkdown: render_inline_markdown,
 } as const
+const Tabs = {
+	Chip: TabChip,
+	InlineText: InlineTabText,
+	renderInlineText: (text: string, opts?: Omit<InlineTabTextProps, "text">) => render_inline_tab_text({ text, ...opts }),
+	resolveToken: resolve_tab_token,
+	defs: { tabs: TabById },
+} as const
 const Help = { Text: HelpText } as const
 
-export const Renderer = { Provider: TooltipProviderAutoClose, Terms, Copy, Metrics, Spend, Help, Formula } as const
+export const Renderer = { Provider: TooltipProviderAutoClose, Terms, Copy, Tabs, Metrics, Spend, Help, Formula } as const
 export { Terms, MetricFormulaView }
 

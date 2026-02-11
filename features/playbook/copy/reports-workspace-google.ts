@@ -16,7 +16,7 @@ export const SheetsCopy: GoogleWorkspaceCard = {
 	openUrl: "https://docs.google.com/spreadsheets/d/1gfEyBNJNBhaAYyBfr5a6p3bF9hqwhSHioTN43k_rZFI/view?usp=sharing",
 	openLabel: "Open",
 	title: "Reporting layer (Sheets)",
-	body: "Use a master report as the shared readout. Here, I've embedded a sample Google Sheets based on the prior tab's CSV exports:",
+	body: "Use a master report as the shared readout. Here, I've embedded a sample Google Sheets based on the same CSV exports seen in {staging models tab}:",
 } as const
 
 export const SlidesCopy: GoogleWorkspaceCard = {

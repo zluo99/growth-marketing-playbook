@@ -4,8 +4,6 @@
 /* Imports                                                                    */
 /* -------------------------------------------------------------------------- */
 
-import * as React from "react"
-
 import { ui } from "@/components/tokens/design"
 import { useReducedMotionBool } from "@/components/tokens/motion"
 import { cn } from "@/lib/utils"
