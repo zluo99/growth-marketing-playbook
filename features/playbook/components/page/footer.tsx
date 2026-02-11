@@ -159,8 +159,8 @@ export default function PbFooter() {
 				ui.text.muted.fg
 			)}
 		>
-			<div className={cn("relative flex w-full items-start", ui.gap.md)}>
-				<div className={cn("flex min-w-0 flex-col", ui.gap.xs)}>
+			<div className={cn("relative flex w-full items-center gap-3 sm:gap-6")}>
+				<div className={cn("flex min-w-0 flex-1 flex-col", ui.gap.xs)}>
 					<div className={cn("flex items-center", ui.gap.sm)}>
 						<Image
 							src="/favicon.ico"
@@ -179,15 +179,17 @@ export default function PbFooter() {
 					</span>
 				</div>
 
-				<div className={cn("ml-auto flex items-stretch", ui.gap.xs)}>
-					<FooterIconLink href={`mailto:${email}`} label={footer_copy.emailLabel} tooltip={email} icon={<Mail className={ui.iconNude.lg} aria-hidden="true" />} />
-					<FooterIconLink
-						href={linkedin_url}
-						label={footer_copy.linkedinLabel}
-						tooltip={footer_copy.linkedinLabel}
-						icon={<Linkedin className={ui.iconNude.lg} aria-hidden="true" />}
-						openInNewTab
-					/>
+				<div className={cn("ml-auto flex shrink-0 flex-col items-end md:flex-row md:items-stretch", ui.gap.xs)}>
+					<div className={cn("flex items-stretch justify-end", ui.gap.xs)}>
+						<FooterIconLink href={`mailto:${email}`} label={footer_copy.emailLabel} tooltip={email} icon={<Mail className={ui.iconNude.lg} aria-hidden="true" />} />
+						<FooterIconLink
+							href={linkedin_url}
+							label={footer_copy.linkedinLabel}
+							tooltip={footer_copy.linkedinLabel}
+							icon={<Linkedin className={ui.iconNude.lg} aria-hidden="true" />}
+							openInNewTab
+						/>
+					</div>
 					<ThemesBar />
 				</div>
 			</div>

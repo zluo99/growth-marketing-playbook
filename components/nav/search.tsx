@@ -67,7 +67,7 @@ const search_row_class = cn(
 	ui.motion.duration,
 	ui.radius.base,
 	"p-0",
-	"overflow-hidden transition-[width,padding,box-shadow,border-color,background-color]",
+	"overflow-hidden transition-[padding,box-shadow,border-color,background-color]",
 	"active:scale-100",
 	"isolate"
 )
@@ -126,6 +126,28 @@ const render_with_tooltips = (text: string | React.ReactNode) => {
 		console.warn("Markdown render failed:", error)
 		return text
 	}
+}
+
+function useIsCoarsePointer() {
+	const [is_coarse_pointer, set_is_coarse_pointer] = React.useState(false)
+
+	React.useEffect(() => {
+		if (typeof window === "undefined") return
+		const mql = window.matchMedia("(pointer: coarse)")
+		const apply = (matches: boolean) => set_is_coarse_pointer(matches)
+		apply(mql.matches)
+
+		const handle_change = (event: MediaQueryListEvent) => apply(event.matches)
+		if (typeof mql.addEventListener === "function") {
+			mql.addEventListener("change", handle_change)
+			return () => mql.removeEventListener("change", handle_change)
+		}
+
+		mql.addListener(handle_change)
+		return () => mql.removeListener(handle_change)
+	}, [])
+
+	return is_coarse_pointer
 }
 
 const highlight_matches = (
@@ -386,6 +408,7 @@ const CloseIcon = ({ className }: { className?: string }) => (
 
 export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 	const reduce_motion = useReducedMotionBool()
+	const is_coarse_pointer = useIsCoarsePointer()
 
 	const [isOpen, setIsOpen] = React.useState(false)
 	const [query, setQuery] = React.useState("")
@@ -669,13 +692,17 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 	const close = React.useCallback(
 		({ preserveQuery = false }: { preserveQuery?: boolean } = {}) => {
 			clear_scroll_timeout()
-			setIsOpen(false)
+			setIsOpen((prev) => {
+				if (!prev) return prev
+				onOpenChange?.(false)
+				return false
+			})
 			setHoveredIndex(null)
 			setCursor(-1)
 			input_ref.current?.blur()
 			if (!preserveQuery) setQuery("")
 		},
-		[clear_scroll_timeout]
+		[clear_scroll_timeout, onOpenChange]
 	)
 
 	const scroll_after_tab = React.useCallback(
@@ -744,6 +771,10 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 
 		if (event.key === "Enter") {
 			event.preventDefault()
+			if (is_coarse_pointer) {
+				input_ref.current?.blur()
+				return
+			}
 			const target_index = cursor >= 0 ? cursor : 0
 			const entry = interactive_results[target_index]
 			if (entry) handle_select(entry)
@@ -758,6 +789,7 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 	React.useEffect(() => {
 		if (!isOpen) return
 		const handle_pointer_down = (event: PointerEvent) => {
+			if (is_coarse_pointer && event.pointerType !== "mouse") return
 			const target = event.target as Node | null
 			if (!target) return
 			if (wrapper_ref.current?.contains(target)) return
@@ -765,7 +797,7 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 		}
 		document.addEventListener("pointerdown", handle_pointer_down, true)
 		return () => document.removeEventListener("pointerdown", handle_pointer_down, true)
-	}, [isOpen, close])
+	}, [isOpen, close, is_coarse_pointer])
 
 	React.useEffect(() => {
 		if (!isOpen) return
@@ -778,8 +810,12 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 	}, [isOpen, close])
 
 	const open = React.useCallback(() => {
-		setIsOpen(true)
-	}, [])
+		setIsOpen((prev) => {
+			if (prev) return prev
+			onOpenChange?.(true)
+			return true
+		})
+	}, [onOpenChange])
 
 	React.useEffect(() => {
 		const handle_key_down = (event: KeyboardEvent) => {
@@ -806,21 +842,18 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 		return () => window.removeEventListener("keydown", handle_key_down)
 	}, [close, isOpen, open])
 
-	React.useEffect(() => {
-		onOpenChange?.(isOpen)
-	}, [isOpen, onOpenChange])
-
 	return (
 		<div
 			ref={wrapper_ref}
 			className={cn(
-				"relative transition-[flex-basis] self-stretch",
+				"relative self-stretch",
+				is_coarse_pointer ? "transition-none" : "transition-[flex-basis]",
 				isOpen ? "flex-[1_1_100%] min-w-0" : "flex-none min-w-[48px]"
 			)}
 			data-playbook-search-anchor
 		>
 			<motion.div
-				variants={{ closed: { width: 48 }, open: { width: "100%" } }}
+				variants={is_coarse_pointer ? { closed: { width: "100%" }, open: { width: "100%" } } : { closed: { width: 48 }, open: { width: "100%" } }}
 				initial="closed"
 				animate={isOpen ? "open" : "closed"}
 				className={cn(
@@ -882,12 +915,13 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 
 			{isOpen && normalized_query ? (
 				<motion.div
-					initial="hidden"
+					initial={is_coarse_pointer ? false : "hidden"}
 					animate="visible"
 					exit="hidden"
 					variants={navMenuFadeVariants}
+					transition={reduce_motion ? { duration: 0 } : { duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
 					className={cn(
-						"absolute left-0 right-0 top-full mt-1 transition overflow-hidden",
+						"absolute left-0 right-0 top-full mt-1 overflow-hidden",
 						"z-50",
 						ui.radius.base,
 						ui.surface.structure.border,
