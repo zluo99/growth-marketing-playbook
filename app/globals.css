@@ -266,6 +266,7 @@
 
 	html {
 		overflow-x: clip;
+		overscroll-behavior-y: none;
 		scrollbar-gutter: stable;
 		text-rendering: geometricPrecision;
 		-webkit-text-size-adjust: 100%;
@@ -283,6 +284,7 @@
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 		overflow-x: clip;
+		overscroll-behavior-y: none;
 	}
 
 	::selection {

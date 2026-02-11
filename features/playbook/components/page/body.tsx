@@ -70,6 +70,11 @@ function tab_path_for(pathname: string | null, tab: TabId) {
 	return `/${tab}`
 }
 
+function scroll_window_to_top() {
+	if (typeof window === "undefined") return
+	window.scrollTo({ top: 0, left: 0, behavior: "auto" })
+}
+
 /* -------------------------------------------------------------------------- */
 /* Hooks                                                                      */
 /* -------------------------------------------------------------------------- */
@@ -117,6 +122,23 @@ function useActiveTabFromUrl(default_tab: TabId) {
 	)
 
 	return { activeTab: active_tab, pushTab: push_tab }
+}
+
+function useScrollToTopOnTabChange(active_tab: TabId) {
+	const previous_tab_ref = React.useRef(active_tab)
+	const did_mount_ref = React.useRef(false)
+
+	React.useEffect(() => {
+		if (!did_mount_ref.current) {
+			did_mount_ref.current = true
+			previous_tab_ref.current = active_tab
+			return
+		}
+
+		if (previous_tab_ref.current === active_tab) return
+		previous_tab_ref.current = active_tab
+		scroll_window_to_top()
+	}, [active_tab])
 }
 
 /* -------------------------------------------------------------------------- */
@@ -203,6 +225,7 @@ function BottomTabNavButtons() {
 export default function PbBody() {
 	const reduce_motion = useReducedMotionBool()
 	const { activeTab, pushTab } = useActiveTabFromUrl("overview")
+	useScrollToTopOnTabChange(activeTab)
 
 	const idx = tab_order.indexOf(activeTab)
 	const next_tab = idx >= 0 && idx < tab_order.length - 1 ? tab_order[idx + 1] : null
