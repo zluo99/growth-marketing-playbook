@@ -14,7 +14,7 @@ import { uiMotion, useReducedMotionBool } from "@/components/tokens/motion"
 import { Badge } from "@/components/ui/badge"
 import { Bar, BarRail, BarScroller, BarScrollButton } from "@/components/nav/bar"
 import { MotionPillIndicator, PillList, PillRoot, PillTrigger, useMotionPillRail } from "@/components/nav/pill"
-import { cn, stableKeyFromText } from "@/lib/utils"
+import { cn, runWithViewportAnchor, scrollIntoHorizontalView, stableKeyFromText } from "@/lib/utils"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { PbBullet, PbCard, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbPanel, PbReveal, PbStack, PbSubtleText, PbTabIntro, PbText } from "@/features/playbook/components/ui/ui"
@@ -201,7 +201,7 @@ function FrameworksBar({
 		(id: FrameworkFilterValue, behavior: ScrollBehavior = "smooth") => {
 			const btn = left.triggerRefs.current[id]
 			if (!btn) return
-			btn.scrollIntoView({ block: "nearest", inline: "center", behavior })
+			scrollIntoHorizontalView(btn, { behavior, align: "center" })
 			left.pill.measureRaf()
 		},
 		[left.pill, left.triggerRefs]
@@ -384,7 +384,9 @@ function PillarBlock({
 		>
 			<button
 				type="button"
-				onClick={on_toggle}
+				onClick={(event) => {
+					runWithViewportAnchor(event.currentTarget, on_toggle)
+				}}
 				aria-expanded={open}
 				aria-controls={panel_id}
 				className={cn(

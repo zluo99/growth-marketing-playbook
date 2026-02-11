@@ -12,7 +12,7 @@ import { ChevronDown } from "lucide-react"
 import { ui } from "@/components/tokens/design"
 import { navMenuFadeVariants, uiMotion, useReducedMotionBool } from "@/components/tokens/motion"
 import { useMounted } from "@/lib/hooks/use-mounted"
-import { cn } from "@/lib/utils"
+import { cn, runWithViewportAnchor } from "@/lib/utils"
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
@@ -416,9 +416,11 @@ export function Dropdown<V extends string>({
 										const is_active = item.value === value
 										const Icon = item.icon
 										const run_select = (next: V) => {
-											onChange(next)
-											const behavior = onItemSelect?.(next) ?? "close"
-											if (behavior === "close") close()
+											runWithViewportAnchor(trigger_ref.current, () => {
+												onChange(next)
+												const behavior = onItemSelect?.(next) ?? "close"
+												if (behavior === "close") close()
+											})
 										}
 										const inline_choices = item.inlineChoices ?? []
 										const inline_choices_only = item.inlineChoicesOnly === true

@@ -16,7 +16,7 @@ import { Dropdown, type DropdownItem } from "@/components/nav/dropdown"
 import { Bar, BarRail, BarScroller, BarScrollButton } from "@/components/nav/bar"
 import { MotionPillIndicator, PillList, PillRoot, PillTrigger, useMotionPillRail } from "@/components/nav/pill"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { cn, stableKeyFromText } from "@/lib/utils"
+import { cn, scrollIntoHorizontalView, stableKeyFromText } from "@/lib/utils"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { PbBullet, PbCard, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbFocus, PbReveal, PbStack, PbSubtleText, PbTabIntro, PbTabPanel } from "@/features/playbook/components/ui/ui"
@@ -591,7 +591,7 @@ function SpendBar({ value, onChange }: { value: SpendPanel["id"]; onChange: (v: 
 		(id: SpendPanel["id"], behavior: ScrollBehavior = "smooth") => {
 			const btn = rail.triggerRefs.current[id]
 			if (!btn) return
-			btn.scrollIntoView({ block: "nearest", inline: "center", behavior })
+			scrollIntoHorizontalView(btn, { behavior, align: "center" })
 			rail.pill.measureRaf()
 		},
 		[rail.pill, rail.triggerRefs]
