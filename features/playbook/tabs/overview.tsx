@@ -8,7 +8,6 @@ import * as React from "react"
 import { ArrowRight, FlaskConical, Scale, Target } from "lucide-react"
 
 import { ui } from "@/components/tokens/design"
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
@@ -104,36 +103,6 @@ function Kicker({ id, icon, title, description, spendIds }: KickerProps) {
 	)
 }
 
-function FlowTag({ text, onClick, icon, keyPrefix }: { text: string; onClick?: () => void; icon?: React.ReactNode; keyPrefix: string }) {
-	const is_interactive = Boolean(onClick)
-	const base_class = cn("inline-flex items-center", ui.gap.sm, ui.typography.label)
-
-	if (is_interactive) {
-		return (
-			<Button
-				size="sm"
-				variant="outline"
-				onClick={onClick}
-				className={cn(base_class, "h-auto", ui.spacing.chipSm, ui.surface.structure.border, "bg-background")}
-			>
-				{icon ? <span className="text-current">{icon}</span> : null}
-				<span className="text-current">
-					<Renderer.Copy.InlineText text={text} keyPrefix={keyPrefix} />
-				</span>
-			</Button>
-		)
-	}
-
-	return (
-		<span className={cn(base_class, ui.surface.structure.border, "bg-muted/30", ui.spacing.chipSm, "text-muted-foreground", ui.radius.control, ui.motion.duration)}>
-			{icon ? <span className="text-muted-foreground">{icon}</span> : null}
-			<span className="text-muted-foreground">
-				<Renderer.Copy.InlineText text={text} keyPrefix={keyPrefix} />
-			</span>
-		</span>
-	)
-}
-
 /* -------------------------------------------------------------------------- */
 /* Default export                                                             */
 /* -------------------------------------------------------------------------- */
@@ -177,24 +146,12 @@ export default function TabOverview() {
 									</div>
 
 									<div className={cn(ui.margin.topSm, "flex flex-wrap items-center text-muted-foreground", ui.gap.sm)}>
-										{GuideCopy.panels[0]?.sequence?.map((s, idx, arr) => {
-											const next_tab = TabById[s.id]
-											const text = next_tab?.alias ?? s.title
-											const on_click = next_tab ? () => goToTab(next_tab.id) : undefined
-											const TabIcon = next_tab?.icon
-
-											return (
-												<React.Fragment key={s.id}>
-													<FlowTag
-														text={text}
-														onClick={on_click}
-														icon={TabIcon ? <TabIcon className={cn(ui.iconNude.xs, "opacity-70")} /> : undefined}
-														keyPrefix={`${overview_key_prefix}-guide-flow-${s.id}`}
-													/>
-													{idx < arr.length - 1 ? <ArrowRight className={cn(ui.iconNude.sm, "opacity-60")} aria-hidden="true" /> : null}
-												</React.Fragment>
-											)
-										})}
+										{GuideCopy.panels[0]?.sequence?.map((s, idx, arr) => (
+											<React.Fragment key={s.id}>
+												<Renderer.Tabs.Chip id={s.id} onClick={goToTab} keyPrefix={`${overview_key_prefix}-guide-flow-${s.id}`} />
+												{idx < arr.length - 1 ? <ArrowRight className={cn(ui.iconNude.sm, "opacity-60")} aria-hidden="true" /> : null}
+											</React.Fragment>
+										))}
 									</div>
 
 									<p className={cn(ui.margin.topSm, "leading-snug text-muted-foreground", ui.typography.body)}>{render_inline_text(GuideCopy.panels[0]?.body ?? "", "overview-guide-sequence")}</p>

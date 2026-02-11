@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge"
 import { Bar, BarRail, BarScroller, BarScrollButton } from "@/components/nav/bar"
 import { MotionPillIndicator, PillList, PillRoot, PillTrigger, useMotionPillRail } from "@/components/nav/pill"
 import { cn, runWithViewportAnchor, scrollIntoHorizontalView, stableKeyFromText } from "@/lib/utils"
+import { useMediaQuery } from "@/lib/hooks/use-media-query"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { PbBullet, PbCard, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbPanel, PbReveal, PbStack, PbSubtleText, PbTabIntro, PbText } from "@/features/playbook/components/ui/ui"
@@ -66,21 +67,6 @@ const by_alias = (a: Framework, b: Framework) => a.alias.localeCompare(b.alias)
 /* -------------------------------------------------------------------------- */
 /* Utils                                                                      */
 /* -------------------------------------------------------------------------- */
-
-function useMediaQuery(query: string) {
-	const [matches, set_matches] = React.useState(false)
-
-	React.useEffect(() => {
-		if (typeof window === "undefined") return
-		const mq = window.matchMedia(query)
-		const apply = () => set_matches(mq.matches)
-		apply()
-		mq.addEventListener("change", apply)
-		return () => mq.removeEventListener("change", apply)
-	}, [query])
-
-	return matches
-}
 
 const chunk = <T,>(xs: readonly T[], n: number) => {
 	const out: T[][] = []

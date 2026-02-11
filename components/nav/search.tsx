@@ -18,7 +18,6 @@ import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { getFocusViewportBounds } from "@/features/playbook/components/ui/ui"
 import { TabById, type TabId } from "@/features/playbook/definitions/tabs"
 import { PlaybookEvents, PlaybookStorage, write_preference } from "@/features/playbook/components/context/preferences"
-import { buildCatalog } from "@/features/playbook/search/search-catalog"
 import type { Catalog, SearchCategory, SearchEntry } from "@/features/playbook/search/search-types"
 
 /* -------------------------------------------------------------------------- */
@@ -400,11 +399,12 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 	const wrapper_ref = React.useRef<HTMLDivElement | null>(null)
 	const focus_token_ref = React.useRef(0)
 	const has_highlight_ref = React.useRef(false)
+	const catalog_promise_ref = React.useRef<Promise<Catalog> | null>(null)
 	const listbox_id = React.useId()
 
 	const normalized_query = query.trim().toLowerCase()
 
-	const load_catalog = React.useCallback(() => {
+	const load_catalog = React.useCallback(async () => {
 		let should_run = true
 		setCatalogStatus((prev) => {
 			if (prev !== "idle") {
@@ -416,10 +416,16 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 		if (!should_run) return
 
 		try {
-			setCatalog(buildCatalog())
+			if (!catalog_promise_ref.current) {
+				catalog_promise_ref.current = import("@/features/playbook/search/search-catalog").then((module) => module.buildCatalog())
+			}
+
+			const loaded_catalog = await catalog_promise_ref.current
+			setCatalog(loaded_catalog)
 			setCatalogStatus("ready")
 		} catch (error) {
 			console.warn("Search catalog load failed:", error)
+			catalog_promise_ref.current = null
 			setCatalogStatus("error")
 		}
 	}, [])
@@ -429,104 +435,108 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 		if (!catalog) return []
 
 		const normalized_info = (value?: string) => (value ?? "").toLowerCase()
-		const matches = catalog.entries
-			.map((entry) => {
-				const base_index = entry.searchable.indexOf(normalized_query)
-				if (base_index < 0) return null
+		const matches: { entry: SearchEntry; score: number }[] = []
 
-				const title_index = normalized_info(entry.title).indexOf(normalized_query)
-				const description_index = normalized_info(entry.description).indexOf(normalized_query)
-				const meta_index = normalized_info(entry.meta).indexOf(normalized_query)
+		for (const entry of catalog.entries) {
+			const base_index = entry.searchable.indexOf(normalized_query)
+			if (base_index < 0) continue
 
-				let priority = 0
-				if (title_index >= 0) priority -= 1000
-				else if (description_index >= 0) priority += 100
-				else if (meta_index >= 0) priority += 200
-				else priority += 400
+			const title_index = normalized_info(entry.title).indexOf(normalized_query)
+			const description_index = normalized_info(entry.description).indexOf(normalized_query)
+			const meta_index = normalized_info(entry.meta).indexOf(normalized_query)
 
-				return { entry, score: base_index + priority }
-			})
-			.filter(Boolean)
-			.sort((a, b) => {
-				if (a!.score !== b!.score) return a!.score - b!.score
-				return a!.entry.title.localeCompare(b!.entry.title)
-			})
-			.map((match) => match!.entry)
+			let priority = 0
+			if (title_index >= 0) priority -= 1000
+			else if (description_index >= 0) priority += 100
+			else if (meta_index >= 0) priority += 200
+			else priority += 400
 
-		return matches.slice(0, 30)
+			matches.push({ entry, score: base_index + priority })
+		}
+
+		matches.sort((a, b) => {
+			if (a.score !== b.score) return a.score - b.score
+			return a.entry.title.localeCompare(b.entry.title)
+		})
+
+		return matches.slice(0, 30).map((match) => match.entry)
 	}, [catalog, normalized_query])
 
-	const display_results = normalized_query ? filtered_results : []
-	const tab_results: SearchEntry[] = []
-	const definition_results: SearchEntry[] = []
+	const display_results = React.useMemo(() => (normalized_query ? filtered_results : []), [filtered_results, normalized_query])
+	const { tab_results, definition_sections, has_definition_entries } = React.useMemo(() => {
+		const tab_results: SearchEntry[] = []
+		const definition_results: SearchEntry[] = []
 
-	display_results.forEach((entry) => {
-		if (
-			entry.category === "term" ||
-			entry.category === "metric" ||
-			entry.category === "source" ||
-			entry.category === "spend" ||
-			entry.category === "vertical" ||
-			entry.category === "utm_medium" ||
-			entry.category === "utm_source" ||
-			entry.category === "utm_placement"
-		) {
-			definition_results.push(entry)
-			return
+		for (const entry of display_results) {
+			if (
+				entry.category === "term" ||
+				entry.category === "metric" ||
+				entry.category === "source" ||
+				entry.category === "spend" ||
+				entry.category === "vertical" ||
+				entry.category === "utm_medium" ||
+				entry.category === "utm_source" ||
+				entry.category === "utm_placement"
+			) {
+				definition_results.push(entry)
+				continue
+			}
+			tab_results.push(entry)
 		}
-		tab_results.push(entry)
-	})
+
+		const definition_groups = definition_results.reduce(
+			(acc, entry) => {
+				const key = entry.category
+				;(acc[key] ??= []).push(entry)
+				return acc
+			},
+			{} as Record<string, SearchEntry[]>
+		)
+
+		const definition_sections = [
+			{ key: "term", label: definition_group_labels.term },
+			{
+				key: "metric",
+				label: definition_group_labels.metric,
+				renderFooter: (result: SearchEntry) =>
+					result.formula ? (
+						<div className="mt-0.5">
+							<Renderer.Formula.View formula={result.formula} />
+						</div>
+					) : null,
+			},
+			{
+				key: "source",
+				label: definition_group_labels.source,
+				renderTitle: (result: SearchEntry, title_node: React.ReactNode, query: string) => {
+					const hierarchy_node = render_source_hierarchy_label(result, query)
+					return hierarchy_node ? (
+						<div className={cn("min-w-0 font-semibold", ui.typography.body)}>{hierarchy_node}</div>
+					) : (
+						<div className={cn("font-semibold", ui.typography.body)}>{title_node}</div>
+					)
+				},
+			},
+			{ key: "spend", label: definition_group_labels.spend },
+			{ key: "vertical", label: definition_group_labels.vertical },
+			{ key: "utm_medium", label: definition_group_labels.utm_medium },
+			{ key: "utm_source", label: definition_group_labels.utm_source },
+			{ key: "utm_placement", label: definition_group_labels.utm_placement },
+			{ key: "weight", label: definition_group_labels.weight },
+			{ key: "seed", label: definition_group_labels.seed },
+		].map((section) => ({
+			...section,
+			entries: definition_groups[section.key] ?? [],
+		}))
+
+		const has_definition_entries = definition_sections.some((section) => section.entries.length)
+
+		return { tab_results, definition_sections, has_definition_entries }
+	}, [display_results])
 
 	const active_result = cursor >= 0 ? tab_results[cursor] : null
 	const active_descendant = active_result ? result_dom_id(active_result) : undefined
 	const interactive_results = tab_results
-
-	const definition_groups = definition_results.reduce(
-		(acc, entry) => {
-			const key = entry.category
-			;(acc[key] ??= []).push(entry)
-			return acc
-		},
-		{} as Record<string, SearchEntry[]>
-	)
-
-	const definition_sections = [
-		{ key: "term", label: definition_group_labels.term },
-		{
-			key: "metric",
-			label: definition_group_labels.metric,
-			renderFooter: (result: SearchEntry) =>
-				result.formula ? (
-					<div className="mt-0.5">
-						<Renderer.Formula.View formula={result.formula} />
-					</div>
-				) : null,
-		},
-		{
-			key: "source",
-			label: definition_group_labels.source,
-			renderTitle: (result: SearchEntry, title_node: React.ReactNode, query: string) => {
-				const hierarchy_node = render_source_hierarchy_label(result, query)
-				return hierarchy_node ? (
-					<div className={cn("min-w-0 font-semibold", ui.typography.body)}>{hierarchy_node}</div>
-				) : (
-					<div className={cn("font-semibold", ui.typography.body)}>{title_node}</div>
-				)
-			},
-		},
-		{ key: "spend", label: definition_group_labels.spend },
-		{ key: "vertical", label: definition_group_labels.vertical },
-		{ key: "utm_medium", label: definition_group_labels.utm_medium },
-		{ key: "utm_source", label: definition_group_labels.utm_source },
-		{ key: "utm_placement", label: definition_group_labels.utm_placement },
-		{ key: "weight", label: definition_group_labels.weight },
-		{ key: "seed", label: definition_group_labels.seed },
-	].map((section) => ({
-		...section,
-		entries: definition_groups[section.key] ?? [],
-	}))
-
-	const has_definition_entries = definition_sections.some((section) => section.entries.length)
 
 	React.useEffect(() => {
 		if (!isOpen) return
@@ -535,7 +545,7 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 
 	React.useEffect(() => {
 		if (!isOpen) return
-		load_catalog()
+		void load_catalog()
 	}, [isOpen, load_catalog])
 
 	React.useEffect(() => {
@@ -550,7 +560,7 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 
 		const run = () => {
 			if (cancelled) return
-			load_catalog()
+			void load_catalog()
 		}
 
 		const can_use_idle_callback = typeof win.requestIdleCallback === "function"

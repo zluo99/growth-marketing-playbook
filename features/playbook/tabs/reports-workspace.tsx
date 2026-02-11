@@ -14,9 +14,10 @@ import { cn } from "@/lib/utils"
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { LoaderCardSkeleton } from "@/features/playbook/components/ui/loader"
 import { PbCard, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbFocus, PbMetricList, PbNumberBadge, PbReveal, PbSubtleText, PbTabIntro, PbTabPanel, createUnknownMetricLogger, useLazyGate } from "@/features/playbook/components/ui/ui"
+import { usePbTabsNav } from "@/features/playbook/components/context/context"
 import { SheetsCopy, SlidesCopy, WorkspaceUiCopy } from "@/features/playbook/copy/reports-workspace-google"
 import { ExampleCopy as WorkspaceExample } from "@/features/playbook/copy/reports-workspace-example"
-import { TabById } from "@/features/playbook/definitions/tabs"
+import { TabById, type TabId } from "@/features/playbook/definitions/tabs"
 
 /* -------------------------------------------------------------------------- */
 /* Components                                                                 */
@@ -50,10 +51,12 @@ function EmbedCard({
 	id,
 	copy,
 	height,
+	onTabClick,
 }: {
 	id: WorkspaceEmbedId
 	copy: { title: string; body: string; embedUrl: string; openUrl: string; openLabel: string }
 	height: number
+	onTabClick?: (tabId: TabId) => void
 }) {
 	const Icon = workspace_icon_map[id]
 	return (
@@ -76,10 +79,11 @@ function EmbedCard({
 					}
 					description={
 						<PbSubtleText size="body">
-							<Renderer.Copy.InlineText
+							<Renderer.Tabs.InlineText
 								text={copy.body}
 								keyPrefix={`${reports_workspace_key_prefix}-${id}-desc`}
 								onUnknownToken={warn_unknown_metric}
+								onTabClick={onTabClick}
 							/>
 						</PbSubtleText>
 					}
@@ -144,6 +148,7 @@ export default function TabReportsWorkspace() {
 	}, { sheets: false, slides: false, timeout: false })
 
 	const { ready: loadSlides, trigger: startSlidesLoading } = useLazyGate()
+	const { goToTab } = usePbTabsNav()
 	const workspace_visibility_ref = React.useRef<HTMLDivElement | null>(null)
 
 	const mark = React.useCallback(
@@ -202,8 +207,8 @@ export default function TabReportsWorkspace() {
 			<PbTabIntro alias={tab.alias} description={tab.description} keyPrefix={`${reports_workspace_key_prefix}-intro`} />
 
 			<PbFocus className={cn("flex flex-col", ui.gap.lg)}>
-				<EmbedCard id="sheets" copy={SheetsCopy} height={ui.size.layout.lg} />
-				<EmbedCard id="slides" copy={SlidesCopy} height={ui.size.layout.md} />
+				<EmbedCard id="sheets" copy={SheetsCopy} height={ui.size.layout.lg} onTabClick={goToTab} />
+				<EmbedCard id="slides" copy={SlidesCopy} height={ui.size.layout.md} onTabClick={goToTab} />
 				<PbReveal className="w-full" data-search-target="workspace-example">
 					<PbCard hover className={cn("relative overflow-hidden", ui.surface.structure.shadowNone)}>
 					<PbCardGlow className={ui.glow.yellow} />
