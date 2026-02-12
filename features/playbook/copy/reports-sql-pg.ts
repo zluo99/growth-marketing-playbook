@@ -14,8 +14,6 @@ export type PgCopy = {
 		editor_help: string
 		viewer_title: string
 		viewer_help: string
-		empty_success_no_rows: string
-		empty_no_result: string
 		run_error_generic: string
 		download_default_name: string
 	}
@@ -33,29 +31,27 @@ export type PgCopy = {
 
 export const PgCopy: PgCopy = {
 	title: "SQL playground",
-	body: "Run queries using the available tables (spoofed data from 2020-01-01 to 2022-12-31). Results use standardized metrics (e.g. `source`, `spend_type`, `arr`, `roas`) from the shared `semantic_model`.",
+	body: "Run SQL on the available tables. Data is spoofed from 2020-01-01 to 2022-12-31. Metrics use the shared `semantic_model` (`source`, `spend_type`, `arr`, `roas`).",
 	icon: "code",
 	labels: {
-		run_btn_running: "Running query...",
+		run_btn_running: "Running...",
 		run_btn_ready: "Run query",
-		run_btn_not_ready: "Load preset and run",
+		run_btn_not_ready: "Load preset to run",
 		download_btn: "Download CSV",
 		editor_title: "SQL editor",
-		editor_help: "Start from a preset or write your own query, then run it.",
+		editor_help: "Start from a preset or write your own query.",
 		viewer_title: "Results",
-		viewer_help: "Run a query to see results; empty sets still mean success.",
-		empty_success_no_rows: "Query succeeded but returned no rows.",
-		empty_no_result: "No results yet. Run a query to view them.",
+		viewer_help: "Run a query to see results. Empty sets still mean success.",
 		run_error_generic: "SQL error",
 		download_default_name: "query",
 	},
 	ui: {
 		resize: {
-			label: "Resize editor and results panels",
+			label: "Resize panes",
 			widthsLabel: "Resize SQL editor and results widths",
 		},
 		resultsToggle: {
-			showPreviewOnly: "Show preview only",
+			showPreviewOnly: "Show preview",
 			showAllRows: "Show all {n} rows",
 		},
 	},

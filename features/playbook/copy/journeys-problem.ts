@@ -19,7 +19,7 @@ export type ProblemCard = {
 
 export const ProblemCopy: ProblemCard = {
 	title: "Problem statement",
-	body: "Teams need a reliable way to move spend toward outcomes like `arr` and `deals`, not debate attribution noise.",
+	body: "Teams need a reliable way to move spend toward `arr` and `deals`, not debate attribution noise.",
 
 	sections: [
 		{
@@ -28,9 +28,9 @@ export const ProblemCopy: ProblemCard = {
 			icon: "alert",
 			glow: "red",
 			bullets: [
-				"`sta` is simple, but it breaks across a real `sales_cycle` with many interactions.",
-				"Without a governed `object_model` and `touch_model`, `source` and `utms` drift between reports.",
-				"Without one `prospect_id`-anchored `identity_graph` that links many `object_id` values, channel credit and budget decisions become opinion instead of evidence.",
+				"`sta` is simple, but it breaks across a real `sales_cycle` with many touches.",
+				"Without governed `object_model` and `touch_model`, `source` and `utms` drift between reports.",
+				"Without a `prospect_id`-anchored `identity_graph` that links `object_id` values, credit and budgets become opinion.",
 			],
 		},
 		{
@@ -39,9 +39,9 @@ export const ProblemCopy: ProblemCard = {
 			icon: "rocket",
 			glow: "green",
 			bullets: [
-				"Build a unified `mta` model: establish `object_model`, then `touch_model`, then join to `object_touch_model`.",
-				"Standardize `source` and `utms` once so first-touch, last-touch, decay, and `markov_model` run on identical prospect-level inputs.",
-				"Use the same journey base to rank leverage with `removal_effect` and reallocate spend toward `arr` and `deals`.",
+				"Build unified `mta` in order: `object_model`, then `touch_model`, then `object_touch_model`.",
+				"Standardize `source` and `utms` once so first-touch, last-touch, decay, and `markov_model` run on identical inputs.",
+				"Use one journey base to rank leverage with `removal_effect` and reallocate toward `arr` and `deals`.",
 			],
 		},
 	],

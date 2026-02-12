@@ -24,23 +24,23 @@ export type DefinitionsCard = {
 
 export const DefinitionsCopy: DefinitionsCard = {
 	title: "Core definitions",
-	body: "Align on definitions with Finance, publish them to the `semantic_model`, and bake them into the `attribution_model`.",
+	body: "Align with Finance, publish to the `semantic_model`, and wire into the `attribution_model`.",
 	icon: "sparkles",
 	panels: [
 		{
 			id: "1",
 			title: "Attributes to standardize",
-			body: "Treat attributes/dimensions as governance, not preference. If these drift, every metric turns into a reconciliation exercise.",
+			body: "Treat attributes as governance, not preference. Drift turns every metric into reconciliation.",
 		},
 		{
 			id: "2",
 			title: "Typical measures",
-			body: "Measures capture what happened (i.e. outcomes, unit economics, efficiency).",
+			body: "Measures capture outcomes, unit economics, and efficiency.",
 		},
 		{
 			id: "3",
 			title: "Available tables",
-			body: "If you're lucky, attributes and measures are already established in your data warehouse in clean tables. These are the typical ones to look for:",
+			body: "If you are lucky, these tables already exist. Start here:",
 			columns: {
 				table: "Table",
 				description: "Description",
@@ -51,17 +51,17 @@ export const DefinitionsCopy: DefinitionsCard = {
 	tables: [
 		{
 			name: "funnel_cohorted",
-			description: "Cohorted funnel outcomes anchored to lead creation (Lead -> Opportunity -> Deal) plus `arr` from those leads.",
+			description: "Cohorted outcomes anchored to lead creation (Lead -> Opportunity -> Deal) plus `arr` from those leads.",
 			columns: "lead_id, lead_created_date, source_l1, source_l2, source_l3, vendor, vertical, opportunities_from_leads, deals_from_leads, arr_from_leads, ltv_from_leads",
 		},
 		{
 			name: "funnel_uncohorted",
-			description: "Object-level funnel events (Lead -> Opportunity -> Deal). `arr` lives on Deal records only.",
+			description: "Object-level funnel events (Lead -> Opportunity -> Deal). `arr` lives on Deal records.",
 			columns: "object_id, object_type, object_created_date, source_l1, source_l2, source_l3, vendor, vertical, arr",
 		},
 		{
 			name: "funnel_spend",
-			description: "Marketing spend at the date level, classified by `spend_type`, `source`, and `vendor`.",
+			description: "Marketing spend by date, classified by `spend_type`, `source`, and `vendor`.",
 			columns: "spend_date, spend_type, source_l1, source_l2, source_l3, vendor, spend",
 		},
 	],

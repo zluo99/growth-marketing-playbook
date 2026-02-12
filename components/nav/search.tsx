@@ -538,8 +538,6 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 			{ key: "utm_medium", label: definition_group_labels.utm_medium },
 			{ key: "utm_source", label: definition_group_labels.utm_source },
 			{ key: "utm_placement", label: definition_group_labels.utm_placement },
-			{ key: "weight", label: definition_group_labels.weight },
-			{ key: "seed", label: definition_group_labels.seed },
 		].map((section) => ({
 			...section,
 			entries: definition_groups[section.key] ?? [],

@@ -12,22 +12,20 @@ export type GuidePanel = {
 }
 
 export type GuideCard = {
-	id: "guide"
 	title: string
 	body: string
 	panels: readonly GuidePanel[]
 }
 
 export const GuideCopy: GuideCard = {
-	id: "guide",
 	title: "Execution guide",
-	body: "Now that we've established the tenets, it's time to go over this playbook.",
+	body: "Start with measurement, then scale plays.",
 
 	panels: [
 		{
 			id: "1",
 			title: "Recommended sequence",
-			body: "Building the growth marketing function requires a strong measurement foundation, and this sequence ensures that.",
+			body: "Build in order so each step has clean inputs.",
 			sequence: [
 				"reports-sql",
 				"reports-workspace",
@@ -38,7 +36,7 @@ export const GuideCopy: GuideCard = {
 		{
 			id: "2",
 			title: "Decision cadence",
-			body: "Reporting is definitions, trends, and reconciliation. Decisions are explicit moves with thresholds, windows, and owners. If a move cannot be stated in one sentence with `arr`, `roas`, and `cac`, it is not decision-ready.",
+			body: "Reporting is definitions, trends, and reconciliation. Decisions are explicit moves with thresholds, windows, and owners. If you cannot state the move in one sentence with `arr`, `roas`, and `cac`, it is not decision-ready.",
 		},
 	],
 

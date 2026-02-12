@@ -360,7 +360,7 @@ const build_copy_entries = (): SearchEntry[] => {
 		tabId: "plays",
 		badge: "Sources",
 		meta: SourcesCopy.footer,
-		extra: [SourcesCopy.downloadLabel, SourcesCopy.segmentToggle.labelB2B, SourcesCopy.segmentToggle.labelB2C],
+		extra: [SourcesCopy.downloadLabel],
 	})
 
 	push({

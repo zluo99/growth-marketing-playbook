@@ -4,14 +4,10 @@
 
 export type BrandCopy = {
 	title: string
-	subtitle: string
 	byline: string
 }
 
-export type HeaderCopy = {
-	title: string
-	subtitle: string
-	byline: string
+export type HeaderContentCopy = {
 	linkedinUrl: string
 	email: string
 }
@@ -66,15 +62,11 @@ export type SearchCopy = {
 
 export const BrandCopy: BrandCopy = {
 	title: "Growth Marketing Playbook",
-	subtitle: "A technical playbook to run the growth marketing function",
-	byline: "Designed and created by John Luo",
+	byline: "Built by John Luo",
 }
 
 export const PageCopy = {
 	headerContent: {
-		title: BrandCopy.title,
-		subtitle: BrandCopy.subtitle,
-		byline: BrandCopy.byline,
 		linkedinUrl: "https://www.linkedin.com/in/zluo99/",
 		email: "jzluo99@gmail.com",
 	},
@@ -105,17 +97,15 @@ export const PageCopy = {
 			utm_medium: "UTM Mediums",
 			utm_source: "UTM Sources",
 			utm_placement: "UTM Placements",
-			weight: "Weights",
-			seed: "Seeds",
 		},
-		emptyState: "No results matched your search yet. Try another phrase.",
+		emptyState: "No matches yet. Try another phrase.",
 		noTabMatches: "No tab matches",
 		noDefinitionMatches: "No definitions found",
 		resultsCountLabel: "{count} results",
-		loadingCatalog: "Loading search catalog...",
-		catalogError: "Search catalog unavailable. Refresh to retry.",
+		loadingCatalog: "Loading search...",
+		catalogError: "Search unavailable. Refresh to retry.",
 		categoryLabels: {
-			tab: "Playbook Tab",
+			tab: "Tab",
 			framework: "Framework",
 			term: "Term",
 			source: "Source",
@@ -125,15 +115,13 @@ export const PageCopy = {
 			utm_medium: "UTM Medium",
 			utm_source: "UTM Source",
 			utm_placement: "UTM Placement",
-			weight: "Weight",
-			seed: "Seed",
 			copy: "Copy",
 		},
 	},
 	footer: {
 		brandTitle: BrandCopy.title,
 		brandMarkAlt: "Growth Marketing Playbook home",
-		disclaimer: "© {year} John Luo. Content uses spoofed data, industry best practices, and experience.",
+		disclaimer: "(c) {year} John Luo. Content uses spoofed data, best practices, and experience.",
 		themeLabel: "Theme",
 		themeOptions: {
 			light: "Light",
@@ -144,10 +132,12 @@ export const PageCopy = {
 		linkedinLabel: "LinkedIn",
 	},
 } as const satisfies {
-	headerContent: HeaderCopy
+	headerContent: HeaderContentCopy
 	headerTabsNav: TabsNavCopy
 	headerNavigation: HeaderNavCopy
 	bodySearch: SearchCopy
 	footer: FooterCopy
 }
+
+
 
