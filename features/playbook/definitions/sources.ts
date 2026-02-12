@@ -182,8 +182,12 @@ const source_rows = Object.freeze([
     description_long:
       "Local or regional in person events. Measure `leads`, `opportunities`, `deals`, and `sales_cycle_time`. Attribute via `matchback` when possible. Validate lift with `holdout` or `geo_test` when feasible.",
     benchmark: {
+      b2b_roas_range: { min: 1.0, max: 3.0 },
+      b2b_roas_description: "ROAS improves when event costs are tracked cleanly and follow up converts meetings into qualified pipeline.",
       b2b_lead_to_deal_cvr_range: { min: 0.6, max: 2.2 },
       b2b_lead_to_deal_cvr_description: "Higher conversion when meetings are pre booked and qualification is consistent.",
+      b2c_roas_range: { min: 0.9, max: 2.6 },
+      b2c_roas_description: "ROAS depends on offer relevance, attendance quality, and speed from event interaction to purchase path.",
       b2c_lead_to_deal_cvr_range: { min: 0.4, max: 1.6 },
       b2c_lead_to_deal_cvr_description: "Event to purchase depends on the offer and immediacy of the next step."
     }

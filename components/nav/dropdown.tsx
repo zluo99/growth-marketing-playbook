@@ -6,7 +6,7 @@
 
 import * as React from "react"
 import { createPortal } from "react-dom"
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { ChevronDown } from "lucide-react"
 
 import { ui } from "@/components/tokens/design"
@@ -143,6 +143,23 @@ function set_suspend_count(n: number) {
 	document.body.setAttribute("data-tooltip-suspended-count", String(n))
 }
 
+function resolve_trigger_label_direction<V extends string>(opts: {
+	items: readonly DropdownItem<V>[]
+	previousValue: V
+	nextValue: V
+}) {
+	const previous_index = opts.items.findIndex((item) => item.value === opts.previousValue)
+	const next_index = opts.items.findIndex((item) => item.value === opts.nextValue)
+	if (previous_index < 0 || next_index < 0 || previous_index === next_index) return 1 as const
+	// Next is above previous => incoming text flies from top, outgoing exits down.
+	return next_index < previous_index ? (1 as const) : (-1 as const)
+}
+
+function resolve_trigger_label_direction_from_index(opts: { previousIndex: number; nextIndex: number }) {
+	if (opts.previousIndex < 0 || opts.nextIndex < 0 || opts.previousIndex === opts.nextIndex) return 1 as const
+	return opts.nextIndex < opts.previousIndex ? (1 as const) : (-1 as const)
+}
+
 /* -------------------------------------------------------------------------- */
 /* Component                                                                  */
 /* -------------------------------------------------------------------------- */
@@ -208,6 +225,23 @@ export function Dropdown<V extends string>({
 
 	const active = React.useMemo(() => items.find((x) => x.value === value), [items, value])
 	const trigger_label = renderTriggerLabel ? renderTriggerLabel(active) : triggerLabel
+	const [trigger_label_direction, set_trigger_label_direction] = React.useState<1 | -1>(1)
+	const previous_value_ref = React.useRef<V>(value)
+	const selected_index = React.useMemo(() => items.findIndex((item) => item.value === value), [items, value])
+
+	React.useLayoutEffect(() => {
+		const previous_value = previous_value_ref.current
+		if (previous_value === value) return
+		set_trigger_label_direction(resolve_trigger_label_direction({ items, previousValue: previous_value, nextValue: value }))
+		previous_value_ref.current = value
+	}, [items, value])
+
+	const set_direction_for_index = React.useCallback(
+		(next_index: number) => {
+			set_trigger_label_direction(resolve_trigger_label_direction_from_index({ previousIndex: selected_index, nextIndex: next_index }))
+		},
+		[selected_index]
+	)
 
 	const [pos, set_pos] = React.useState<{ left: number; top: number; width: number } | null>(null)
 
@@ -337,6 +371,7 @@ export function Dropdown<V extends string>({
 				const item = items[active_index]
 				if (!item || item.disabled) return
 				e.preventDefault()
+				set_direction_for_index(active_index)
 				onChange(item.value)
 				const behavior = onItemSelect?.(item.value) ?? "close"
 				if (behavior === "close") {
@@ -352,7 +387,7 @@ export function Dropdown<V extends string>({
 				trigger_ref.current?.focus?.()
 			}
 		},
-		[active_index, close, find_first_enabled, find_last_enabled, focus_item, items, move_active, onChange, onItemSelect]
+		[active_index, close, find_first_enabled, find_last_enabled, focus_item, items, move_active, onChange, onItemSelect, set_direction_for_index]
 	)
 
 	const on_key_down = React.useCallback((e: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -367,6 +402,15 @@ export function Dropdown<V extends string>({
 	const inline_reveal_transition = reduce_motion ? uiMotion.frameworks.dropdownInline.reduced : uiMotion.frameworks.dropdownInline.reveal
 	const inline_shrink_transition = reduce_motion ? uiMotion.frameworks.dropdownInline.reduced : uiMotion.frameworks.dropdownInline.shrink
 	const inline_reveal_delay = reduce_motion ? 0 : uiMotion.frameworks.dropdownInline.revealDelay
+	const trigger_swap_transition = reduce_motion ? uiMotion.frameworks.dropdownTrigger.reduced : uiMotion.frameworks.dropdownTrigger.swap
+	const trigger_swap_distance = reduce_motion ? 0 : uiMotion.frameworks.dropdownTrigger.distancePx
+	const trigger_label_variants = React.useMemo(() => {
+		return {
+			enter: (direction: 1 | -1) => ({ opacity: 0, y: -direction * trigger_swap_distance }),
+			center: { opacity: 1, y: 0 },
+			exit: (direction: 1 | -1) => ({ opacity: 0, y: direction * trigger_swap_distance }),
+		} as const
+	}, [trigger_swap_distance])
 
 	return (
 		<div ref={shell_ref} className={cn("relative", align === "stretch" ? "w-full" : "w-auto")}>
@@ -383,7 +427,24 @@ export function Dropdown<V extends string>({
 			>
 				<div className={trigger_inner}>
 					<span className="min-w-0 flex-1 flex items-center h-full">
-						<span className="min-w-0 flex-1 flex items-center h-full">{trigger_label}</span>
+						<span className="min-w-0 flex h-full flex-1 items-center">
+							<span className="grid h-full w-full min-w-0 items-center overflow-hidden">
+								<AnimatePresence initial={false} custom={trigger_label_direction} mode="sync">
+								<motion.span
+									key={value}
+									custom={trigger_label_direction}
+									variants={trigger_label_variants}
+									initial="enter"
+									animate="center"
+									exit="exit"
+									transition={trigger_swap_transition}
+									className="col-start-1 row-start-1 min-w-0 flex w-full items-center"
+								>
+									{trigger_label}
+								</motion.span>
+							</AnimatePresence>
+							</span>
+						</span>
 					</span>
 
 					<ChevronDown className={cn(chevron_chrome, open ? "rotate-180" : "rotate-0")} aria-hidden="true" />
@@ -415,7 +476,8 @@ export function Dropdown<V extends string>({
 									{items.map((item, index) => {
 										const is_active = item.value === value
 										const Icon = item.icon
-										const run_select = (next: V) => {
+										const run_select = (next: V, next_index: number) => {
+											set_direction_for_index(next_index)
 											runWithViewportAnchor(trigger_ref.current, () => {
 												onChange(next)
 												const behavior = onItemSelect?.(next) ?? "close"
@@ -482,7 +544,7 @@ export function Dropdown<V extends string>({
 																onClick={(e) => {
 																	e.preventDefault()
 																	e.stopPropagation()
-																	run_select(choice.value)
+																	run_select(choice.value, index)
 																}}
 															>
 																{choice.label}
@@ -516,7 +578,7 @@ export function Dropdown<V extends string>({
 														animate={{ opacity: 1, width: `calc(100% - ${inline_group_slot_px}px)` }}
 														transition={inline_shrink_transition}
 														onClick={() => {
-															run_select(item.value)
+															run_select(item.value, index)
 														}}
 														onMouseDown={(e) => {
 															e.preventDefault()
@@ -586,7 +648,7 @@ export function Dropdown<V extends string>({
 																onClick={(e) => {
 																	e.preventDefault()
 																	e.stopPropagation()
-																	run_select(choice.value)
+																	run_select(choice.value, index)
 																}}
 															>
 																{choice.label}
@@ -606,7 +668,7 @@ export function Dropdown<V extends string>({
 												type="button"
 												disabled={!!item.disabled}
 												onClick={() => {
-													run_select(item.value)
+													run_select(item.value, index)
 												}}
 												onMouseDown={(e) => {
 													e.preventDefault()

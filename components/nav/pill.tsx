@@ -27,6 +27,9 @@ type PillListRef = React.ComponentRef<typeof TabsPrimitive.List>
 
 type PillTriggerProps = React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> & {
 	standard?: boolean
+	activeOwnsChrome?: boolean
+	deferTouchPointerDown?: boolean
+	onPressPreview?: (event: React.PointerEvent<HTMLButtonElement>) => void
 }
 type PillTriggerRef = React.ComponentRef<typeof TabsPrimitive.Trigger>
 
@@ -98,14 +101,64 @@ const PillList = React.forwardRef<PillListRef, PillListProps>(function PillList(
 })
 PillList.displayName = TabsPrimitive.List.displayName ?? "PillList"
 
-const PillTrigger = React.forwardRef<PillTriggerRef, PillTriggerProps>(function PillTrigger({ className, standard = true, ...props }, ref) {
+const PillTrigger = React.forwardRef<PillTriggerRef, PillTriggerProps>(function PillTrigger(
+	{
+		className,
+		standard = true,
+		activeOwnsChrome = false,
+		deferTouchPointerDown = true,
+		onPressPreview,
+		onPointerDown,
+		onPointerUp,
+		onPointerCancel,
+		...props
+	},
+	ref
+) {
+	const deferred_pointer_id_ref = React.useRef<number | null>(null)
+
+	const on_pointer_down = React.useCallback(
+		(event: React.PointerEvent<HTMLButtonElement>) => {
+			if (deferTouchPointerDown && event.pointerType === "touch") {
+				deferred_pointer_id_ref.current = event.pointerId
+			} else {
+				onPressPreview?.(event)
+			}
+			onPointerDown?.(event)
+		},
+		[deferTouchPointerDown, onPointerDown, onPressPreview]
+	)
+
+	const on_pointer_up = React.useCallback(
+		(event: React.PointerEvent<HTMLButtonElement>) => {
+			if (deferred_pointer_id_ref.current === event.pointerId) {
+				deferred_pointer_id_ref.current = null
+				onPressPreview?.(event)
+			}
+			onPointerUp?.(event)
+		},
+		[onPointerUp, onPressPreview]
+	)
+
+	const on_pointer_cancel = React.useCallback(
+		(event: React.PointerEvent<HTMLButtonElement>) => {
+			if (deferred_pointer_id_ref.current === event.pointerId) deferred_pointer_id_ref.current = null
+			onPointerCancel?.(event)
+		},
+		[onPointerCancel]
+	)
+
 	return (
 		<TabsPrimitive.Trigger
 			ref={ref}
 			data-slot="pill-trigger"
+			onPointerDown={on_pointer_down}
+			onPointerUp={on_pointer_up}
+			onPointerCancel={on_pointer_cancel}
 			className={cn(
 				"inline-flex items-center justify-center whitespace-nowrap disabled:pointer-events-none disabled:opacity-50",
 				"box-border",
+				"touch-pan-x select-none",
 				standard ? ui.nav.control.height : null,
 				standard ? ui.nav.control.padX : null,
 				ui.typography.body,
@@ -122,8 +175,11 @@ const PillTrigger = React.forwardRef<PillTriggerRef, PillTriggerProps>(function 
 				ui.surface.state.press.shadow,
 				ui.surface.state.hover.shadowMd,
 				ui.surface.state.hover.bg,
-				ui.surface.state.active.bg,
-				ui.surface.state.active.border,
+				activeOwnsChrome ? ui.surface.state.active.bg : "data-[state=active]:!bg-transparent",
+				activeOwnsChrome ? ui.surface.state.active.border : "data-[state=active]:!border-transparent",
+				!activeOwnsChrome ? "data-[state=active]:hover:!bg-transparent" : null,
+				!activeOwnsChrome ? "data-[state=active]:hover:!border-transparent" : null,
+				!activeOwnsChrome ? "data-[state=active]:![box-shadow:none] data-[state=active]:hover:![box-shadow:none]" : null,
 				"border border-transparent bg-transparent",
 				className
 			)}

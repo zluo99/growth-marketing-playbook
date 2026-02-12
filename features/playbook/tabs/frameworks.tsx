@@ -278,7 +278,7 @@ function FrameworksBar({
 													value={item.value}
 													ref={left.getTriggerRef(item.value)}
 													className={cn(ui.nav.rail.triggerChrome, "shrink-0")}
-													onPointerDown={() => {
+													onPressPreview={() => {
 														ensure_filter_visible(item.value, "auto")
 														left.pill.measureRaf()
 													}}
@@ -321,7 +321,7 @@ function FrameworksBar({
 												value={v}
 												ref={right.getTriggerRef(v)}
 												className={cn(ui.nav.rail.triggerChrome, ui.nav.control.size, "p-0 grid place-items-center")}
-												onPointerDown={() => right.pill.measureRaf()}
+												onPressPreview={() => right.pill.measureRaf()}
 											>
 												<span className={cn("relative z-10 grid h-full w-full place-items-center", ui.motion.duration, tone)}>
 													<ColumnIcon n={n} />

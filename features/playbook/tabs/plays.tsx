@@ -673,7 +673,7 @@ function SpendBar({ value, onChange }: { value: SpendPanel["id"]; onChange: (v: 
 												className={cn(ui.nav.rail.triggerChrome, "shrink-0")}
 												title={t.body}
 												aria-label={t.body ? `${t.title}. ${t.body}` : t.title}
-												onPointerDown={() => {
+												onPressPreview={() => {
 													ensure_visible(t.id, "auto")
 													rail.pill.measureRaf()
 												}}

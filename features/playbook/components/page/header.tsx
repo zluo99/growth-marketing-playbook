@@ -475,7 +475,7 @@ const TabsBarRail = React.memo(function TabsBarRail({ activeTab, onGoToTab, redu
 													key={t.id}
 													value={t.id}
 													ref={rail.getTriggerRef(t.id)}
-													onPointerDown={() => {
+													onPressPreview={() => {
 														ensure_visible(t.id, "instant")
 														rail.pill.measureRaf()
 													}}
