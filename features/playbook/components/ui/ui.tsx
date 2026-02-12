@@ -586,6 +586,37 @@ export function PbTabIntro({ alias, description, keyPrefix }: { alias: string; d
 	)
 }
 
+export type PbTabShellProps = {
+	alias: string
+	description?: string
+	keyPrefix: string
+	tabId?: string
+	className?: string
+	gap?: StackGap
+	focus?: boolean
+	focusClassName?: string
+	introClassName?: string
+	header?: React.ReactNode
+	children?: React.ReactNode
+}
+
+export const PbTabShell = React.forwardRef<HTMLDivElement, PbTabShellProps>(function PbTabShell(
+	{ alias, description, keyPrefix, tabId, className, gap = "lg", focus = true, focusClassName, introClassName, header, children },
+	ref
+) {
+	const gap_class = ui.gap[gap]
+	const intro = <PbTabIntro alias={alias} description={description} keyPrefix={keyPrefix} />
+
+	return (
+		<div ref={ref} className={cn("flex flex-col", gap_class, className)} data-search-target={tabId ? `tab:${tabId}` : undefined}>
+			{introClassName ? <div className={introClassName}>{intro}</div> : intro}
+			{header}
+			{focus ? <PbFocus className={cn("flex flex-col", gap_class, focusClassName)}>{children}</PbFocus> : children}
+		</div>
+	)
+})
+PbTabShell.displayName = "PbTabShell"
+
 /* -------------------------------------------------------------------------- */
 /* Components                                                                 */
 /* -------------------------------------------------------------------------- */
@@ -604,6 +635,14 @@ export const PbCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
 	)
 })
 PbCard.displayName = "PbCard"
+
+export const PbTabCard = React.forwardRef<HTMLDivElement, React.ComponentProps<typeof PbCard>>(function PbTabCard(
+	{ className, shadow = false, ...props },
+	ref
+) {
+	return <PbCard ref={ref} shadow={shadow} className={cn("relative overflow-hidden", className)} {...props} />
+})
+PbTabCard.displayName = "PbTabCard"
 
 export const PbPanel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & WithHover>(function PbPanel({ className, hover = true, ...props }, ref) {
 	return <div ref={ref} data-slot="pb-panel" className={cn(surface_class({ hover, radius: ui.radius.base, shadow: false, tone: "panel" }), className)} {...props} />
@@ -761,16 +800,34 @@ export type PbBulletListProps = {
 	size?: TypographyKey
 	marker?: "none" | "dash" | "dot"
 	tone?: Tone
-	keyPrefix?: string
+	keyPrefix?: string | ((item: string, index: number) => string)
+	getKey?: (item: string, index: number) => string
+	renderItem?: (item: string, index: number) => React.ReactNode
 	onUnknownToken?: (token: string) => React.ReactNode
 }
 
-export function PbBulletList({ className, gap = "sm", items, size = "body", marker = "dot", tone = "default", keyPrefix = "pb-bullet-list", onUnknownToken }: PbBulletListProps) {
+export function PbBulletList({
+	className,
+	gap = "sm",
+	items,
+	size = "body",
+	marker = "dot",
+	tone = "default",
+	keyPrefix = "pb-bullet-list",
+	getKey,
+	renderItem,
+	onUnknownToken,
+}: PbBulletListProps) {
+	const resolve_key_prefix = React.useCallback(
+		(item: string, index: number) => (typeof keyPrefix === "function" ? keyPrefix(item, index) : keyPrefix),
+		[keyPrefix]
+	)
+
 	return (
 		<PbStack asList className={className} gap={gap}>
 			{items.map((t, i) => (
-				<PbBullet key={`${i}-${t}`} asListItem marker={marker} size={size} tone={tone}>
-					<Renderer.Copy.InlineText text={t} keyPrefix={keyPrefix} onUnknownToken={onUnknownToken} />
+				<PbBullet key={getKey?.(t, i) ?? `${i}-${t}`} asListItem marker={marker} size={size} tone={tone}>
+					{renderItem ? renderItem(t, i) : <Renderer.Copy.InlineText text={t} keyPrefix={resolve_key_prefix(t, i)} onUnknownToken={onUnknownToken} />}
 				</PbBullet>
 			))}
 		</PbStack>
@@ -782,12 +839,20 @@ export function PbMetricList({
 	gap = "sm",
 	items,
 	size = "body",
+	tone = "default",
+	keyPrefix = "metric-bullet",
+	getKey,
+	renderItem,
 	onUnknownToken,
 }: {
 	className?: string
 	gap?: StackGap
 	items: readonly string[]
 	size?: TypographyKey
+	tone?: Tone
+	keyPrefix?: string | ((item: string, index: number) => string)
+	getKey?: (item: string, index: number) => string
+	renderItem?: (item: string, index: number) => React.ReactNode
 	onUnknownToken?: (token: string) => React.ReactNode
 }) {
 	return (
@@ -797,7 +862,10 @@ export function PbMetricList({
 			items={items}
 			size={size}
 			marker="dot"
-			keyPrefix="metric-bullet"
+			tone={tone}
+			keyPrefix={keyPrefix}
+			getKey={getKey}
+			renderItem={renderItem}
 			onUnknownToken={onUnknownToken}
 		/>
 	)

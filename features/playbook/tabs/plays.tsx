@@ -19,7 +19,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cn, scrollIntoHorizontalView, stableKeyFromText } from "@/lib/utils"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
-import { PbBullet, PbCard, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbFocus, PbReveal, PbStack, PbSubtleText, PbTabIntro, PbTabPanel } from "@/features/playbook/components/ui/ui"
+import { PbBulletList, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell } from "@/features/playbook/components/ui/ui"
 import { SourcesCopy } from "@/features/playbook/copy/plays-sources"
 import { SpendCopy, type SpendBullet, type SpendPanel, type SpendPillar } from "@/features/playbook/copy/plays-spend"
 import { MetricDefinitions } from "@/features/playbook/definitions/metrics"
@@ -871,203 +871,184 @@ export default function TabPlays() {
 
 	return (
 		<Renderer.Provider>
-			<div className={cn("flex flex-col", ui.gap.lg)}>
-				<div data-search-target="tab:plays">
-					<PbTabIntro alias={tab.alias} description={tab.description} keyPrefix={`${plays_key_prefix}-intro`} />
-				</div>
-
-				<PbFocus className={cn("flex flex-col", ui.gap.lg)}>
-					<PbReveal className="w-full" ref={spend_card_ref} data-search-target="spend-card">
-						<PbCard hover shadow className="relative w-full overflow-hidden">
-							<PbCardLayer>
-								<PbCardHeader
-									title={
-										<span className={ui.typography.title.lg}>
-											<Renderer.Copy.InlineText text={SpendCopy.title} keyPrefix={`${plays_key_prefix}-spend-title`} />
-										</span>
-									}
-									description={null}
-								/>
-								<PbCardContent className="relative">
-									<div className={cn("flex flex-col", ui.gap.sm)}>
-										<SpendBar value={spend_view} onChange={on_spend_view_change} />
-										{panel?.body ? (
-											<motion.div
-												key={`spend-desc-${spend_view}`}
-												initial={!reduce_motion ? { opacity: 0, y: 8 } : false}
-												animate={{ opacity: 1, y: 0 }}
-												transition={enter_transition}
+			<PbTabShell tabId="plays" alias={tab.alias} description={tab.description} keyPrefix={`${plays_key_prefix}-intro`}>
+				<PbReveal className="w-full" ref={spend_card_ref} data-search-target="spend-card">
+					<PbTabCard hover shadow className="w-full">
+						<PbCardLayer>
+							<PbCardHeader
+								title={
+									<span className={ui.typography.title.lg}>
+										<Renderer.Copy.InlineText text={SpendCopy.title} keyPrefix={`${plays_key_prefix}-spend-title`} />
+									</span>
+								}
+								description={null}
+							/>
+							<PbCardContent className="relative">
+								<div className={cn("flex flex-col", ui.gap.sm)}>
+									<SpendBar value={spend_view} onChange={on_spend_view_change} />
+									{panel?.body ? (
+										<motion.div key={`spend-desc-${spend_view}`} initial={!reduce_motion ? { opacity: 0, y: 8 } : false} animate={{ opacity: 1, y: 0 }} transition={enter_transition}>
+											<div
+												className={cn(
+													ui.radius.base,
+													ui.surface.structure.border,
+													ui.surface.structure.shadowNone,
+													ui.motion.duration,
+													ui.component.outline.hover,
+													"bg-background px-4 py-3"
+												)}
 											>
-												<div
-													className={cn(
-														ui.radius.base,
-														ui.surface.structure.border,
-														ui.surface.structure.shadowNone,
-														ui.motion.duration,
-														ui.component.outline.hover,
-														"bg-background px-4 py-3"
-													)}
-												>
-													<PbSubtleText size="body">
-														<Renderer.Copy.InlineText text={panel.body} keyPrefix={`${plays_key_prefix}-spend-panel-${panel.id}`} />
-													</PbSubtleText>
-												</div>
-											</motion.div>
-										) : null}
-
-										<motion.div key={spend_view} initial={!reduce_motion ? { opacity: 0, y: 8 } : false} animate={{ opacity: 1, y: 0 }} transition={enter_transition}>
-											<div className={cn("grid grid-cols-2 items-stretch", ui.gap.sm)}>
-												{brand_pillar ? (
-													<PbTabPanel className="relative flex h-full flex-col overflow-hidden">
-														<PbCardGlow className={ui.glow.red} />
-														<PbCardLayer>
-															<div className={cn("flex items-start", ui.gap.sm)}>
-																<Renderer.Spend.Pill id="brand" className={cn("px-4 py-2", ui.typography.title.md)} />
-															</div>
-
-															{brand_content.body ? (
-																<p className={cn(ui.margin.topSm, "leading-relaxed text-muted-foreground", ui.typography.body)}>{render_spend_text(brand_content.body, `${plays_key_prefix}-spend-brand-${spend_view}`)}</p>
-															) : null}
-
-															<PbStack className={ui.margin.topSm} asList gap="sm">
-																{brand_content.bullets.map((b) => (
-																	<PbBullet key={b.text} asListItem marker="dot">
-																		{render_spend_bullet(b.text)}
-																	</PbBullet>
-																))}
-															</PbStack>
-														</PbCardLayer>
-													</PbTabPanel>
-												) : null}
-
-												{perf_pillar ? (
-													<PbTabPanel className="relative flex h-full flex-col overflow-hidden">
-														<PbCardGlow className={ui.glow.purple} />
-														<PbCardLayer>
-															<div className={cn("flex items-start", ui.gap.sm)}>
-																<Renderer.Spend.Pill id="performance" className={cn("px-4 py-2", ui.typography.title.md)} />
-															</div>
-
-															{perf_content.body ? (
-																<p className={cn(ui.margin.topSm, "leading-relaxed text-muted-foreground", ui.typography.body)}>{render_spend_text(perf_content.body, `${plays_key_prefix}-spend-performance-${spend_view}`)}</p>
-															) : null}
-
-															<PbStack className={ui.margin.topSm} asList gap="sm">
-																{perf_content.bullets.map((b) => (
-																	<PbBullet key={b.text} asListItem marker="dot">
-																		{render_spend_bullet(b.text)}
-																	</PbBullet>
-																))}
-															</PbStack>
-														</PbCardLayer>
-													</PbTabPanel>
-												) : null}
+												<PbSubtleText size="body">
+													<Renderer.Copy.InlineText text={panel.body} keyPrefix={`${plays_key_prefix}-spend-panel-${panel.id}`} />
+												</PbSubtleText>
 											</div>
 										</motion.div>
+									) : null}
 
-										<p className={cn("text-muted-foreground", ui.typography.caption)}>{render_spend_text(SpendCopy.footer, `${plays_key_prefix}-spend-footer`)}</p>
-									</div>
-								</PbCardContent>
-							</PbCardLayer>
-						</PbCard>
-					</PbReveal>
+									<motion.div key={spend_view} initial={!reduce_motion ? { opacity: 0, y: 8 } : false} animate={{ opacity: 1, y: 0 }} transition={enter_transition}>
+										<div className={cn("grid grid-cols-2 items-stretch", ui.gap.sm)}>
+											{brand_pillar ? (
+												<PbTabPanel className="relative flex h-full flex-col overflow-hidden">
+													<PbCardGlow className={ui.glow.red} />
+													<PbCardLayer>
+														<div className={cn("flex items-start", ui.gap.sm)}>
+															<Renderer.Spend.Pill id="brand" className={cn("px-4 py-2", ui.typography.title.md)} />
+														</div>
 
-					<PbReveal className="w-full" data-search-target="sources-card">
-						<PbCard hover className={cn("relative overflow-hidden", ui.surface.structure.shadowNone)}>
-							<PbCardGlow className={ui.glow.blue} />
-							<PbCardLayer>
-								<PbCardHeader
-									className="flex-col items-stretch sm:flex-row sm:items-start"
-									title={
-										<span className={ui.typography.title.lg}>
-											<Renderer.Copy.InlineText text={SourcesCopy.title} keyPrefix={`${plays_key_prefix}-sources-title`} />
-										</span>
-									}
-									description={
-										<PbSubtleText size="body">
-											<Renderer.Copy.InlineText text={SourcesCopy.body} keyPrefix={`${plays_key_prefix}-sources-desc`} />
-										</PbSubtleText>
-									}
-									action={
-										<div className={cn("flex flex-wrap items-center justify-start", ui.gap.sm)}>
-											<Button className={cn(buttonVariants({ variant: "success", size: "sm" }), ui.surface.state.hover.shadowMd)} onClick={on_export} type="button">
-												<Download className={ui.iconNude.lg} />
-												<span>
-													<Renderer.Copy.InlineText text={SourcesCopy.downloadLabel} keyPrefix={`${plays_key_prefix}-sources-download`} />
-												</span>
-											</Button>
+														{brand_content.body ? (
+															<p className={cn(ui.margin.topSm, "leading-relaxed text-muted-foreground", ui.typography.body)}>
+																{render_spend_text(brand_content.body, `${plays_key_prefix}-spend-brand-${spend_view}`)}
+															</p>
+														) : null}
+
+														<PbBulletList className={ui.margin.topSm} items={brand_content.bullets.map((b) => b.text)} renderItem={(text) => render_spend_bullet(text)} />
+													</PbCardLayer>
+												</PbTabPanel>
+											) : null}
+
+											{perf_pillar ? (
+												<PbTabPanel className="relative flex h-full flex-col overflow-hidden">
+													<PbCardGlow className={ui.glow.purple} />
+													<PbCardLayer>
+														<div className={cn("flex items-start", ui.gap.sm)}>
+															<Renderer.Spend.Pill id="performance" className={cn("px-4 py-2", ui.typography.title.md)} />
+														</div>
+
+														{perf_content.body ? (
+															<p className={cn(ui.margin.topSm, "leading-relaxed text-muted-foreground", ui.typography.body)}>
+																{render_spend_text(perf_content.body, `${plays_key_prefix}-spend-performance-${spend_view}`)}
+															</p>
+														) : null}
+
+														<PbBulletList className={ui.margin.topSm} items={perf_content.bullets.map((b) => b.text)} renderItem={(text) => render_spend_bullet(text)} />
+													</PbCardLayer>
+												</PbTabPanel>
+											) : null}
 										</div>
-									}
-								/>
+									</motion.div>
 
-								<PbCardContent>
-									<div className={cn(ui.radius.base, ui.surface.structure.border, ui.surface.structure.shadowNone, "bg-background overflow-hidden")}>
-										<Table headerTone="indigo" stickyHeader groupedDividers containerClassName="max-h-[520px] overflow-auto" className="w-full table-fixed">
-											<colgroup>
-												<col className="w-[15%]" />
-												<col className="w-[15%]" />
-												<col className="w-[15%]" />
-												<col className="w-[55%]" />
-											</colgroup>
+									<p className={cn("text-muted-foreground", ui.typography.caption)}>{render_spend_text(SpendCopy.footer, `${plays_key_prefix}-spend-footer`)}</p>
+								</div>
+							</PbCardContent>
+						</PbCardLayer>
+					</PbTabCard>
+				</PbReveal>
 
-											<TableHeader>
-												<TableRow>
-													<TableHead className="whitespace-normal break-words">
-														<MetricHeaderInline metric_id="source_l1" />
-													</TableHead>
-													<TableHead className="whitespace-normal break-words">
-														<MetricHeaderInline metric_id="source_l2" />
-													</TableHead>
-													<TableHead className="whitespace-normal break-words">
-														<MetricHeaderInline metric_id="source_l3" />
-													</TableHead>
-
-													<TableHead className={cn("whitespace-normal break-words", cell_inset)}>
-														<FieldDropdown
-															value={field_id}
-															pendingVariantFor={pending_variant_for}
-															onSelectField={on_field_change}
-															onStartVariantSelection={on_variant_selection_start}
-															onSelectVariant={on_variant_select}
-															onMenuOpenChange={on_field_dropdown_open_change}
-															segment={segment}
-														/>
-													</TableHead>
-												</TableRow>
-											</TableHeader>
-
-											<TableBody>
-												{display_rows.map((r) => (
-													<TableRow key={`${r.raw.source_l1}__${r.raw.source_l2}__${r.raw.source_l3}`} divider={r.divider}>
-														<TableCell className={table_cell_class} muted={r.repeatMuted?.[0]}>
-															<span className={table_text_class}>{r.source_l1}</span>
-														</TableCell>
-														<TableCell className={table_cell_class} muted={r.repeatMuted?.[1]}>
-															<span className={table_text_class}>{r.source_l2}</span>
-														</TableCell>
-														<TableCell className={table_cell_class} muted={r.repeatMuted?.[2]}>
-															<span className={table_text_class}>{r.source_l3}</span>
-														</TableCell>
-														<TableCell className={cn(table_cell_class, "pr-3")}>
-															<div className={table_text_class}>
-																<FourthCell segment={segment} row={r.raw} id={field_id} scale={scale} />
-															</div>
-														</TableCell>
-													</TableRow>
-												))}
-											</TableBody>
-										</Table>
+				<PbReveal className="w-full" data-search-target="sources-card">
+					<PbTabCard hover>
+						<PbCardGlow className={ui.glow.blue} />
+						<PbCardLayer>
+							<PbCardHeader
+								className="flex-col items-stretch sm:flex-row sm:items-start"
+								title={
+									<span className={ui.typography.title.lg}>
+										<Renderer.Copy.InlineText text={SourcesCopy.title} keyPrefix={`${plays_key_prefix}-sources-title`} />
+									</span>
+								}
+								description={
+									<PbSubtleText size="body">
+										<Renderer.Copy.InlineText text={SourcesCopy.body} keyPrefix={`${plays_key_prefix}-sources-desc`} />
+									</PbSubtleText>
+								}
+								action={
+									<div className={cn("flex flex-wrap items-center justify-start", ui.gap.sm)}>
+										<Button className={cn(buttonVariants({ variant: "success", size: "sm" }), ui.surface.state.hover.shadowMd)} onClick={on_export} type="button">
+											<Download className={ui.iconNude.lg} />
+											<span>
+												<Renderer.Copy.InlineText text={SourcesCopy.downloadLabel} keyPrefix={`${plays_key_prefix}-sources-download`} />
+											</span>
+										</Button>
 									</div>
+								}
+							/>
 
-									<p className={cn(ui.margin.topMd, "text-muted-foreground", ui.typography.caption)}>
-										<Renderer.Copy.InlineText text={SourcesCopy.footer} keyPrefix={`${plays_key_prefix}-sources-footer`} />
-									</p>
-								</PbCardContent>
-							</PbCardLayer>
-						</PbCard>
-					</PbReveal>
-				</PbFocus>
-			</div>
+							<PbCardContent>
+								<div className={cn(ui.radius.base, ui.surface.structure.border, ui.surface.structure.shadowNone, "bg-background overflow-hidden")}>
+									<Table headerTone="indigo" stickyHeader groupedDividers containerClassName="max-h-[520px] overflow-auto" className="w-full table-fixed">
+										<colgroup>
+											<col className="w-[15%]" />
+											<col className="w-[15%]" />
+											<col className="w-[15%]" />
+											<col className="w-[55%]" />
+										</colgroup>
+
+										<TableHeader>
+											<TableRow>
+												<TableHead className="whitespace-normal break-words">
+													<MetricHeaderInline metric_id="source_l1" />
+												</TableHead>
+												<TableHead className="whitespace-normal break-words">
+													<MetricHeaderInline metric_id="source_l2" />
+												</TableHead>
+												<TableHead className="whitespace-normal break-words">
+													<MetricHeaderInline metric_id="source_l3" />
+												</TableHead>
+
+												<TableHead className={cn("whitespace-normal break-words", cell_inset)}>
+													<FieldDropdown
+														value={field_id}
+														pendingVariantFor={pending_variant_for}
+														onSelectField={on_field_change}
+														onStartVariantSelection={on_variant_selection_start}
+														onSelectVariant={on_variant_select}
+														onMenuOpenChange={on_field_dropdown_open_change}
+														segment={segment}
+													/>
+												</TableHead>
+											</TableRow>
+										</TableHeader>
+
+										<TableBody>
+											{display_rows.map((r) => (
+												<TableRow key={`${r.raw.source_l1}__${r.raw.source_l2}__${r.raw.source_l3}`} divider={r.divider}>
+													<TableCell className={table_cell_class} muted={r.repeatMuted?.[0]}>
+														<span className={table_text_class}>{r.source_l1}</span>
+													</TableCell>
+													<TableCell className={table_cell_class} muted={r.repeatMuted?.[1]}>
+														<span className={table_text_class}>{r.source_l2}</span>
+													</TableCell>
+													<TableCell className={table_cell_class} muted={r.repeatMuted?.[2]}>
+														<span className={table_text_class}>{r.source_l3}</span>
+													</TableCell>
+													<TableCell className={cn(table_cell_class, "pr-3")}>
+														<div className={table_text_class}>
+															<FourthCell segment={segment} row={r.raw} id={field_id} scale={scale} />
+														</div>
+													</TableCell>
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
+								</div>
+
+								<p className={cn(ui.margin.topMd, "text-muted-foreground", ui.typography.caption)}>
+									<Renderer.Copy.InlineText text={SourcesCopy.footer} keyPrefix={`${plays_key_prefix}-sources-footer`} />
+								</p>
+							</PbCardContent>
+						</PbCardLayer>
+					</PbTabCard>
+				</PbReveal>
+			</PbTabShell>
 		</Renderer.Provider>
 	)
 }

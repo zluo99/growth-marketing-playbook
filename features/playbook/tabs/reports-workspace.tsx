@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { LoaderCardSkeleton } from "@/features/playbook/components/ui/loader"
-import { PbCard, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbFocus, PbMetricList, PbNumberBadge, PbReveal, PbSubtleText, PbTabIntro, PbTabPanel, createUnknownMetricLogger, useLazyGate } from "@/features/playbook/components/ui/ui"
+import { PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbMetricList, PbNumberBadge, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell, createUnknownMetricLogger, useLazyGate } from "@/features/playbook/components/ui/ui"
 import { usePbTabsNav } from "@/features/playbook/components/context/context"
 import { SheetsCopy, SlidesCopy, WorkspaceUiCopy } from "@/features/playbook/copy/reports-workspace-google"
 import { ExampleCopy as WorkspaceExample } from "@/features/playbook/copy/reports-workspace-example"
@@ -61,7 +61,7 @@ function EmbedCard({
 	const Icon = workspace_icon_map[id]
 	return (
 		<PbReveal className="w-full" data-search-target={`workspace-${id}`}>
-			<PbCard hover className={ui.surface.structure.shadowNone}>
+			<PbTabCard hover>
 				<PbCardHeader
 					title={
 						<span className={cn("inline-flex items-center", ui.gap.sm)}>
@@ -105,7 +105,7 @@ function EmbedCard({
 					</div>
 
 				</PbCardContent>
-			</PbCard>
+			</PbTabCard>
 		</PbReveal>
 	)
 }
@@ -186,9 +186,14 @@ export default function TabReportsWorkspace() {
 
 	if (!rendered) {
 		return (
-			<div ref={workspace_visibility_ref} className={cn("flex flex-col", ui.gap.lg)} data-search-target="tab:reports-workspace">
-				<PbTabIntro alias={tab.alias} description={tab.description} keyPrefix={`${reports_workspace_key_prefix}-intro`} />
-
+			<PbTabShell
+				ref={workspace_visibility_ref}
+				tabId="reports-workspace"
+				alias={tab.alias}
+				description={tab.description}
+				keyPrefix={`${reports_workspace_key_prefix}-intro`}
+				focus={false}
+			>
 				<PreloadIframes
 					sheetsSrc={SheetsCopy.embedUrl}
 					slidesSrc={SlidesCopy.embedUrl}
@@ -198,19 +203,22 @@ export default function TabReportsWorkspace() {
 				/>
 
 				<LoaderCardSkeleton />
-			</div>
+			</PbTabShell>
 		)
 	}
 
 	return (
-		<div ref={workspace_visibility_ref} className={cn("flex flex-col", ui.gap.lg)} data-search-target="tab:reports-workspace">
-			<PbTabIntro alias={tab.alias} description={tab.description} keyPrefix={`${reports_workspace_key_prefix}-intro`} />
-
-			<PbFocus className={cn("flex flex-col", ui.gap.lg)}>
-				<EmbedCard id="sheets" copy={SheetsCopy} height={ui.size.layout.lg} onTabClick={goToTab} />
-				<EmbedCard id="slides" copy={SlidesCopy} height={ui.size.layout.md} onTabClick={goToTab} />
-				<PbReveal className="w-full" data-search-target="workspace-example">
-					<PbCard hover className={cn("relative overflow-hidden", ui.surface.structure.shadowNone)}>
+		<PbTabShell
+			ref={workspace_visibility_ref}
+			tabId="reports-workspace"
+			alias={tab.alias}
+			description={tab.description}
+			keyPrefix={`${reports_workspace_key_prefix}-intro`}
+		>
+			<EmbedCard id="sheets" copy={SheetsCopy} height={ui.size.layout.lg} onTabClick={goToTab} />
+			<EmbedCard id="slides" copy={SlidesCopy} height={ui.size.layout.md} onTabClick={goToTab} />
+			<PbReveal className="w-full" data-search-target="workspace-example">
+				<PbTabCard hover>
 					<PbCardGlow className={ui.glow.yellow} />
 					<PbCardLayer>
 						<PbCardHeader
@@ -270,9 +278,8 @@ export default function TabReportsWorkspace() {
 
 						</PbCardContent>
 					</PbCardLayer>
-				</PbCard>
+				</PbTabCard>
 			</PbReveal>
-			</PbFocus>
-		</div>
+		</PbTabShell>
 	)
 }

@@ -206,7 +206,7 @@ export const TermDefinitions = [
   {
     id: "source_description",
     alias: "Source Description",
-    description: "Plain-English definitions of attribution sources used for reporting and rollups",
+    description: "Descriptions of attribution sources used for reporting and rollups",
   },
   {
     id: "data",

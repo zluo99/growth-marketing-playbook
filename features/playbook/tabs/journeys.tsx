@@ -14,18 +14,18 @@ import { cn } from "@/lib/utils"
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { CodeBlock } from "@/features/playbook/components/ui/code"
 import {
-	PbCard,
+	PbBulletList,
 	PbCardContent,
 	PbCardGlow,
 	PbCardHeader,
 	PbCardLayer,
-	PbFocus,
 	PbMetricList,
 	PbNumberBadge,
 	PbReveal,
 	PbSubtleText,
-	PbTabIntro,
+	PbTabCard,
 	PbTabPanel,
+	PbTabShell,
 	createUnknownMetricLogger,
 } from "@/features/playbook/components/ui/ui"
 import { AnalysisCopy, type AnalysisDiagram, type AnalysisPanel } from "@/features/playbook/copy/journeys-analysis"
@@ -226,13 +226,15 @@ function AnalysisStepOneBlock({
 			</div>
 
 			{rules.length ? (
-				<ul className={cn(ui.margin.topXs, "list-disc pl-5 text-muted-foreground", ui.typography.caption)}>
-					{rules.map((rule, idx) => (
-						<li key={`analysis-step1-rule-${idx}`}>
-							<Renderer.Copy.InlineText text={rule} keyPrefix={`${journeys_key_prefix}-step1-rule-${idx}`} onUnknownToken={onUnknownToken} />
-						</li>
-					))}
-				</ul>
+				<PbBulletList
+					className={ui.margin.topXs}
+					items={rules}
+					size="caption"
+					tone="muted"
+					keyPrefix={(_, idx) => `${journeys_key_prefix}-step1-rule-${idx}`}
+					getKey={(_, idx) => `analysis-step1-rule-${idx}`}
+					onUnknownToken={onUnknownToken}
+				/>
 			) : null}
 
 			<div className={cn(ui.margin.topMd, "min-w-0")}>
@@ -312,13 +314,15 @@ function AnalysisStepTwoBlock({
 			</div>
 
 			{rules.length ? (
-				<ul className={cn(ui.margin.topXs, "list-disc pl-5 text-muted-foreground", ui.typography.caption)}>
-					{rules.map((rule, idx) => (
-						<li key={`analysis-step2-rule-${idx}`}>
-							<Renderer.Copy.InlineText text={rule} keyPrefix={`${journeys_key_prefix}-step2-rule-${idx}`} onUnknownToken={onUnknownToken} />
-						</li>
-					))}
-				</ul>
+				<PbBulletList
+					className={ui.margin.topXs}
+					items={rules}
+					size="caption"
+					tone="muted"
+					keyPrefix={(_, idx) => `${journeys_key_prefix}-step2-rule-${idx}`}
+					getKey={(_, idx) => `analysis-step2-rule-${idx}`}
+					onUnknownToken={onUnknownToken}
+				/>
 			) : null}
 
 			<div className={cn(ui.margin.topMd, "min-w-0")}>
@@ -390,13 +394,15 @@ function AnalysisStepThreeBlock({
 			</div>
 
 			{rules.length ? (
-				<ul className={cn(ui.margin.topSm, "list-disc pl-5 text-foreground", ui.typography.body)}>
-					{rules.map((rule, idx) => (
-						<li key={`analysis-step3-rule-${idx}`}>
-							<Renderer.Copy.InlineText text={rule} keyPrefix={`${journeys_key_prefix}-step3-rule-${idx}`} onUnknownToken={onUnknownToken} />
-						</li>
-					))}
-				</ul>
+				<PbBulletList
+					className={ui.margin.topSm}
+					items={rules}
+					size="body"
+					tone="default"
+					keyPrefix={(_, idx) => `${journeys_key_prefix}-step3-rule-${idx}`}
+					getKey={(_, idx) => `analysis-step3-rule-${idx}`}
+					onUnknownToken={onUnknownToken}
+				/>
 			) : null}
 		</PbTabPanel>
 	)
@@ -414,12 +420,9 @@ export default function TabJourneys() {
 	const analysis_panel = AnalysisCopy.panels[2]
 
 	return (
-		<div className={cn("flex flex-col", ui.gap.lg)} data-search-target="tab:journeys">
-			<PbTabIntro alias={tab.alias} description={tab.description} keyPrefix={`${journeys_key_prefix}-intro`} />
-
-			<PbFocus className={cn("flex flex-col", ui.gap.lg)}>
-				<PbReveal className="w-full" data-search-target="problem-card">
-				<PbCard hover className={ui.surface.structure.shadowNone}>
+		<PbTabShell tabId="journeys" alias={tab.alias} description={tab.description} keyPrefix={`${journeys_key_prefix}-intro`}>
+			<PbReveal className="w-full" data-search-target="problem-card">
+				<PbTabCard hover>
 					<PbCardHeader
 						title={
 							<span className={cn(ui.typography.title.lg, ui.margin.allNone)}>
@@ -448,11 +451,11 @@ export default function TabJourneys() {
 							))}
 						</div>
 					</PbCardContent>
-				</PbCard>
+				</PbTabCard>
 			</PbReveal>
 
 			<PbReveal className="w-full" data-search-target="analysis-card">
-				<PbCard hover className={ui.surface.structure.shadowNone}>
+				<PbTabCard hover>
 					<PbCardHeader
 						title={
 							<span className={cn(ui.typography.title.lg, ui.margin.allNone)}>
@@ -482,11 +485,11 @@ export default function TabJourneys() {
 							</p>
 						) : null}
 					</PbCardContent>
-				</PbCard>
+				</PbTabCard>
 			</PbReveal>
 
 			<PbReveal className="w-full">
-				<PbCard hover className={cn("relative overflow-hidden", ui.surface.structure.shadowNone)}>
+				<PbTabCard hover>
 					<PbCardGlow className={ui.glow.green} />
 
 					<PbCardLayer>
@@ -518,9 +521,8 @@ export default function TabJourneys() {
 							</div>
 						</PbCardContent>
 					</PbCardLayer>
-				</PbCard>
+				</PbTabCard>
 			</PbReveal>
-		</PbFocus>
-		</div>
+		</PbTabShell>
 	)
 }
