@@ -8,8 +8,6 @@ export type AnalysisPanel = {
 }
 
 export type AnalysisDiagram = {
-	title: string
-	body: string
 	prospect_id: string
 	objects: readonly {
 		object_id: string
@@ -18,7 +16,6 @@ export type AnalysisDiagram = {
 	touches: readonly {
 		touch_id: string
 		object_id: string
-		touch_type: string
 	}[]
 }
 
@@ -35,7 +32,7 @@ export type AnalysisCard = {
 
 export const AnalysisCopy: AnalysisCard = {
 	title: "Journey analysis",
-	body: "Build `mta` in sequence: stabilize `object_model`, stabilize `touch_model`, then analyze one `object_touch_model` base.",
+	body: "Build `mta` in sequence. Stabilize `object_model`, stabilize `touch_model`, then analyze one `object_touch_model` base.",
 
 	panels: [
 		{
@@ -68,8 +65,6 @@ export const AnalysisCopy: AnalysisCard = {
 	],
 
 	diagram: {
-		title: "Object-touch diagram",
-		body: "One `prospect_id` maps to many `object_id` values, and each `touch_id` maps to one `object_id`.",
 		prospect_id: "deal-044",
 		objects: [
 			{ object_id: "L-991", object_type: "lead" },
@@ -77,9 +72,9 @@ export const AnalysisCopy: AnalysisCard = {
 			{ object_id: "D-044", object_type: "deal" },
 		],
 		touches: [
-			{ touch_id: "touch-formsubmit-100", object_id: "L-991", touch_type: "form_submit" },
-			{ touch_id: "touch-meeting-245", object_id: "L-991", touch_type: "meeting" },
-			{ touch_id: "touch-emailreply-389", object_id: "O-203", touch_type: "email_reply" },
+			{ touch_id: "touch-formsubmit-100", object_id: "L-991" },
+			{ touch_id: "touch-meeting-245", object_id: "L-991" },
+			{ touch_id: "touch-emailreply-389", object_id: "O-203" },
 		],
 	},
 

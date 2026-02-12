@@ -499,11 +499,11 @@ function TypicalFunnel() {
 	return (
 		<div className={cn("flex flex-col", ui.gap.sm)}>
 			<div className={cn("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5", ui.gap.sm)}>
-				{FunnelCopy.panels.map((s) => (
+				{FunnelCopy.panels.map((s, idx) => (
 					<FunnelStagePanel
 						key={s.id}
 						title={s.title}
-						stage_n={Number(s.id) as 1 | 2 | 3 | 4 | 5}
+						stage_n={(idx + 1) as 1 | 2 | 3 | 4 | 5}
 						body={<StageBody body={s.body} />}
 						metrics={<FunnelMetricPills metrics={s.common_metrics as readonly unknown[] | undefined} />}
 						extra={s.note ? <FunnelNotePills alias={s.note.title} items={s.note.items as readonly unknown[]} /> : null}

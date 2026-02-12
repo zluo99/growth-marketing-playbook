@@ -15,11 +15,11 @@ export const RButton = {
 
 export const RCode: RCode = {
 	title: "R snippet",
-	body: "Turn one CSV into decision-ready journey insights with canonical fields: `prospect_id`, `journey_path`, `is_converted`, `touch_count`, and optional `source_l2`.",
+	body: "Turn one CSV into decision-ready journey insights with `prospect_id`, `journey_path`, `is_converted`, `touch_count`, and optional `source_l2`.",
 	bullets: [
-		"Normalize incoming columns once, then materialize one journey base aligned to `object_touch_model` before analysis.",
-		"Score journey leverage with `markov_model` and `removal_effect` on reduced `journey_path` values from that same base.",
-		"Ship simple guardrails next to model output: top `journey_path` volume, `cvr` by `touch_count`, and a `source_l2` cut at the `prospect_id` level.",
+		"Normalize columns once, then materialize one journey base aligned to `object_touch_model`.",
+		"Score leverage with `markov_model` and `removal_effect` on reduced `journey_path` values.",
+		"Ship guardrails next to output: top `journey_path` volume, `cvr` by `touch_count`, and a `source_l2` cut at `prospect_id`.",
 	],
 } as const
 

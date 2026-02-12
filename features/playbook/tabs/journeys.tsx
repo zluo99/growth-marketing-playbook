@@ -207,12 +207,10 @@ function AnalysisStepOneBlock({
 		return `${object.object_type.toLowerCase()}-${suffix}`
 	}, [])
 
-	const section_label_class = cn("uppercase tracking-[0.08em] text-foreground", ui.typography.caption)
-	const rule_primary = panel.bullets[0]
-	const rule_secondary = panel.bullets[1]
+	const rules = panel.bullets.filter(Boolean)
 
 	return (
-		<PbTabPanel className="overflow-hidden" data-search-target="analysis-step-1">
+		<PbTabPanel className="h-full overflow-hidden" data-search-target="analysis-step-1">
 			<div className={cn("flex items-start justify-between", ui.gap.sm)}>
 				<div className="min-w-0">
 					<div className={cn("text-foreground", ui.typography.title.md)}>
@@ -227,28 +225,19 @@ function AnalysisStepOneBlock({
 				<PbNumberBadge number="Step 1" className="min-w-[68px] px-2.5" ariaLabel={AnalysisCopy.ui.analysisItemLabel.replace("{n}", "1")} />
 			</div>
 
-			{rule_primary ? (
-				<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.caption)}>
-					<Renderer.Copy.InlineText text={rule_primary} keyPrefix={`${journeys_key_prefix}-step1-rule-primary`} onUnknownToken={onUnknownToken} />
-				</p>
-			) : null}
-
-			{rule_secondary ? (
-				<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.caption)}>
-					<Renderer.Copy.InlineText text={rule_secondary} keyPrefix={`${journeys_key_prefix}-step1-rule-secondary`} onUnknownToken={onUnknownToken} />
-				</p>
+			{rules.length ? (
+				<ul className={cn(ui.margin.topXs, "list-disc pl-5 text-muted-foreground", ui.typography.caption)}>
+					{rules.map((rule, idx) => (
+						<li key={`analysis-step1-rule-${idx}`}>
+							<Renderer.Copy.InlineText text={rule} keyPrefix={`${journeys_key_prefix}-step1-rule-${idx}`} onUnknownToken={onUnknownToken} />
+						</li>
+					))}
+				</ul>
 			) : null}
 
 			<div className={cn(ui.margin.topMd, "min-w-0")}>
-				<div className="hidden min-w-0 lg:grid lg:grid-cols-[minmax(0,0.34fr)_minmax(24px,0.08fr)_minmax(0,0.58fr)] lg:items-end lg:gap-2">
-					<div className={section_label_class}>Prospect anchor</div>
-					<div />
-					<div className={section_label_class}>Objects linked to this prospect</div>
-				</div>
-
 				<div className={cn(ui.margin.topXs, "grid min-w-0 gap-2 lg:grid-cols-[minmax(0,0.34fr)_minmax(24px,0.08fr)_minmax(0,0.58fr)] lg:items-center")}>
 					<div className="min-w-0">
-						<div className={cn(section_label_class, "lg:hidden")}>Prospect anchor</div>
 						<div className={cn(ui.margin.topXs, "min-w-0 rounded-[var(--radius-control)] border border-[color:var(--border)] bg-background px-2 py-1.5")}>
 							<div className={cn("flex flex-wrap items-center", ui.gap.sm)}>
 								<Renderer.Metrics.AttributePill id="prospect_id" />
@@ -260,7 +249,6 @@ function AnalysisStepOneBlock({
 					<AnalysisLinkBridge active className="lg:min-h-[44px]" />
 
 					<div className="min-w-0">
-						<div className={cn(section_label_class, "lg:hidden")}>Objects linked to this prospect</div>
 						<div className={cn(ui.margin.topXs, "min-w-0 overflow-hidden rounded-[var(--radius-control)] border border-[color:var(--border)] bg-background")}>
 							{diagram.objects.map((object, idx) => (
 								<div key={`analysis-step1-object-${object.object_id}`} className={cn("min-w-0 px-2 py-2", idx > 0 ? "border-t border-[color:var(--border)]/70" : null)}>
@@ -305,12 +293,10 @@ function AnalysisStepTwoBlock({
 		return `${object.object_type.toLowerCase()}-${suffix}`
 	}, [])
 
-	const section_label_class = cn("uppercase tracking-[0.08em] text-foreground", ui.typography.caption)
-	const rule_primary = panel.bullets[0]
-	const rule_secondary = panel.bullets[1]
+	const rules = panel.bullets.filter(Boolean)
 
 	return (
-		<PbTabPanel className="overflow-hidden" data-search-target="analysis-step-2">
+		<PbTabPanel className="h-full overflow-hidden" data-search-target="analysis-step-2">
 			<div className={cn("flex items-start justify-between", ui.gap.sm)}>
 				<div className="min-w-0">
 					<div className={cn("text-foreground", ui.typography.title.md)}>
@@ -325,30 +311,21 @@ function AnalysisStepTwoBlock({
 				<PbNumberBadge number="Step 2" className="min-w-[68px] px-2.5" ariaLabel={AnalysisCopy.ui.analysisItemLabel.replace("{n}", "2")} />
 			</div>
 
-			{rule_primary ? (
-				<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.caption)}>
-					<Renderer.Copy.InlineText text={rule_primary} keyPrefix={`${journeys_key_prefix}-step2-rule-primary`} onUnknownToken={onUnknownToken} />
-				</p>
-			) : null}
-
-			{rule_secondary ? (
-				<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.caption)}>
-					<Renderer.Copy.InlineText text={rule_secondary} keyPrefix={`${journeys_key_prefix}-step2-rule-secondary`} onUnknownToken={onUnknownToken} />
-				</p>
+			{rules.length ? (
+				<ul className={cn(ui.margin.topXs, "list-disc pl-5 text-muted-foreground", ui.typography.caption)}>
+					{rules.map((rule, idx) => (
+						<li key={`analysis-step2-rule-${idx}`}>
+							<Renderer.Copy.InlineText text={rule} keyPrefix={`${journeys_key_prefix}-step2-rule-${idx}`} onUnknownToken={onUnknownToken} />
+						</li>
+					))}
+				</ul>
 			) : null}
 
 			<div className={cn(ui.margin.topMd, "min-w-0")}>
-				<div className="hidden min-w-0 lg:grid lg:grid-cols-[minmax(0,0.34fr)_minmax(24px,0.08fr)_minmax(0,0.58fr)] lg:items-end lg:gap-2">
-					<div className={section_label_class}>Object anchors</div>
-					<div />
-					<div className={section_label_class}>Touches linked by object</div>
-				</div>
-
 				<div className={cn(ui.margin.topXs, "flex min-w-0 flex-col", ui.gap.sm)}>
 					{rows.map((row) => (
 						<div key={`analysis-touch-linkage-${row.object.object_id}`} className="grid min-w-0 gap-2 lg:grid-cols-[minmax(0,0.34fr)_minmax(24px,0.08fr)_minmax(0,0.58fr)] lg:items-center">
 							<div className="min-w-0">
-								<div className={cn(section_label_class, "lg:hidden")}>Object anchor</div>
 								<div className={cn(ui.margin.topXs, "min-w-0 rounded-[var(--radius-control)] border border-[color:var(--border)] bg-background px-2 py-2")}>
 									<div className={cn("flex flex-wrap items-center", ui.gap.sm)}>
 										<Renderer.Metrics.AttributePill id="object_id" />
@@ -360,7 +337,6 @@ function AnalysisStepTwoBlock({
 							<AnalysisLinkBridge active={row.touches.length > 0} />
 
 							<div className="min-w-0">
-								<div className={cn(section_label_class, "lg:hidden")}>Touches</div>
 								<div className={cn(ui.margin.topXs, "min-w-0")}>
 									{row.touches.length ? (
 										<div className={cn("min-w-0 overflow-hidden rounded-[var(--radius-control)] border border-[color:var(--border)] bg-background")}>
@@ -395,6 +371,8 @@ function AnalysisStepThreeBlock({
 	panel: AnalysisPanel
 	onUnknownToken: (token: string) => React.ReactNode
 }) {
+	const rules = panel.bullets.filter(Boolean)
+
 	return (
 		<PbTabPanel className="overflow-hidden" data-search-target="analysis-step-3">
 			<div className={cn("flex items-start justify-between", ui.gap.sm)}>
@@ -411,9 +389,15 @@ function AnalysisStepThreeBlock({
 				<PbNumberBadge number="Step 3" className="min-w-[68px] px-2.5" ariaLabel={AnalysisCopy.ui.analysisItemLabel.replace("{n}", "3")} />
 			</div>
 
-			<div className={cn(ui.margin.topSm, "min-w-0")}>
-				<PbMetricList items={panel.bullets} size="body" onUnknownToken={onUnknownToken} />
-			</div>
+			{rules.length ? (
+				<ul className={cn(ui.margin.topSm, "list-disc pl-5 text-foreground", ui.typography.body)}>
+					{rules.map((rule, idx) => (
+						<li key={`analysis-step3-rule-${idx}`}>
+							<Renderer.Copy.InlineText text={rule} keyPrefix={`${journeys_key_prefix}-step3-rule-${idx}`} onUnknownToken={onUnknownToken} />
+						</li>
+					))}
+				</ul>
+			) : null}
 		</PbTabPanel>
 	)
 }
@@ -483,9 +467,12 @@ export default function TabJourneys() {
 					/>
 
 					<PbCardContent className={cn("flex flex-col", ui.gap.sm)}>
-						{objects_panel ? <AnalysisStepOneBlock diagram={AnalysisCopy.diagram} panel={objects_panel} onUnknownToken={warn_unknown_metric} /> : null}
-
-						{touches_panel ? <AnalysisStepTwoBlock diagram={AnalysisCopy.diagram} panel={touches_panel} onUnknownToken={warn_unknown_metric} /> : null}
+						{objects_panel || touches_panel ? (
+							<div className={cn("grid items-stretch", ui.gap.sm, "lg:grid-cols-2")}>
+								{objects_panel ? <AnalysisStepOneBlock diagram={AnalysisCopy.diagram} panel={objects_panel} onUnknownToken={warn_unknown_metric} /> : null}
+								{touches_panel ? <AnalysisStepTwoBlock diagram={AnalysisCopy.diagram} panel={touches_panel} onUnknownToken={warn_unknown_metric} /> : null}
+							</div>
+						) : null}
 
 						{analysis_panel ? <AnalysisStepThreeBlock panel={analysis_panel} onUnknownToken={warn_unknown_metric} /> : null}
 

@@ -18,7 +18,7 @@ export type ExampleCopy = {
 
 export const ExampleCopy: ExampleCopy = {
 	title: "Example Report: Direct Mail",
-	body: "Connect sends to `arr`, then validate lift with `incremental_lift_arr`. Here's an example layout to drive decisions:",
+	body: "Connect sends to `arr`, then validate lift with `incremental_lift_arr`. Example layout for decision-ready reporting:",
 	ui: {
 		exampleItemLabel: "Workspace example item {n}",
 	},
@@ -26,9 +26,9 @@ export const ExampleCopy: ExampleCopy = {
 		{
 			id: "1",
 			title: "Funnel impact",
-			subtitle: "Display the funnel as number tiles.",
+			subtitle: "Show the funnel as number tiles.",
 			bullets: [
-				"Trend `mail_sends` over time.",
+				"Trend `mail_sends`.",
 				"Overlay cohort outcomes: `leads`, `deals_from_leads`, `arr_from_leads`.",
 				"Layer conversion rates: `lead_to_opp_cvr`, `opp_to_deal_cvr`, `cvr`.",
 			],
@@ -36,7 +36,7 @@ export const ExampleCopy: ExampleCopy = {
 		{
 			id: "2",
 			title: "Financial impact",
-			subtitle: "Drill-down to add colour.",
+			subtitle: "Drill down for context.",
 			bullets: [
 				"Efficiency: `total_spend`, `roas`, `cost_per_deal`, `cac`, `payback`.",
 				"Health: `opportunities`, `sales_cycle_time`.",
@@ -45,7 +45,7 @@ export const ExampleCopy: ExampleCopy = {
 		{
 			id: "3",
 			title: "Lift analysis",
-			subtitle: "The counterfactual matters.",
+			subtitle: "Counterfactual matters.",
 			bullets: [
 				"Use a `control_group`.",
 				"Report `incrementality`, not attribution.",
