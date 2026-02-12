@@ -5,9 +5,10 @@
 /* -------------------------------------------------------------------------- */
 
 import * as React from "react"
+import { motion } from "framer-motion"
 
 import { ui } from "@/components/tokens/design"
-import { useRafThrottle, useReducedMotionBool } from "@/components/tokens/motion"
+import { uiMotion, useRafThrottle, useReducedMotionBool } from "@/components/tokens/motion"
 import { cn } from "@/lib/utils"
 
 /* -------------------------------------------------------------------------- */
@@ -332,6 +333,10 @@ export function BarScrollButton({
 	controlsId,
 	className,
 	children,
+	onMouseEnter,
+	onMouseLeave,
+	onFocus,
+	onBlur,
 	...button_props
 }: {
 	dir: "left" | "right"
@@ -341,23 +346,111 @@ export function BarScrollButton({
 	className?: string
 	children?: React.ReactNode
 } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type" | "onClick" | "aria-label" | "aria-controls">) {
-	const points = dir === "left" ? "12,5 8,9 12,13" : "8,5 12,9 8,13"
+	const [hovered, set_hovered] = React.useState(false)
+
+	const on_mouse_enter = React.useCallback(
+		(event: React.MouseEvent<HTMLButtonElement>) => {
+			set_hovered(true)
+			onMouseEnter?.(event)
+		},
+		[onMouseEnter]
+	)
+
+	const on_mouse_leave = React.useCallback(
+		(event: React.MouseEvent<HTMLButtonElement>) => {
+			set_hovered(false)
+			onMouseLeave?.(event)
+		},
+		[onMouseLeave]
+	)
+
+	const on_focus = React.useCallback(
+		(event: React.FocusEvent<HTMLButtonElement>) => {
+			set_hovered(true)
+			onFocus?.(event)
+		},
+		[onFocus]
+	)
+
+	const on_blur = React.useCallback(
+		(event: React.FocusEvent<HTMLButtonElement>) => {
+			set_hovered(false)
+			onBlur?.(event)
+		},
+		[onBlur]
+	)
 
 	return (
 		<button
 			type="button"
 			onClick={onClick}
+			onMouseEnter={on_mouse_enter}
+			onMouseLeave={on_mouse_leave}
+			onFocus={on_focus}
+			onBlur={on_blur}
 			aria-label={ariaLabel}
 			aria-controls={controlsId}
 			className={cn(ui.nav.arrow.buttonChrome, "group", className)}
 			{...button_props}
 		>
 			{children ?? (
-				<svg className={ui.iconNude.sm} viewBox="0 0 20 20" fill="none" aria-hidden="true">
-					<polyline points={points} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-				</svg>
+				<BarMorphArrow dir={dir} hovered={hovered} />
 			)}
 		</button>
 	)
 }
+
+export const BarMorphArrow = React.memo(function BarMorphArrow({
+	dir,
+	hovered = false,
+	className,
+}: {
+	dir: "left" | "right"
+	hovered?: boolean
+	className?: string
+}) {
+	const reduce_motion = useReducedMotionBool()
+	const transition = React.useMemo(
+		() =>
+			reduce_motion
+				? { duration: 0 }
+				: { duration: uiMotion.tokens.durations.base, ease: uiMotion.tokens.easing.standard },
+		[reduce_motion]
+	)
+	const active = hovered
+
+	const tip = dir === "left" ? 8 : 16
+	const join_nudge = dir === "left" ? -0.5 : 0.5
+	const tail_length = 8
+	const head_points = dir === "left" ? "14,2 8,6 14,10" : "10,2 16,6 10,10"
+	const tail = dir === "left" ? { x1: tip, x2: tip + tail_length, shift: -2.5 } : { x1: tip, x2: tip - tail_length, shift: 2.5 }
+
+	return (
+		<span
+			className={cn(
+				"inline-flex h-3.5 w-7 items-center justify-center transition-colors duration-200 ease-out",
+				active ? ui.text.default.fg : ui.text.muted.fg,
+				className
+			)}
+		>
+			<svg viewBox="0 0 24 12" className="h-3.5 w-7" aria-hidden="true" focusable="false">
+				<motion.g animate={{ x: active ? tail.shift : 0 }} transition={transition}>
+					<polyline points={head_points} className="fill-none stroke-current stroke-[1.35]" strokeLinecap="round" strokeLinejoin="round" />
+				</motion.g>
+
+				<motion.line
+					x1={tail.x1 + join_nudge}
+					x2={active ? tail.x2 : tail.x1 + join_nudge}
+					y1={6}
+					y2={6}
+					className="stroke-current stroke-[1.35]"
+					strokeLinecap="round"
+					initial={false}
+					animate={{ x2: active ? tail.x2 : tail.x1 + join_nudge }}
+					transition={transition}
+				/>
+			</svg>
+		</span>
+	)
+})
 

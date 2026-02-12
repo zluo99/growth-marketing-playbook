@@ -7,10 +7,26 @@ export type AnalysisPanel = {
 	bullets: readonly string[]
 }
 
+export type AnalysisDiagram = {
+	title: string
+	body: string
+	prospect_id: string
+	objects: readonly {
+		object_id: string
+		object_type: string
+	}[]
+	touches: readonly {
+		touch_id: string
+		object_id: string
+		touch_type: string
+	}[]
+}
+
 export type AnalysisCard = {
 	title: string
 	body: string
 	panels: readonly AnalysisPanel[]
+	diagram: AnalysisDiagram
 	footer: string
 	ui: {
 		analysisItemLabel: string
@@ -19,44 +35,56 @@ export type AnalysisCard = {
 
 export const AnalysisCopy: AnalysisCard = {
 	title: "Journey analysis",
-	body: "How we build `mta`: `object_model`, `touch_model`, then `object_touch_model` for analysis:",
+	body: "Build `mta` in sequence: stabilize `object_model`, stabilize `touch_model`, then analyze one `object_touch_model` base.",
 
 	panels: [
 		{
 			id: "1",
 			title: "Unify objects",
-			body: "Build `object_model` first so identity and sourcing are stable.",
+			body: "Set one identity layer first.",
 			bullets: [
-				"Unify users, leads, accounts, opportunities, and rooftops into one journey-ready identity layer keyed by `prospect_id`.",
-				"Map many `object_id` records to each `prospect_id` so `identity_graph` is stable before attribution.",
-				"Standardize `source` from `utms`, lead source, and sales signals so channel definitions stay consistent.",
-				"Create consistent first-touch and last-touch baselines with clear lineage for `qa`.",
+				"Anchor the `identity_graph` on `prospect_id`, then map one-to-many `object_id` records (lead, opportunity, deal).",
+				"Standardize `source` and `utms` once in `object_model` so downstream cuts stay consistent.",
 			],
 		},
 		{
 			id: "2",
 			title: "Unify touches",
-			body: "Build `touch_model` with one ordered touch schema across systems.",
+			body: "Build one ordered touch stream.",
 			bullets: [
-				"Normalize tasks, meetings, email events, and pageviews into one ordered stream of touches.",
-				"Link each touch to the right entity, use one shared interaction taxonomy, and keep campaign/page context.",
-				"Define `attribution_window` rules before scoring so each `attribution_model` uses the same eligible touches.",
+				"Normalize tasks, meetings, emails, and pageviews into one `touch_model` keyed by `touch_id`.",
+				"Map each `touch_id` to one `object_id`, then inherit `prospect_id` through the object relationship.",
 			],
 		},
 		{
 			id: "3",
 			title: "Analyze from one model",
-			body: "Use `object_touch_model` to compare methods without data drift.",
+			body: "Compare models without drift.",
 			bullets: [
-				"Run first-touch, last-touch, decay, and `markov_model` on the same prospect-level `journey_path` values.",
-				"Measure leverage with `markov_model` `removal_effect`, path frequency, and `touch_count` patterns at the `prospect_id` level.",
-				"Slice by inbound/outbound mix, owner role, and `source_l2` to guide spend toward `arr` and `deals`.",
+				"Run first-touch, last-touch, decay, and `markov_model` from the same `object_touch_model` base.",
+				"Rank leverage with `removal_effect`, path frequency, and conversion by `touch_count`.",
 			],
 		},
 	],
 
+	diagram: {
+		title: "Object-touch diagram",
+		body: "One `prospect_id` maps to many `object_id` values, and each `touch_id` maps to one `object_id`.",
+		prospect_id: "deal-044",
+		objects: [
+			{ object_id: "L-991", object_type: "lead" },
+			{ object_id: "O-203", object_type: "opportunity" },
+			{ object_id: "D-044", object_type: "deal" },
+		],
+		touches: [
+			{ touch_id: "touch-formsubmit-100", object_id: "L-991", touch_type: "form_submit" },
+			{ touch_id: "touch-meeting-245", object_id: "L-991", touch_type: "meeting" },
+			{ touch_id: "touch-emailreply-389", object_id: "O-203", touch_type: "email_reply" },
+		],
+	},
+
 	footer: "If `object_model` or `touch_model` is unstable, pause. Stable inputs are required before `mta` comparisons.",
 	ui: {
-		analysisItemLabel: "Analysis item {n}",
+		analysisItemLabel: "Step {n}",
 	},
 } as const
