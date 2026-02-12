@@ -266,7 +266,7 @@
 
 	html {
 		overflow-x: clip;
-		overscroll-behavior-y: none;
+		overscroll-behavior-y: auto;
 		scrollbar-gutter: stable;
 		text-rendering: geometricPrecision;
 		-webkit-text-size-adjust: 100%;
@@ -284,7 +284,12 @@
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 		overflow-x: clip;
-		overscroll-behavior-y: none;
+		overscroll-behavior-y: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	:where(.overflow-auto, .overflow-x-auto, .overflow-y-auto, .overflow-scroll, .overflow-x-scroll, .overflow-y-scroll) {
+		-webkit-overflow-scrolling: touch;
 	}
 
 	::selection {
@@ -372,10 +377,11 @@
 
 .app-shell {
 	min-height: 100svh;
-	padding-top: var(--app-pad-y);
-	padding-right: var(--app-pad-x);
-	padding-left: var(--app-pad-x);
-	padding-bottom: 0;
+	min-height: 100dvh;
+	padding-top: max(var(--app-pad-y), env(safe-area-inset-top));
+	padding-right: max(var(--app-pad-x), env(safe-area-inset-right));
+	padding-left: max(var(--app-pad-x), env(safe-area-inset-left));
+	padding-bottom: env(safe-area-inset-bottom);
 }
 
 .app-container {
