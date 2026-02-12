@@ -15,7 +15,7 @@ import { ExampleCopy } from "@/features/playbook/copy/reports-workspace-example"
 import { SheetsCopy, SlidesCopy } from "@/features/playbook/copy/reports-workspace-google"
 
 import { MetricDefinitionList } from "@/features/playbook/definitions/metrics"
-import { FrameworkDefinitions, type Framework } from "@/features/playbook/definitions/frameworks"
+import { FrameworkDefinitions, type Framework } from "@/features/playbook/copy/frameworks"
 import { SpendDefinitions } from "@/features/playbook/definitions/spend"
 import { Sources } from "@/features/playbook/definitions/sources"
 import { PlaybookTabs, TabById } from "@/features/playbook/definitions/tabs"
