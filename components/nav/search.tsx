@@ -393,6 +393,7 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 	const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null)
 	const [catalog, setCatalog] = React.useState<Catalog | null>(null)
 	const [catalogStatus, setCatalogStatus] = React.useState<"idle" | "loading" | "ready" | "error">("idle")
+	const [isCoarsePointer, setIsCoarsePointer] = React.useState(false)
 
 	const input_ref = React.useRef<HTMLInputElement | null>(null)
 	const scroll_timeout_ref = React.useRef<number | null>(null)
@@ -403,6 +404,21 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 	const listbox_id = React.useId()
 
 	const normalized_query = query.trim().toLowerCase()
+
+	React.useEffect(() => {
+		if (typeof window === "undefined" || typeof window.matchMedia !== "function") return
+		const media = window.matchMedia("(hover: none), (pointer: coarse)")
+		const sync = () => setIsCoarsePointer(media.matches)
+		sync()
+
+		if (typeof media.addEventListener === "function") {
+			media.addEventListener("change", sync)
+			return () => media.removeEventListener("change", sync)
+		}
+
+		media.addListener(sync)
+		return () => media.removeListener(sync)
+	}, [])
 
 	const load_catalog = React.useCallback(async () => {
 		let should_run = true
@@ -744,6 +760,10 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 
 		if (event.key === "Enter") {
 			event.preventDefault()
+			if (isCoarsePointer) {
+				input_ref.current?.blur()
+				return
+			}
 			const target_index = cursor >= 0 ? cursor : 0
 			const entry = interactive_results[target_index]
 			if (entry) handle_select(entry)

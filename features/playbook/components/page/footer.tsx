@@ -85,7 +85,7 @@ function ThemesBar() {
 										value={opt.id}
 										ref={rail.getTriggerRef(opt.id as "light" | "system" | "dark")}
 										standard={false}
-										onPointerDown={() => rail.pill.measureRaf()}
+										onPressPreview={() => rail.pill.measureRaf()}
 										className={ui.nav.rail.iconTriggerChrome}
 									>
 										<span className="relative z-10 grid h-full w-full place-items-center">

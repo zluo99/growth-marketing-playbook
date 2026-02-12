@@ -80,6 +80,11 @@ export const uiMotion = {
 			stagger: 0.03,
 			revealDelay: 0.08,
 		},
+		dropdownTrigger: {
+			swap: { type: "tween", duration: durations.base, ease: easing.standard } satisfies Transition,
+			reduced: transitions.enterReduced,
+			distancePx: 10,
+		},
 	},
 	tabs: {
 		arrowTransition: transitions.arrow,

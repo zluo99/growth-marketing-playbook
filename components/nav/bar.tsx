@@ -39,6 +39,7 @@ export type BarProps = {
 export function Bar({ ariaLabel, variant = "chrome", className, children }: BarProps) {
 	const reduce_motion = useReducedMotionBool()
 	const scroller_ref = React.useRef<HTMLDivElement>(null)
+	const settle_raf_ref = React.useRef<number | null>(null)
 
 	type OverflowState = { canScrollLeft: boolean; canScrollRight: boolean }
 	const [state, setState] = React.useState<OverflowState>({ canScrollLeft: false, canScrollRight: false })
@@ -62,6 +63,49 @@ export function Bar({ ariaLabel, variant = "chrome", className, children }: BarP
 
 	const recompute_raf = useRafThrottle(recompute)
 
+	const cancel_settle_loop = React.useCallback(() => {
+		if (settle_raf_ref.current == null) return
+		cancelAnimationFrame(settle_raf_ref.current)
+		settle_raf_ref.current = null
+	}, [])
+
+	const settle_after_scroll = React.useCallback(
+		(target_left: number) => {
+			cancel_settle_loop()
+
+			let frames = 0
+			let last_left: number | null = null
+
+			const tick = () => {
+				const el = scroller_ref.current
+				if (!el) {
+					settle_raf_ref.current = null
+					return
+				}
+
+				recompute()
+				const left = el.scrollLeft
+				const near_target = Math.abs(left - target_left) <= 1
+				const stable = last_left == null ? false : Math.abs(left - last_left) <= 0.5
+				last_left = left
+				frames += 1
+
+				if ((near_target && stable) || frames >= 30) {
+					settle_raf_ref.current = null
+					recompute()
+					return
+				}
+
+				settle_raf_ref.current = requestAnimationFrame(tick)
+			}
+
+			settle_raf_ref.current = requestAnimationFrame(tick)
+		},
+		[cancel_settle_loop, recompute]
+	)
+
+	React.useEffect(() => cancel_settle_loop, [cancel_settle_loop])
+
 	React.useEffect(() => {
 		const el = scroller_ref.current
 		if (!el) return
@@ -71,11 +115,32 @@ export function Bar({ ariaLabel, variant = "chrome", className, children }: BarP
 
 		const ro = new ResizeObserver(() => recompute_raf())
 		ro.observe(el)
+		let observed_child: HTMLElement | null = null
+		const sync_child_observer = () => {
+			const next = el.firstElementChild instanceof HTMLElement ? el.firstElementChild : null
+			if (observed_child === next) return
+			if (observed_child) ro.unobserve(observed_child)
+			if (next) ro.observe(next)
+			observed_child = next
+		}
+		sync_child_observer()
+
+		const mo = new MutationObserver(() => {
+			sync_child_observer()
+			recompute_raf()
+		})
+		mo.observe(el, { childList: true })
+
+		const on_resize = () => recompute_raf()
+		window.addEventListener("resize", on_resize, { passive: true })
 
 		recompute()
 
 		return () => {
 			el.removeEventListener("scroll", on_scroll)
+			window.removeEventListener("resize", on_resize)
+			mo.disconnect()
+			if (observed_child) ro.unobserve(observed_child)
 			ro.disconnect()
 		}
 	}, [recompute, recompute_raf])
@@ -87,12 +152,15 @@ export function Bar({ ariaLabel, variant = "chrome", className, children }: BarP
 
 			const max = Math.max(0, el.scrollWidth - el.clientWidth)
 			const amt = Math.max(240, Math.floor(el.clientWidth * 0.8))
-			const to = Math.max(0, Math.min(dir === "left" ? el.scrollLeft - amt : el.scrollLeft + amt, max))
+			const raw_to = Math.max(0, Math.min(dir === "left" ? el.scrollLeft - amt : el.scrollLeft + amt, max))
+			const to = Math.abs(raw_to - max) <= 2 ? max : raw_to
+			const use_smooth = !reduce_motion && Math.abs(to - el.scrollLeft) > 1
 
-			el.scrollTo({ left: to, behavior: reduce_motion ? "auto" : "smooth" })
-			recompute_raf()
+			el.scrollTo({ left: to, behavior: use_smooth ? "smooth" : "auto" })
+			recompute()
+			if (use_smooth) settle_after_scroll(to)
 		},
-		[reduce_motion, recompute_raf]
+		[reduce_motion, recompute, settle_after_scroll]
 	)
 
 	const root_chrome = variant === "shell" ? cn(ui.nav.shell.base, ui.nav.heights.md) : cn(ui.nav.chrome.md)
@@ -116,6 +184,7 @@ export function BarScroller({
 	scrollerRef,
 	canScrollLeft,
 	canScrollRight,
+	dragScroll = true,
 	className,
 	children,
 }: {
@@ -123,9 +192,84 @@ export function BarScroller({
 	scrollerRef: React.RefObject<HTMLDivElement>
 	canScrollLeft: boolean
 	canScrollRight: boolean
+	dragScroll?: boolean
 	className?: string
 	children: React.ReactNode
 }) {
+	const drag_ref = React.useRef<{
+		pointerId: number
+		startX: number
+		startLeft: number
+		didDrag: boolean
+	} | null>(null)
+	const suppress_click_ref = React.useRef(false)
+	const clear_suppress_ref = React.useRef<number | null>(null)
+
+	const arm_click_suppression = React.useCallback(() => {
+		suppress_click_ref.current = true
+		if (clear_suppress_ref.current != null) window.clearTimeout(clear_suppress_ref.current)
+		clear_suppress_ref.current = window.setTimeout(() => {
+			suppress_click_ref.current = false
+			clear_suppress_ref.current = null
+		}, 180)
+	}, [])
+
+	React.useEffect(() => {
+		return () => {
+			if (clear_suppress_ref.current != null) window.clearTimeout(clear_suppress_ref.current)
+		}
+	}, [])
+
+	const on_pointer_down = React.useCallback(
+		(event: React.PointerEvent<HTMLDivElement>) => {
+			if (!dragScroll || event.button !== 0 || event.pointerType !== "mouse") return
+			const el = scrollerRef.current
+			if (!el) return
+			drag_ref.current = {
+				pointerId: event.pointerId,
+				startX: event.clientX,
+				startLeft: el.scrollLeft,
+				didDrag: false,
+			}
+		},
+		[dragScroll, scrollerRef]
+	)
+
+	const on_pointer_move = React.useCallback(
+		(event: React.PointerEvent<HTMLDivElement>) => {
+			const session = drag_ref.current
+			if (!session || session.pointerId !== event.pointerId) return
+			const el = scrollerRef.current
+			if (!el) return
+
+			const dx = event.clientX - session.startX
+			if (!session.didDrag && Math.abs(dx) >= 6) session.didDrag = true
+			if (!session.didDrag) return
+
+			el.scrollLeft = session.startLeft - dx
+			event.preventDefault()
+		},
+		[scrollerRef]
+	)
+
+	const end_drag = React.useCallback(
+		(event: React.PointerEvent<HTMLDivElement>) => {
+			const session = drag_ref.current
+			if (!session || session.pointerId !== event.pointerId) return
+			drag_ref.current = null
+
+			if (session.didDrag) arm_click_suppression()
+		},
+		[arm_click_suppression]
+	)
+
+	const on_click_capture = React.useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+		if (!suppress_click_ref.current) return
+		suppress_click_ref.current = false
+		event.preventDefault()
+		event.stopPropagation()
+	}, [])
+
 	return (
 		<div className="relative flex h-full min-w-0 flex-1 items-center">
 			{canScrollLeft ? (
@@ -149,9 +293,16 @@ export function BarScroller({
 			<div
 				id={id}
 				ref={scrollerRef}
+				onPointerDown={on_pointer_down}
+				onPointerMove={on_pointer_move}
+				onPointerUp={end_drag}
+				onPointerCancel={end_drag}
+				onPointerLeave={end_drag}
+				onClickCapture={on_click_capture}
 				className={cn(
 					"relative z-10 min-w-0 flex-1 overflow-x-auto overflow-y-visible",
 					"[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+					"touch-pan-x overscroll-x-contain select-none",
 					"transition-[padding] duration-200 ease-out",
 					className
 				)}
@@ -160,6 +311,8 @@ export function BarScroller({
 					paddingRight: canScrollRight ? ui.nav.rail.scroller.padOverflowRem : ui.nav.rail.scroller.padDefaultRem,
 					scrollPaddingLeft: canScrollLeft ? ui.nav.rail.scroller.scrollPadOverflowPx : ui.nav.rail.scroller.scrollPadDefaultPx,
 					scrollPaddingRight: canScrollRight ? ui.nav.rail.scroller.scrollPadOverflowPx : ui.nav.rail.scroller.scrollPadDefaultPx,
+					WebkitOverflowScrolling: "touch",
+					touchAction: "pan-x",
 				}}
 			>
 				{children}

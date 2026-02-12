@@ -346,7 +346,7 @@ const search = {
 	menuFocusRing:
 		"focus-within:border-[color:var(--accent-blue-soft-border-hover)] focus-within:ring-2 focus-within:ring-[color:var(--accent-blue-soft-ring)] focus-within:ring-offset-2 focus-within:ring-offset-background",
 	menuScrollGutter: "[scrollbar-gutter:stable]",
-	menuContentPadding: "pt-4 pb-4 pl-4 pr-1",
+	menuContentPadding: "p-4",
 
 	rowHoverBorderBlue:
 		"hover:border-[color:var(--accent-blue-soft-border-hover)] focus-within:border-[color:var(--accent-blue-soft-border-hover)]",

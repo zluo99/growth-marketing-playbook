@@ -420,12 +420,14 @@
 	color: inherit;
 }
 
-.ui-control:hover,
-.ui-control-ghost:hover {
-	background: var(--surface-bg-hover);
-	border-color: var(--border-hover);
-	box-shadow: var(--shadow-sm);
-	color: var(--surface-fg);
+@media (hover: hover) and (pointer: fine) {
+	.ui-control:hover,
+	.ui-control-ghost:hover {
+		background: var(--surface-bg-hover);
+		border-color: var(--border-hover);
+		box-shadow: var(--shadow-sm);
+		color: var(--surface-fg);
+	}
 }
 
 .ui-control:disabled,
