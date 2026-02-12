@@ -28,7 +28,7 @@ import {
 	PbTabPanel,
 	createUnknownMetricLogger,
 } from "@/features/playbook/components/ui/ui"
-import { AnalysisCopy, type AnalysisPanel } from "@/features/playbook/copy/journeys-analysis"
+import { AnalysisCopy, type AnalysisDiagram, type AnalysisPanel } from "@/features/playbook/copy/journeys-analysis"
 import { ProblemCopy } from "@/features/playbook/copy/journeys-problem"
 import { RButton, RCopy, RCode } from "@/features/playbook/copy/journeys-r"
 import { TabById } from "@/features/playbook/definitions/tabs"
@@ -159,36 +159,259 @@ function SectionCard({
 	)
 }
 
-function AnalysisBlock({
+const id_chip_class = cn(
+	"inline-flex min-h-5 items-center whitespace-nowrap",
+	"rounded-[var(--radius-control)] border border-[color:var(--border)] bg-background",
+	"font-mono font-medium leading-none",
+	ui.spacing.chipSm,
+	ui.typography.caption
+)
+
+function AnalysisIdChip({ value }: { value: string }) {
+	return <code className={id_chip_class}>{value}</code>
+}
+
+function AnalysisLinkBridge({ active = true, className }: { active?: boolean; className?: string }) {
+	const line_color_class = "border-[color:var(--border)]/70"
+
+	return (
+		<div className={cn("flex items-center justify-center py-1 lg:px-2", className)} aria-hidden="true">
+			{active ? (
+				<>
+					<span className="h-6 w-px bg-[color:var(--border)] lg:hidden" />
+					<span className="hidden h-px w-full bg-[color:var(--border)] lg:block" />
+				</>
+			) : (
+				<>
+					<span className={cn("h-6 w-0 border-l border-dashed lg:hidden", line_color_class)} />
+					<span className={cn("hidden h-0 w-full border-t border-dashed lg:block", line_color_class)} />
+				</>
+			)}
+		</div>
+	)
+}
+
+function AnalysisStepOneBlock({
+	diagram,
 	panel,
-	idx,
 	onUnknownToken,
 }: {
+	diagram: AnalysisDiagram
 	panel: AnalysisPanel
-	idx: number
 	onUnknownToken: (token: string) => React.ReactNode
 }) {
+	type DiagramObject = AnalysisDiagram["objects"][number]
+
+	const format_object_label = React.useCallback((object: DiagramObject) => {
+		const suffix = object.object_id.split("-")[1] ?? object.object_id
+		return `${object.object_type.toLowerCase()}-${suffix}`
+	}, [])
+
+	const section_label_class = cn("uppercase tracking-[0.08em] text-foreground", ui.typography.caption)
+	const rule_primary = panel.bullets[0]
+	const rule_secondary = panel.bullets[1]
+
 	return (
-		<PbTabPanel>
+		<PbTabPanel className="overflow-hidden" data-search-target="analysis-step-1">
 			<div className={cn("flex items-start justify-between", ui.gap.sm)}>
 				<div className="min-w-0">
 					<div className={cn("text-foreground", ui.typography.title.md)}>
-						<Renderer.Copy.InlineText
-							text={panel.title}
-							keyPrefix={`${journeys_key_prefix}-analysis-title-${panel.id}`}
-							onUnknownToken={onUnknownToken}
-						/>
+						<Renderer.Copy.InlineText text={panel.title} keyPrefix={`${journeys_key_prefix}-step1-title`} onUnknownToken={onUnknownToken} />
 					</div>
 
 					<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.body)}>
-						<Renderer.Copy.InlineText text={panel.body} keyPrefix={`${journeys_key_prefix}-analysis-body-${panel.id}`} onUnknownToken={onUnknownToken} />
+						<Renderer.Copy.InlineText text={panel.body} keyPrefix={`${journeys_key_prefix}-step1-body`} onUnknownToken={onUnknownToken} />
 					</p>
 				</div>
 
-				<PbNumberBadge number={idx + 1} ariaLabel={AnalysisCopy.ui.analysisItemLabel.replace("{n}", String(idx + 1))} />
+				<PbNumberBadge number="Step 1" className="min-w-[68px] px-2.5" ariaLabel={AnalysisCopy.ui.analysisItemLabel.replace("{n}", "1")} />
 			</div>
 
-			<div className={ui.margin.topSm}>
+			{rule_primary ? (
+				<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.caption)}>
+					<Renderer.Copy.InlineText text={rule_primary} keyPrefix={`${journeys_key_prefix}-step1-rule-primary`} onUnknownToken={onUnknownToken} />
+				</p>
+			) : null}
+
+			{rule_secondary ? (
+				<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.caption)}>
+					<Renderer.Copy.InlineText text={rule_secondary} keyPrefix={`${journeys_key_prefix}-step1-rule-secondary`} onUnknownToken={onUnknownToken} />
+				</p>
+			) : null}
+
+			<div className={cn(ui.margin.topMd, "min-w-0")}>
+				<div className="hidden min-w-0 lg:grid lg:grid-cols-[minmax(0,0.34fr)_minmax(24px,0.08fr)_minmax(0,0.58fr)] lg:items-end lg:gap-2">
+					<div className={section_label_class}>Prospect anchor</div>
+					<div />
+					<div className={section_label_class}>Objects linked to this prospect</div>
+				</div>
+
+				<div className={cn(ui.margin.topXs, "grid min-w-0 gap-2 lg:grid-cols-[minmax(0,0.34fr)_minmax(24px,0.08fr)_minmax(0,0.58fr)] lg:items-center")}>
+					<div className="min-w-0">
+						<div className={cn(section_label_class, "lg:hidden")}>Prospect anchor</div>
+						<div className={cn(ui.margin.topXs, "min-w-0 rounded-[var(--radius-control)] border border-[color:var(--border)] bg-background px-2 py-1.5")}>
+							<div className={cn("flex flex-wrap items-center", ui.gap.sm)}>
+								<Renderer.Metrics.AttributePill id="prospect_id" />
+								<AnalysisIdChip value={diagram.prospect_id} />
+							</div>
+						</div>
+					</div>
+
+					<AnalysisLinkBridge active className="lg:min-h-[44px]" />
+
+					<div className="min-w-0">
+						<div className={cn(section_label_class, "lg:hidden")}>Objects linked to this prospect</div>
+						<div className={cn(ui.margin.topXs, "min-w-0 overflow-hidden rounded-[var(--radius-control)] border border-[color:var(--border)] bg-background")}>
+							{diagram.objects.map((object, idx) => (
+								<div key={`analysis-step1-object-${object.object_id}`} className={cn("min-w-0 px-2 py-2", idx > 0 ? "border-t border-[color:var(--border)]/70" : null)}>
+									<div className={cn("flex flex-wrap items-center", ui.gap.sm)}>
+										<Renderer.Metrics.AttributePill id="object_id" />
+										<AnalysisIdChip value={format_object_label(object)} />
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
+				</div>
+			</div>
+		</PbTabPanel>
+	)
+}
+
+function AnalysisStepTwoBlock({
+	diagram,
+	panel,
+	onUnknownToken,
+}: {
+	diagram: AnalysisDiagram
+	panel: AnalysisPanel
+	onUnknownToken: (token: string) => React.ReactNode
+}) {
+	type DiagramObject = AnalysisDiagram["objects"][number]
+	type DiagramTouch = AnalysisDiagram["touches"][number]
+	type DiagramRow = { object: DiagramObject; touches: readonly DiagramTouch[] }
+
+	const rows = React.useMemo<readonly DiagramRow[]>(
+		() =>
+			diagram.objects.map((object) => ({
+				object,
+				touches: diagram.touches.filter((touch) => touch.object_id === object.object_id),
+			})),
+		[diagram.objects, diagram.touches]
+	)
+
+	const format_object_label = React.useCallback((object: DiagramObject) => {
+		const suffix = object.object_id.split("-")[1] ?? object.object_id
+		return `${object.object_type.toLowerCase()}-${suffix}`
+	}, [])
+
+	const section_label_class = cn("uppercase tracking-[0.08em] text-foreground", ui.typography.caption)
+	const rule_primary = panel.bullets[0]
+	const rule_secondary = panel.bullets[1]
+
+	return (
+		<PbTabPanel className="overflow-hidden" data-search-target="analysis-step-2">
+			<div className={cn("flex items-start justify-between", ui.gap.sm)}>
+				<div className="min-w-0">
+					<div className={cn("text-foreground", ui.typography.title.md)}>
+						<Renderer.Copy.InlineText text={panel.title} keyPrefix={`${journeys_key_prefix}-step2-title`} onUnknownToken={onUnknownToken} />
+					</div>
+
+					<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.body)}>
+						<Renderer.Copy.InlineText text={panel.body} keyPrefix={`${journeys_key_prefix}-step2-body`} onUnknownToken={onUnknownToken} />
+					</p>
+				</div>
+
+				<PbNumberBadge number="Step 2" className="min-w-[68px] px-2.5" ariaLabel={AnalysisCopy.ui.analysisItemLabel.replace("{n}", "2")} />
+			</div>
+
+			{rule_primary ? (
+				<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.caption)}>
+					<Renderer.Copy.InlineText text={rule_primary} keyPrefix={`${journeys_key_prefix}-step2-rule-primary`} onUnknownToken={onUnknownToken} />
+				</p>
+			) : null}
+
+			{rule_secondary ? (
+				<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.caption)}>
+					<Renderer.Copy.InlineText text={rule_secondary} keyPrefix={`${journeys_key_prefix}-step2-rule-secondary`} onUnknownToken={onUnknownToken} />
+				</p>
+			) : null}
+
+			<div className={cn(ui.margin.topMd, "min-w-0")}>
+				<div className="hidden min-w-0 lg:grid lg:grid-cols-[minmax(0,0.34fr)_minmax(24px,0.08fr)_minmax(0,0.58fr)] lg:items-end lg:gap-2">
+					<div className={section_label_class}>Object anchors</div>
+					<div />
+					<div className={section_label_class}>Touches linked by object</div>
+				</div>
+
+				<div className={cn(ui.margin.topXs, "flex min-w-0 flex-col", ui.gap.sm)}>
+					{rows.map((row) => (
+						<div key={`analysis-touch-linkage-${row.object.object_id}`} className="grid min-w-0 gap-2 lg:grid-cols-[minmax(0,0.34fr)_minmax(24px,0.08fr)_minmax(0,0.58fr)] lg:items-center">
+							<div className="min-w-0">
+								<div className={cn(section_label_class, "lg:hidden")}>Object anchor</div>
+								<div className={cn(ui.margin.topXs, "min-w-0 rounded-[var(--radius-control)] border border-[color:var(--border)] bg-background px-2 py-2")}>
+									<div className={cn("flex flex-wrap items-center", ui.gap.sm)}>
+										<Renderer.Metrics.AttributePill id="object_id" />
+										<AnalysisIdChip value={format_object_label(row.object)} />
+									</div>
+								</div>
+							</div>
+
+							<AnalysisLinkBridge active={row.touches.length > 0} />
+
+							<div className="min-w-0">
+								<div className={cn(section_label_class, "lg:hidden")}>Touches</div>
+								<div className={cn(ui.margin.topXs, "min-w-0")}>
+									{row.touches.length ? (
+										<div className={cn("min-w-0 overflow-hidden rounded-[var(--radius-control)] border border-[color:var(--border)] bg-background")}>
+											{row.touches.map((touch, idx) => (
+												<div key={`analysis-touch-row-${touch.touch_id}`} className={cn("min-w-0 px-2 py-1.5", idx > 0 ? "border-t border-[color:var(--border)]/70" : null)}>
+													<div className={cn("flex flex-wrap items-center", ui.gap.sm)}>
+														<Renderer.Metrics.AttributePill id="touch_id" />
+														<AnalysisIdChip value={touch.touch_id} />
+													</div>
+												</div>
+											))}
+										</div>
+									) : (
+										<div className={cn("rounded-[var(--radius-control)] border border-dashed border-[color:var(--border)] bg-background px-2 py-2 text-muted-foreground", ui.typography.caption)}>
+											No touches linked
+										</div>
+									)}
+								</div>
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+		</PbTabPanel>
+	)
+}
+
+function AnalysisStepThreeBlock({
+	panel,
+	onUnknownToken,
+}: {
+	panel: AnalysisPanel
+	onUnknownToken: (token: string) => React.ReactNode
+}) {
+	return (
+		<PbTabPanel className="overflow-hidden" data-search-target="analysis-step-3">
+			<div className={cn("flex items-start justify-between", ui.gap.sm)}>
+				<div className="min-w-0">
+					<div className={cn("text-foreground", ui.typography.title.md)}>
+						<Renderer.Copy.InlineText text={panel.title} keyPrefix={`${journeys_key_prefix}-step3-title`} onUnknownToken={onUnknownToken} />
+					</div>
+
+					<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.body)}>
+						<Renderer.Copy.InlineText text={panel.body} keyPrefix={`${journeys_key_prefix}-step3-body`} onUnknownToken={onUnknownToken} />
+					</p>
+				</div>
+
+				<PbNumberBadge number="Step 3" className="min-w-[68px] px-2.5" ariaLabel={AnalysisCopy.ui.analysisItemLabel.replace("{n}", "3")} />
+			</div>
+
+			<div className={cn(ui.margin.topSm, "min-w-0")}>
 				<PbMetricList items={panel.bullets} size="body" onUnknownToken={onUnknownToken} />
 			</div>
 		</PbTabPanel>
@@ -202,6 +425,9 @@ function AnalysisBlock({
 export default function TabJourneys() {
 	const warn_unknown_metric = React.useMemo(() => createUnknownMetricLogger("Journeys"), [])
 	const tab = TabById["journeys"]
+	const objects_panel = AnalysisCopy.panels[0]
+	const touches_panel = AnalysisCopy.panels[1]
+	const analysis_panel = AnalysisCopy.panels[2]
 
 	return (
 		<div className={cn("flex flex-col", ui.gap.lg)} data-search-target="tab:journeys">
@@ -256,15 +482,15 @@ export default function TabJourneys() {
 						}
 					/>
 
-					<PbCardContent>
-						<div className={cn("grid md:grid-cols-3", ui.gap.sm)}>
-							{AnalysisCopy.panels.map((panel, idx) => (
-								<AnalysisBlock key={panel.id} panel={panel} idx={idx} onUnknownToken={warn_unknown_metric} />
-							))}
-						</div>
+					<PbCardContent className={cn("flex flex-col", ui.gap.sm)}>
+						{objects_panel ? <AnalysisStepOneBlock diagram={AnalysisCopy.diagram} panel={objects_panel} onUnknownToken={warn_unknown_metric} /> : null}
+
+						{touches_panel ? <AnalysisStepTwoBlock diagram={AnalysisCopy.diagram} panel={touches_panel} onUnknownToken={warn_unknown_metric} /> : null}
+
+						{analysis_panel ? <AnalysisStepThreeBlock panel={analysis_panel} onUnknownToken={warn_unknown_metric} /> : null}
 
 						{AnalysisCopy.footer ? (
-							<p className={cn(ui.margin.topMd, "text-muted-foreground", ui.typography.caption)}>
+							<p className={cn("text-muted-foreground", ui.typography.caption)}>
 								<Renderer.Copy.InlineText text={AnalysisCopy.footer} keyPrefix={`${journeys_key_prefix}-analysis-footer`} onUnknownToken={warn_unknown_metric} />
 							</p>
 						) : null}

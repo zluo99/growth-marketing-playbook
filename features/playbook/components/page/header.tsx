@@ -10,7 +10,7 @@ import Link from "next/link"
 import { motion, useMotionValue, useSpring } from "framer-motion"
 
 import { ui } from "@/components/tokens/design"
-import { uiMotion, useRafThrottle, useReducedMotionBool } from "@/components/tokens/motion"
+import { uiMotion, useRafThrottle } from "@/components/tokens/motion"
 import { Bar, BarRail, BarScroller, BarScrollButton } from "@/components/nav/bar"
 import { Dropdown, type DropdownItem } from "@/components/nav/dropdown"
 import { MotionPillIndicator, PillList, PillRoot, PillTrigger, useMotionPillRail } from "@/components/nav/pill"
@@ -226,60 +226,6 @@ function TabLabel({ tab, isActive, className }: { tab: TabMeta; isActive: boolea
 	)
 }
 
-export const HoverMorphArrow = React.memo(function HoverMorphArrow({
-	dir,
-	hovered = false,
-	className,
-}: {
-	dir: "left" | "right"
-	hovered?: boolean
-	className?: string
-}) {
-	const reduce_motion = useReducedMotionBool()
-	const transition = React.useMemo(
-		() =>
-			reduce_motion
-				? { duration: 0 }
-				: { duration: uiMotion.tokens.durations.base, ease: uiMotion.tokens.easing.standard },
-		[reduce_motion]
-	)
-	const active = hovered
-
-	const tip = dir === "left" ? 8 : 16
-	const join_nudge = dir === "left" ? -0.5 : 0.5
-	const tailLength = 8
-	const headPoints = dir === "left" ? "14,2 8,6 14,10" : "10,2 16,6 10,10"
-	const tail = dir === "left" ? { x1: tip, x2: tip + tailLength, shift: -2.5 } : { x1: tip, x2: tip - tailLength, shift: 2.5 }
-
-	return (
-		<span
-			className={cn(
-				"inline-flex h-3.5 w-7 items-center justify-center transition-colors duration-200 ease-out",
-				active ? ui.text.default.fg : ui.text.muted.fg,
-				className
-			)}
-		>
-			<svg viewBox="0 0 24 12" className="h-3.5 w-7" aria-hidden="true" focusable="false">
-				<motion.g animate={{ x: active ? tail.shift : 0 }} transition={transition}>
-					<polyline points={headPoints} className="fill-none stroke-current stroke-[1.35]" strokeLinecap="round" strokeLinejoin="round" />
-				</motion.g>
-
-				<motion.line
-					x1={tail.x1 + join_nudge}
-					x2={active ? tail.x2 : tail.x1 + join_nudge}
-					y1={6}
-					y2={6}
-					className="stroke-current stroke-[1.35]"
-					strokeLinecap="round"
-					initial={false}
-					animate={{ x2: active ? tail.x2 : tail.x1 + join_nudge }}
-					transition={transition}
-				/>
-			</svg>
-		</span>
-	)
-})
-
 function HomeButton({ onGoToTab }: { onGoToTab: (id: TabId) => void }) {
 	const { isTapActive, tapFeedbackProps } = useTapFeedback<HTMLAnchorElement>()
 
@@ -345,9 +291,6 @@ function TabsDropdown({ activeTab, onGoToTab }: { activeTab: TabId; onGoToTab: (
 const TabsBarRail = React.memo(function TabsBarRail({ activeTab, onGoToTab, reduceMotion }: TabsBarProps) {
 	const content_row_ref = React.useRef<HTMLDivElement>(null)
 	const rail = useMotionPillRail<TabId>({ activeKey: activeTab, spring: uiMotion.nav.pillSpring })
-
-	const [hoverLeft, setHoverLeft] = React.useState(false)
-	const [hoverRight, setHoverRight] = React.useState(false)
 
 	const settle = useRafThrottle(() => {
 		rail.pill.measure()
@@ -422,13 +365,7 @@ const TabsBarRail = React.memo(function TabsBarRail({ activeTab, onGoToTab, redu
 								onClick={() => scrollByPage("left")}
 								ariaLabel={PageCopy.headerNavigation.scrollLeftAria}
 								controlsId={scroller_id}
-								onMouseEnter={() => setHoverLeft(true)}
-								onMouseLeave={() => setHoverLeft(false)}
-								onFocus={() => setHoverLeft(true)}
-								onBlur={() => setHoverLeft(false)}
-							>
-								<HoverMorphArrow dir="left" hovered={hoverLeft} />
-							</BarScrollButton>
+							/>
 						</motion.div>
 
 						<motion.div
@@ -443,13 +380,7 @@ const TabsBarRail = React.memo(function TabsBarRail({ activeTab, onGoToTab, redu
 								onClick={() => scrollByPage("right")}
 								ariaLabel={PageCopy.headerNavigation.scrollRightAria}
 								controlsId={scroller_id}
-								onMouseEnter={() => setHoverRight(true)}
-								onMouseLeave={() => setHoverRight(false)}
-								onFocus={() => setHoverRight(true)}
-								onBlur={() => setHoverRight(false)}
-							>
-								<HoverMorphArrow dir="right" hovered={hoverRight} />
-							</BarScrollButton>
+							/>
 						</motion.div>
 
 						<BarScroller id={scroller_id} scrollerRef={scrollerRef} canScrollLeft={canScrollLeft} canScrollRight={canScrollRight}>

@@ -232,7 +232,7 @@ function FrameworksBar({
 					{({ scrollerRef, canScrollLeft, canScrollRight, scrollByPage }) => (
 						<>
 							{canScrollLeft ? (
-								<div className="absolute left-[0.35rem] top-1/2 z-30 -translate-y-1/2">
+								<div className="absolute top-1/2 z-30 -translate-y-1/2" style={{ left: ui.nav.arrow.insetRem }}>
 									<BarScrollButton
 										dir="left"
 										onClick={() => scrollByPage("left")}
@@ -243,7 +243,7 @@ function FrameworksBar({
 							) : null}
 
 							{canScrollRight ? (
-								<div className="absolute right-[0.35rem] top-1/2 z-30 -translate-y-1/2">
+								<div className="absolute top-1/2 z-30 -translate-y-1/2" style={{ right: ui.nav.arrow.insetRem }}>
 									<BarScrollButton
 										dir="right"
 										onClick={() => scrollByPage("right")}

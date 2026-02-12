@@ -5,7 +5,7 @@
 /* -------------------------------------------------------------------------- */
 
 import * as React from "react"
-import { ArrowRight, FlaskConical, Scale, Target } from "lucide-react"
+import { FlaskConical, Scale, Target } from "lucide-react"
 
 import { ui } from "@/components/tokens/design"
 import { cn } from "@/lib/utils"
@@ -111,6 +111,7 @@ export default function TabOverview() {
 	const { goToTab } = usePbTabsNav()
 	const reveal_cards = true
 	const tab = TabById["overview"]
+	const guide_sequence_text = (GuideCopy.panels[0]?.sequence ?? []).map((id) => `{${id}}`).join(" -> ")
 
 	return (
 		<div className={cn("flex flex-col", ui.gap.lg)} data-search-target="tab:overview">
@@ -145,14 +146,15 @@ export default function TabOverview() {
 										/>
 									</div>
 
-									<div className={cn(ui.margin.topSm, "flex flex-wrap items-center text-muted-foreground", ui.gap.sm)}>
-										{GuideCopy.panels[0]?.sequence?.map((s, idx, arr) => (
-											<React.Fragment key={s.id}>
-												<Renderer.Tabs.Chip id={s.id} onClick={goToTab} keyPrefix={`${overview_key_prefix}-guide-flow-${s.id}`} />
-												{idx < arr.length - 1 ? <ArrowRight className={cn(ui.iconNude.sm, "opacity-60")} aria-hidden="true" /> : null}
-											</React.Fragment>
-										))}
-									</div>
+									{guide_sequence_text ? (
+										<div className={cn(ui.margin.topSm, "flex flex-wrap items-center text-muted-foreground", ui.gap.sm)}>
+											<Renderer.Tabs.InlineText
+												text={guide_sequence_text}
+												keyPrefix={`${overview_key_prefix}-guide-flow`}
+												onTabClick={goToTab}
+											/>
+										</div>
+									) : null}
 
 									<p className={cn(ui.margin.topSm, "leading-snug text-muted-foreground", ui.typography.body)}>{render_inline_text(GuideCopy.panels[0]?.body ?? "", "overview-guide-sequence")}</p>
 								</PbTabPanel>

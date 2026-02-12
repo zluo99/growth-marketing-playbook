@@ -13,6 +13,7 @@ import { useReducedMotionBool } from "@/components/tokens/motion"
 import { Button } from "@/components/ui/button"
 import { useTapFeedback } from "@/lib/hooks/use-tap-feedback"
 import { cn } from "@/lib/utils"
+import { BarMorphArrow } from "@/components/nav/bar"
 import { PillContent, PillRoot } from "@/components/nav/pill"
 
 import { PageCopy } from "../../copy/page"
@@ -23,7 +24,7 @@ import TabOverview from "../../tabs/overview"
 import TabPlays from "../../tabs/plays"
 import { Renderer } from "../ui/renderer"
 import { LoaderCardSkeleton } from "../ui/loader"
-import { PbHeader, HoverMorphArrow } from "./header"
+import { PbHeader } from "./header"
 import { PbBodyTabContext, type PbBodyTabContextValue, usePbTabsNav } from "../context/context"
 
 /* -------------------------------------------------------------------------- */
@@ -201,11 +202,11 @@ function BottomTabNavButtons() {
 				onPointerLeave={tapFeedbackProps.onPointerLeave}
 				className={nav_btn_class}
 			>
-				{is_prev ? <HoverMorphArrow dir="left" hovered={is_active} /> : null}
+				{is_prev ? <BarMorphArrow dir="left" hovered={is_active} /> : null}
 				<span className={cn(ui.motion.duration, ui.text.interactive.all, isTapActive ? "text-foreground" : null)}>
 					{is_prev ? PageCopy.headerTabsNav.prevLabel : PageCopy.headerTabsNav.nextLabel}
 				</span>
-				{!is_prev ? <HoverMorphArrow dir="right" hovered={is_active} /> : null}
+				{!is_prev ? <BarMorphArrow dir="right" hovered={is_active} /> : null}
 			</Button>
 		)
 	}

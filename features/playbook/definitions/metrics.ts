@@ -543,6 +543,12 @@ const MetricDefinitionList = [
     description: "Number of observed touches for the prospect in the selected window, typically used for journey depth and CVR cuts",
   },
   {
+    id: "touch_id",
+    alias: "Touch ID",
+    type_l1: "attribute",
+    description: "Stable unique identifier for a touch record; each touch_id links to one object_id and inherits prospect_id through the object relationship",
+  },
+  {
     id: "treatment",
     alias: "Treatment",
     type_l1: "measure",

@@ -16,7 +16,7 @@ export const SheetsCopy: GoogleWorkspaceCard = {
 	openUrl: "https://docs.google.com/spreadsheets/d/1gfEyBNJNBhaAYyBfr5a6p3bF9hqwhSHioTN43k_rZFI/view?usp=sharing",
 	openLabel: "Open",
 	title: "Reporting layer (Sheets)",
-	body: "Use a master report as the shared readout. Here, I've embedded a sample Google Sheets based on the same CSV exports seen in {staging models tab}:",
+	body: "Use a master report as the shared readout. Here, I've embedded a sample Google Sheets based on the same CSV exports seen in {reports-sql}",
 } as const
 
 export const SlidesCopy: GoogleWorkspaceCard = {
@@ -24,7 +24,7 @@ export const SlidesCopy: GoogleWorkspaceCard = {
 	openUrl: "https://docs.google.com/presentation/d/1iTLKJVf6hTCRc_KP_1LwfVQ6oYzNd55pqWh-LTgT0KQ/view?usp=sharing",
 	openLabel: "Open",
 	title: "Presentation layer (Slides)",
-	body: "Use a deck for decision-ready narratives. Here, I've embedded a sample Google Slides that can import directly from the Google Sheets:",
+	body: "Use a deck for decision-ready narratives. Here, I've embedded a sample Google Slides that can import directly from the Google Sheets",
 } as const
 
 export const WorkspaceUiCopy: WorkspaceUiCopy = {

@@ -285,7 +285,7 @@ const build_copy_entries = (): SearchEntry[] => {
 			tabId: "overview",
 			badge: "Guide",
 			meta: "Execution guide",
-			searchExtras: panel.sequence?.map((step) => step.title) ?? [],
+			searchExtras: panel.sequence?.flatMap((tabId) => [tabId, TabById[tabId].alias]) ?? [],
 			breadcrumbs: [GuideCopy.title],
 		})
 	)
