@@ -19,8 +19,18 @@ import { useMediaQuery } from "@/lib/hooks/use-media-query"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { PbBullet, PbCard, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbPanel, PbReveal, PbStack, PbSubtleText, PbTabIntro, PbText } from "@/features/playbook/components/ui/ui"
-import { FrameworkFilterOptions, FrameworkInfoCopy, FrameworksUiCopy, type FrameworkFilterValue } from "@/features/playbook/copy/frameworks"
-import { FrameworkDefinitions, FrameworkPillarKey, type Framework, type FrameworkIcon, type FrameworkPillar, type FrameworkThemeKey } from "@/features/playbook/definitions/frameworks"
+import {
+	FrameworkDefinitions,
+	FrameworkFilterOptions,
+	FrameworkInfoCopy,
+	FrameworkPillarKey,
+	FrameworksUiCopy,
+	type Framework,
+	type FrameworkFilterValue,
+	type FrameworkIcon,
+	type FrameworkPillar,
+	type FrameworkThemeKey,
+} from "@/features/playbook/copy/frameworks"
 import { TabById } from "@/features/playbook/definitions/tabs"
 import { PlaybookEvents, PlaybookStorage, read_preference, remove_preference, write_preference } from "@/features/playbook/components/context/preferences"
 
