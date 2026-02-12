@@ -121,7 +121,7 @@ export const PageCopy = {
 	footer: {
 		brandTitle: BrandCopy.title,
 		brandMarkAlt: "Growth Marketing Playbook home",
-		disclaimer: "(c) {year} John Luo. Content uses spoofed data, best practices, and experience.",
+		disclaimer: "© {year} John Luo. Content uses spoofed data, best practices, and experience.",
 		themeLabel: "Theme",
 		themeOptions: {
 			light: "Light",

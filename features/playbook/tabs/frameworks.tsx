@@ -18,7 +18,7 @@ import { cn, runWithViewportAnchor, scrollIntoHorizontalView, stableKeyFromText 
 import { useMediaQuery } from "@/lib/hooks/use-media-query"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
-import { PbBullet, PbCard, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbPanel, PbReveal, PbStack, PbSubtleText, PbTabIntro, PbText } from "@/features/playbook/components/ui/ui"
+import { PbBulletList, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell, PbText } from "@/features/playbook/components/ui/ui"
 import {
 	FrameworkDefinitions,
 	FrameworkFilterOptions,
@@ -367,7 +367,9 @@ function PillarBlock({
 	const panel_id = `pillar-${fw_id}-${pillar.name}`
 
 	return (
-		<PbPanel
+		<PbTabPanel
+			size="sm"
+			interactive={false}
 			className={cn(
 				"p-0 bg-muted/30",
 				ui.surface.structure.shadowNone,
@@ -405,19 +407,19 @@ function PillarBlock({
 
 			<Collapse open={open} transition={transition} id={panel_id} ariaLabel={FrameworksUiCopy.pillarDetailsLabel.replace("{pillar}", pillar.name)}>
 				<div className="px-3 pb-3 pt-0.5">
-					<PbStack asList gap="sm" className={cn("pl-8", ui.margin.topSm)}>
-						{pillar.items.map((item) => {
+					<PbBulletList
+						className={cn("pl-8 text-foreground/90", ui.margin.topSm)}
+						items={pillar.items}
+						size={textSize}
+						getKey={(item) => stableKeyFromText(item, `${frameworks_key_prefix}-${panel_id}-item`)}
+						renderItem={(item) => {
 							const key = stableKeyFromText(item, `${frameworks_key_prefix}-${panel_id}-item`)
-							return (
-								<PbBullet key={key} asListItem marker="dot" size={textSize} className="text-foreground/90">
-									{Renderer.Copy.renderInlineMarkdown(item, key)}
-								</PbBullet>
-							)
-						})}
-					</PbStack>
+							return Renderer.Copy.renderInlineMarkdown(item, key)
+						}}
+					/>
 				</div>
 			</Collapse>
-		</PbPanel>
+		</PbTabPanel>
 	)
 }
 
@@ -438,7 +440,7 @@ function FrameworkCard({
 	const icon_frame_class = cn(ui.iconCard.frame, "shrink-0")
 
 	return (
-		<PbCard hover shadow className={cn("relative overflow-hidden", ui.surface.structure.shadowNone, ui.frameworks[theme_key].tint)}>
+		<PbTabCard hover shadow className={ui.frameworks[theme_key].tint}>
 			<PbCardGlow className={framework_glow[theme_key]} />
 
 			<PbCardLayer>
@@ -471,7 +473,7 @@ function FrameworkCard({
 					</div>
 				</PbCardContent>
 			</PbCardLayer>
-		</PbCard>
+		</PbTabCard>
 	)
 }
 
@@ -597,11 +599,16 @@ export default function TabFrameworks() {
 	const grid_style = React.useMemo<React.CSSProperties>(() => ({ gridTemplateColumns: `repeat(${effective_cols}, minmax(0, 1fr))` }), [effective_cols])
 
 	return (
-		<div className={cn("flex flex-col", ui.gap.sm, ui.margin.bottomNone)} data-search-target="tab:frameworks">
-			<div className={ui.margin.bottomMd}>
-				<PbTabIntro alias={tab.alias} description={tab.description} keyPrefix={`${frameworks_key_prefix}-intro`} />
-			</div>
-
+		<PbTabShell
+			tabId="frameworks"
+			alias={tab.alias}
+			description={tab.description}
+			keyPrefix={`${frameworks_key_prefix}-intro`}
+			gap="sm"
+			focus={false}
+			introClassName={ui.margin.bottomMd}
+			className={ui.margin.bottomNone}
+		>
 			<FrameworksBar value={filter} onChange={on_filter_change} cols={cols} onChangeCols={on_cols_change} col_options={col_options} />
 
 			<div className={cn("flex flex-col", ui.gap.sm)}>
@@ -626,6 +633,6 @@ export default function TabFrameworks() {
 					</PbReveal>
 				))}
 			</div>
-		</div>
+		</PbTabShell>
 	)
 }

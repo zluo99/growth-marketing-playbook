@@ -12,16 +12,15 @@ import { cn } from "@/lib/utils"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import {
-	PbCard,
 	PbCardContent,
 	PbCardGlow,
 	PbCardHeader,
 	PbCardLayer,
-	PbFocus,
 	PbReveal,
 	PbSubtleText,
-	PbTabIntro,
+	PbTabCard,
 	PbTabPanel,
+	PbTabShell,
 } from "@/features/playbook/components/ui/ui"
 import { usePbTabsNav } from "@/features/playbook/components/context/context"
 import { GuideCopy } from "@/features/playbook/copy/overview-guide"
@@ -63,7 +62,7 @@ function OverviewCard({
 		typeof description === "string" ? <Renderer.Copy.InlineText text={description} keyPrefix={`${overview_key_prefix}-card-${id}-desc`} /> : description
 
 	return (
-		<PbCard hover shadow className="relative w-full overflow-hidden">
+		<PbTabCard hover shadow className="w-full">
 			{glowClassName ? <PbCardGlow className={glowClassName} /> : null}
 			<PbCardLayer>
 				<PbCardHeader
@@ -72,7 +71,7 @@ function OverviewCard({
 				/>
 				<PbCardContent className="relative">{children}</PbCardContent>
 			</PbCardLayer>
-		</PbCard>
+		</PbTabCard>
 	)
 }
 
@@ -114,65 +113,55 @@ export default function TabOverview() {
 	const guide_sequence_text = (GuideCopy.panels[0]?.sequence ?? []).map((id) => `{${id}}`).join(" -> ")
 
 	return (
-		<div className={cn("flex flex-col", ui.gap.lg)} data-search-target="tab:overview">
-			<PbTabIntro alias={tab.alias} description={tab.description} keyPrefix={`${overview_key_prefix}-intro`} />
-
-			<PbFocus className={cn("flex flex-col", ui.gap.lg)}>
-				<PbReveal enabled={reveal_cards} className="w-full" data-search-target="tenets-card">
-					<OverviewCard id={TenetsCopy.id} title={TenetsCopy.title} description={TenetsCopy.body} glowClassName={ui.glow.orange}>
-						<div className={cn("flex flex-col", ui.gap.sm)}>
-							<div className={cn("grid items-stretch md:grid-cols-3", ui.gap.sm)}>
-								{TenetsCopy.panels.map((t) => (
-									<Kicker key={t.id} id={t.id} icon={tenet_icon(t.icon)} title={t.title} description={t.body} spendIds={t.spend_ids} />
-								))}
-							</div>
-
-							<p className={cn("text-muted-foreground", ui.typography.caption)}>
-								{render_inline_text(TenetsCopy.footer, `${overview_key_prefix}-tenets-footer`)}
-							</p>
+		<PbTabShell tabId="overview" alias={tab.alias} description={tab.description} keyPrefix={`${overview_key_prefix}-intro`}>
+			<PbReveal enabled={reveal_cards} className="w-full" data-search-target="tenets-card">
+				<OverviewCard id={TenetsCopy.id} title={TenetsCopy.title} description={TenetsCopy.body} glowClassName={ui.glow.orange}>
+					<div className={cn("flex flex-col", ui.gap.sm)}>
+						<div className={cn("grid items-stretch md:grid-cols-3", ui.gap.sm)}>
+							{TenetsCopy.panels.map((t) => (
+								<Kicker key={t.id} id={t.id} icon={tenet_icon(t.icon)} title={t.title} description={t.body} spendIds={t.spend_ids} />
+							))}
 						</div>
-					</OverviewCard>
-				</PbReveal>
 
-				<PbReveal enabled={reveal_cards} className="w-full" data-search-target="guide-card">
-					<OverviewCard id="guide" title={GuideCopy.title} description={GuideCopy.body}>
-						<div className={cn("flex flex-col", ui.gap.sm)}>
-							<div className={cn("grid items-stretch md:grid-cols-2", ui.gap.sm)}>
-								<PbTabPanel>
-									<div className={cn("text-foreground", ui.typography.title.md)}>
-										<Renderer.Copy.InlineText
-											text={GuideCopy.panels[0]?.title ?? ""}
-											keyPrefix={`${overview_key_prefix}-guide-panel-1-title`}
-										/>
+						<p className={cn("text-muted-foreground", ui.typography.caption)}>
+							{render_inline_text(TenetsCopy.footer, `${overview_key_prefix}-tenets-footer`)}
+						</p>
+					</div>
+				</OverviewCard>
+			</PbReveal>
+
+			<PbReveal enabled={reveal_cards} className="w-full" data-search-target="guide-card">
+				<OverviewCard id="guide" title={GuideCopy.title} description={GuideCopy.body}>
+					<div className={cn("flex flex-col", ui.gap.sm)}>
+						<div className={cn("grid items-stretch md:grid-cols-2", ui.gap.sm)}>
+							<PbTabPanel>
+								<div className={cn("text-foreground", ui.typography.title.md)}>
+									<Renderer.Copy.InlineText text={GuideCopy.panels[0]?.title ?? ""} keyPrefix={`${overview_key_prefix}-guide-panel-1-title`} />
+								</div>
+
+								{guide_sequence_text ? (
+									<div className={cn(ui.margin.topSm, "flex flex-wrap items-center text-muted-foreground", ui.gap.sm)}>
+										<Renderer.Tabs.InlineText text={guide_sequence_text} keyPrefix={`${overview_key_prefix}-guide-flow`} onTabClick={goToTab} />
 									</div>
+								) : null}
 
-									{guide_sequence_text ? (
-										<div className={cn(ui.margin.topSm, "flex flex-wrap items-center text-muted-foreground", ui.gap.sm)}>
-											<Renderer.Tabs.InlineText
-												text={guide_sequence_text}
-												keyPrefix={`${overview_key_prefix}-guide-flow`}
-												onTabClick={goToTab}
-											/>
-										</div>
-									) : null}
+								<p className={cn(ui.margin.topSm, "leading-snug text-muted-foreground", ui.typography.body)}>
+									{render_inline_text(GuideCopy.panels[0]?.body ?? "", "overview-guide-sequence")}
+								</p>
+							</PbTabPanel>
 
-									<p className={cn(ui.margin.topSm, "leading-snug text-muted-foreground", ui.typography.body)}>{render_inline_text(GuideCopy.panels[0]?.body ?? "", "overview-guide-sequence")}</p>
-								</PbTabPanel>
-
-								<PbTabPanel>
-									<div className={cn("text-foreground", ui.typography.title.md)}>
-										<Renderer.Copy.InlineText
-											text={GuideCopy.panels[1]?.title ?? ""}
-											keyPrefix={`${overview_key_prefix}-guide-panel-2-title`}
-										/>
-									</div>
-									<p className={cn(ui.margin.topSm, "leading-snug text-muted-foreground", ui.typography.body)}>{render_inline_text(GuideCopy.panels[1]?.body ?? "", "overview-guide-journey")}</p>
-								</PbTabPanel>
-							</div>
+							<PbTabPanel>
+								<div className={cn("text-foreground", ui.typography.title.md)}>
+									<Renderer.Copy.InlineText text={GuideCopy.panels[1]?.title ?? ""} keyPrefix={`${overview_key_prefix}-guide-panel-2-title`} />
+								</div>
+								<p className={cn(ui.margin.topSm, "leading-snug text-muted-foreground", ui.typography.body)}>
+									{render_inline_text(GuideCopy.panels[1]?.body ?? "", "overview-guide-journey")}
+								</p>
+							</PbTabPanel>
 						</div>
-					</OverviewCard>
-				</PbReveal>
-			</PbFocus>
-		</div>
+					</div>
+				</OverviewCard>
+			</PbReveal>
+		</PbTabShell>
 	)
 }

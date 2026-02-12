@@ -17,7 +17,7 @@ import { clamp_value, cn, stableKeyFromParts, stableKeyFromText } from "@/lib/ut
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { CodeTextarea } from "@/features/playbook/components/ui/code"
 import { PlaybookStorage, read_preference, write_preference } from "@/features/playbook/components/context/preferences"
-import { PbBullet, PbCard, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbFocus, PbNumberBadge, PbPanel, PbReveal, PbStack, PbSubtleText, PbTabIntro, useLazyGate } from "@/features/playbook/components/ui/ui"
+import { PbBulletList, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbNumberBadge, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell, useLazyGate } from "@/features/playbook/components/ui/ui"
 import { LoaderCardSkeleton } from "@/features/playbook/components/ui/loader"
 import { DefinitionsCopy } from "@/features/playbook/copy/reports-sql-definitions"
 import { FunnelCopy } from "@/features/playbook/copy/reports-sql-funnel"
@@ -71,23 +71,6 @@ const reports_sql_icon_map = {
 type ReportsSqlIconKey = keyof typeof reports_sql_icon_map
 
 const reports_sql_key_prefix = "reports-sql"
-const panel_md_hover_class = cn(
-	ui.surface.structure.panel,
-	ui.surface.structure.border,
-	ui.spacing.panelMd,
-	ui.motion.duration,
-	ui.radius.base,
-	ui.surface.structure.shadowNone,
-	"hover:border-[color:var(--border-hover)]"
-)
-const panel_sm_hover_class = cn(
-	ui.surface.structure.shadowNone,
-	ui.surface.structure.border,
-	ui.spacing.panelSm,
-	ui.motion.duration,
-	ui.radius.base,
-	"min-w-0 hover:border-[color:var(--border-hover)]"
-)
 const reports_sql_help_hover_class = "hover:decoration-foreground/60"
 const error_panel_class = cn(ui.radius.base, ui.spacing.panelSm, ui.typography.body, "border border-destructive/30 bg-destructive/5 text-destructive")
 const resize_tone_class = "text-[color:var(--color-muted-foreground-soft)] hover:text-[color:var(--border-hover)] focus-visible:text-[color:var(--border-hover)]"
@@ -405,9 +388,9 @@ function AvailableTables() {
 			containerClassName={cn("overflow-x-auto overflow-y-hidden", ui.radius.base, ui.surface.structure.border)}
 		>
 			<colgroup>
-				<col className="w-1/3" />
-				<col className="w-1/3" />
-				<col className="w-1/3" />
+				<col className="w-[20%]" />
+				<col className="w-[40%]" />
+				<col className="w-[40%]" />
 			</colgroup>
 
 			{sql_definitions_columns ? (
@@ -439,16 +422,15 @@ function StageBody({ body }: { body: string }) {
 	const items = React.useMemo(() => body.split(/\n{2,}/g).map((s) => s.trim()).filter(Boolean), [body])
 
 	return (
-		<PbStack asList gap="sm" className={ui.margin.allNone}>
-			{items.map((txt) => {
-				const key = stableKeyFromText(txt, `${reports_sql_key_prefix}-stage`)
-				return (
-					<PbBullet key={key} asListItem marker="dot" size="caption" className={cn("items-start text-muted-foreground [&>span:first-child]:mt-[0.2em]", ui.typography.caption)}>
-						<Renderer.Copy.InlineText text={txt} keyPrefix={key} />
-					</PbBullet>
-				)
-			})}
-		</PbStack>
+		<PbBulletList
+			className={ui.margin.allNone}
+			gap="sm"
+			items={items}
+			size="caption"
+			tone="muted"
+			keyPrefix={(txt) => stableKeyFromText(txt, `${reports_sql_key_prefix}-stage`)}
+			getKey={(txt) => stableKeyFromText(txt, `${reports_sql_key_prefix}-stage`)}
+		/>
 	)
 }
 
@@ -472,7 +454,7 @@ function FunnelNotePills({ alias, items }: { alias: string; items: readonly unkn
 
 function FunnelStagePanel({ title, body, metrics, extra, stage_n }: { title: string; body: React.ReactNode; metrics?: React.ReactNode; extra?: React.ReactNode; stage_n: 1 | 2 | 3 | 4 | 5 }) {
 	return (
-		<PbPanel className={cn(ui.surface.structure.panel, ui.surface.structure.border, ui.spacing.panelSm, ui.motion.duration, ui.radius.base, ui.surface.structure.shadowNone, "flex h-full min-w-0 flex-col overflow-hidden hover:border-[color:var(--border-hover)]")}>
+		<PbTabPanel size="sm" className={cn("flex h-full min-w-0 flex-col overflow-hidden", ui.surface.structure.border, "hover:border-[color:var(--border-hover)]")}>
 			<div className={cn("flex items-center", ui.gap.sm)}>
 				<PbNumberBadge number={stage_n} ariaLabel={FunnelCopy.labels.stageLabel.replace("{n}", String(stage_n))} />
 				<div className={cn("text-foreground", ui.typography.title.md)}>
@@ -491,7 +473,7 @@ function FunnelStagePanel({ title, body, metrics, extra, stage_n }: { title: str
 
 			{extra ? <div className={ui.margin.topSm}>{extra}</div> : null}
 			<div className={cn(ui.margin.topSm, "min-h-0 flex-1 leading-snug text-muted-foreground", ui.typography.caption)}>{body}</div>
-		</PbPanel>
+		</PbTabPanel>
 	)
 }
 
@@ -511,22 +493,21 @@ function TypicalFunnel() {
 				))}
 			</div>
 
-			<PbPanel className={cn("bg-background/40", ui.spacing.panelSm, ui.radius.base, ui.surface.structure.shadowNone)}>
+			<PbTabPanel size="sm" className="bg-background/40">
 				<div className={cn("text-foreground", ui.typography.title.md)}>
 					<Renderer.Copy.InlineText text={FunnelCopy.notes.title} keyPrefix={`${reports_sql_key_prefix}-funnel-notes-title`} />
 				</div>
 
-				<PbStack asList className={ui.margin.topSm} gap="sm">
-					{FunnelCopy.notes.bullets.map((b) => {
-						const key = stableKeyFromText(b, `${reports_sql_key_prefix}-note`)
-						return (
-							<PbBullet key={key} className={cn("text-muted-foreground", ui.typography.caption)}>
-								<Renderer.Copy.InlineText text={b} keyPrefix={key} />
-							</PbBullet>
-						)
-					})}
-				</PbStack>
-			</PbPanel>
+				<PbBulletList
+					className={ui.margin.topSm}
+					gap="sm"
+					items={FunnelCopy.notes.bullets}
+					size="caption"
+					tone="muted"
+					keyPrefix={(txt) => stableKeyFromText(txt, `${reports_sql_key_prefix}-note`)}
+					getKey={(txt) => stableKeyFromText(txt, `${reports_sql_key_prefix}-note`)}
+				/>
+			</PbTabPanel>
 		</div>
 	)
 }
@@ -792,23 +773,18 @@ export default function TabReportsSql() {
 	}, [can_download, download_name, result])
 
 	const run_label = is_running ? PgCopy.labels.run_btn_running : ready ? PgCopy.labels.run_btn_ready : PgCopy.labels.run_btn_not_ready
-	const tab_intro = <PbTabIntro alias={tab.alias} description={tab.description} keyPrefix={`${reports_sql_key_prefix}-intro`} />
 	const error_messages = [error, worker_error].filter(Boolean) as string[]
 	if (!ready && !worker_error)
 		return (
-			<div className={cn("flex flex-col", ui.gap.lg)} data-search-target="tab:reports-sql">
-				{tab_intro}
+			<PbTabShell tabId="reports-sql" alias={tab.alias} description={tab.description} keyPrefix={`${reports_sql_key_prefix}-intro`} focus={false}>
 				<LoaderCardSkeleton />
-			</div>
+			</PbTabShell>
 		)
 
 	return (
-		<div className={cn("flex flex-col", ui.gap.lg)} data-search-target="tab:reports-sql">
-			{tab_intro}
-
-			<PbFocus className={cn("flex flex-col", ui.gap.lg)}>
+		<PbTabShell tabId="reports-sql" alias={tab.alias} description={tab.description} keyPrefix={`${reports_sql_key_prefix}-intro`}>
 				<PbReveal enabled={reveal_cards} className="w-full" data-search-target="funnel-card">
-					<PbCard hover className={cn("relative overflow-hidden", ui.surface.structure.shadowNone)}>
+					<PbTabCard hover>
 						<PbCardGlow className={ui.glow.yellow} />
 						<PbCardLayer>
 							<PbCardHeader
@@ -824,11 +800,11 @@ export default function TabReportsSql() {
 								<TypicalFunnel />
 							</PbCardContent>
 						</PbCardLayer>
-					</PbCard>
+					</PbTabCard>
 				</PbReveal>
 
 				<PbReveal enabled={reveal_cards} className="w-full" data-search-target="definitions-card">
-					<PbCard hover className={cn("relative overflow-hidden", ui.surface.structure.shadowNone)}>
+					<PbTabCard hover>
 						<PbCardHeader
 							title={<PbTitleWithIcon icon={icon_for(DefinitionsCopy.icon)} text={<Renderer.Copy.InlineText text={DefinitionsCopy.title} keyPrefix={`${reports_sql_key_prefix}-defs-title`} />} />}
 							description={
@@ -840,7 +816,7 @@ export default function TabReportsSql() {
 						/>
 						<PbCardContent className="relative">
 							<div className={cn("grid grid-cols-1", ui.gap.sm)}>
-								<PbPanel className={panel_md_hover_class}>
+								<PbTabPanel>
 									<div className={cn("text-foreground", ui.typography.title.md)}>
 										<Renderer.Copy.InlineText text={DefinitionsCopy.panels[0]?.title ?? ""} keyPrefix={`${reports_sql_key_prefix}-defs-panel-1-title`} />
 									</div>
@@ -852,9 +828,9 @@ export default function TabReportsSql() {
 											<Renderer.Metrics.AttributePill key={id} id={id} />
 										))}
 									</div>
-								</PbPanel>
+								</PbTabPanel>
 
-								<PbPanel className={panel_md_hover_class}>
+								<PbTabPanel>
 									<div className={cn("text-foreground", ui.typography.title.md)}>
 										<Renderer.Copy.InlineText text={DefinitionsCopy.panels[1]?.title ?? ""} keyPrefix={`${reports_sql_key_prefix}-defs-panel-2-title`} />
 									</div>
@@ -866,9 +842,9 @@ export default function TabReportsSql() {
 											<Renderer.Metrics.MeasurePill key={id} id={id} />
 										))}
 									</div>
-								</PbPanel>
+								</PbTabPanel>
 
-								<PbPanel className={panel_md_hover_class}>
+								<PbTabPanel>
 									<div className={cn("text-foreground", ui.typography.title.md)}>
 										<Renderer.Copy.InlineText text={DefinitionsCopy.panels[2]?.title ?? ""} keyPrefix={`${reports_sql_key_prefix}-defs-panel-3-title`} />
 									</div>
@@ -878,15 +854,15 @@ export default function TabReportsSql() {
 									<div className={ui.margin.topSm}>
 										<AvailableTables />
 									</div>
-								</PbPanel>
+								</PbTabPanel>
 							</div>
 						</PbCardContent>
-					</PbCard>
+					</PbTabCard>
 				</PbReveal>
 
 				<div ref={playground_root_ref} data-slot="sql-playground">
 					<PbReveal enabled={reveal_cards} className="w-full" data-search-target="pg-card">
-						<PbCard hover className={cn("relative overflow-hidden", ui.surface.structure.shadowNone)}>
+						<PbTabCard hover>
 							<PbCardHeader
 								className="flex flex-col md:flex-row md:items-start md:justify-between"
 								title={<PbTitleWithIcon icon={icon_for(PgCopy.icon)} text={<Renderer.Copy.InlineText text={PgCopy.title} keyPrefix={`${reports_sql_key_prefix}-pg-title`} />} />}
@@ -958,7 +934,7 @@ export default function TabReportsSql() {
 										className={cn("grid min-w-0 grid-cols-1", ui.gap.sm, "lg:gap-0")}
 										style={is_desktop_playground ? { gridTemplateColumns: `minmax(300px, ${width_drag.clamp_pct(editor_width_pct)}%) 24px minmax(420px, 1fr)` } : undefined}
 									>
-										<PbPanel className={panel_sm_hover_class}>
+										<PbTabPanel size="sm" className="min-w-0">
 											<div className="min-w-0">
 												<div className={cn("font-medium text-foreground", ui.typography.body)}>
 													<Renderer.Copy.InlineText text={PgCopy.labels.editor_title} keyPrefix={`${reports_sql_key_prefix}-pg-editor-title`} />
@@ -980,7 +956,7 @@ export default function TabReportsSql() {
 													ariaLabel={PgCopy.labels.editor_title}
 												/>
 											</div>
-										</PbPanel>
+										</PbTabPanel>
 
 										{is_desktop_playground ? (
 											<div
@@ -1011,7 +987,7 @@ export default function TabReportsSql() {
 											</div>
 										) : null}
 
-										<PbPanel className={cn(panel_sm_hover_class, "flex flex-col")}>
+										<PbTabPanel size="sm" className="min-w-0 flex flex-col">
 											<div className={cn("font-medium text-foreground", ui.typography.body)}>
 												<Renderer.Copy.InlineText text={PgCopy.labels.viewer_title} keyPrefix={`${reports_sql_key_prefix}-pg-viewer-title`} />
 											</div>
@@ -1023,7 +999,7 @@ export default function TabReportsSql() {
 												<div className={cn("min-h-0 flex-1 overflow-hidden bg-background flex flex-col", ui.radius.base, ui.surface.structure.shadowNone, ui.surface.structure.border)}>
 													<div className="relative flex min-h-0 flex-1 flex-col">
 														<Table
-															stickyHeader={is_desktop_playground}
+															stickyHeader
 															headerTone="green"
 															groupedDividers
 															containerClassName={results_table_container_class}
@@ -1102,7 +1078,7 @@ export default function TabReportsSql() {
 													</div>
 												</div>
 											</div>
-										</PbPanel>
+										</PbTabPanel>
 									</div>
 
 									{is_desktop_playground ? (
@@ -1141,10 +1117,9 @@ export default function TabReportsSql() {
 									))}
 								</div>
 							</PbCardContent>
-						</PbCard>
+						</PbTabCard>
 					</PbReveal>
 				</div>
-			</PbFocus>
-		</div>
+		</PbTabShell>
 	)
 }
