@@ -148,21 +148,24 @@ function useTabBarHide({
 	y_target: ReturnType<typeof useMotionValue<number>>
 	enabled?: boolean
 }) {
+	const [pointer_events, set_pointer_events] = React.useState<"auto" | "none">("auto")
+
 	React.useEffect(() => {
 		if (!enabled) {
 			y_target.set(0)
-			if (bar_ref.current) bar_ref.current.style.pointerEvents = "auto"
+			set_pointer_events((prev) => (prev === "auto" ? prev : "auto"))
 			return
 		}
-		const bar = bar_ref.current
-		if (!bar) return
 
 		let last_y = Math.max(0, window.scrollY || 0)
 		let hidden_progress = 0
 		let raf_id: number | null = null
 
 		const set_interactive = (v: boolean) => {
-			bar.style.pointerEvents = v ? "auto" : "none"
+			set_pointer_events((prev) => {
+				const next = v ? "auto" : "none"
+				return prev === next ? prev : next
+			})
 		}
 
 		const apply = () => {
@@ -212,6 +215,8 @@ function useTabBarHide({
 			window.removeEventListener("resize", on_resize)
 		}
 	}, [bar_height, bar_ref, enabled, is_stuck, y_target])
+
+	return pointer_events
 }
 
 /* -------------------------------------------------------------------------- */
@@ -464,7 +469,7 @@ export function PbHeader({
 
 	const bar_ref = React.useRef<HTMLDivElement | null>(null)
 	const bar_height = useMeasureHeight(bar_ref)
-	useTabBarHide({ bar_ref, bar_height, is_stuck, y_target, enabled: !introActive && !suppressMotion })
+	const bar_pointer_events = useTabBarHide({ bar_ref, bar_height, is_stuck, y_target, enabled: !introActive && !suppressMotion })
 
 	React.useEffect(() => {
 		if (!reduce_motion) return
@@ -492,7 +497,11 @@ export function PbHeader({
 		<>
 			<div ref={sentinel_ref} aria-hidden="true" className="h-0 w-full" />
 
-			<motion.div ref={bar_ref} style={{ y: reduce_motion ? y_target : y }} className={cn("sticky z-50 w-full will-change-transform", "top-3 md:top-4")}>
+			<motion.div
+				ref={bar_ref}
+				style={{ y: reduce_motion ? y_target : y, pointerEvents: bar_pointer_events }}
+				className={cn("sticky z-50 w-full will-change-transform", "top-3 md:top-4")}
+			>
 				<div className={cn("pointer-events-none", ui.nav.headerGap)} />
 
 				<div className="w-full">

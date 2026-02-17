@@ -183,7 +183,8 @@ export function useMotionPill<K extends string>(opts: {
 	spring: SpringOptions
 	reduceMotion?: boolean
 }) {
-	const reduce_motion = opts.reduceMotion ?? useReducedMotionBool()
+	const prefers_reduced_motion = useReducedMotionBool()
+	const reduce_motion = opts.reduceMotion ?? prefers_reduced_motion
 
 	const x_target = useMotionValue(0)
 	const w_target = useMotionValue(0)

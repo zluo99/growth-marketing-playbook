@@ -62,7 +62,7 @@ function cubic_bezier_slope(t: number, p0: number, p1: number, p2: number, p3: n
 
 function bezier_ease_value(t: number, curve: readonly [number, number, number, number]) {
 	const [x1, y1, x2, y2] = curve
-	let x = t
+	const x = t
 	let guess = t
 	for (let i = 0; i < 5; i++) {
 		const current = cubic_bezier_value(guess, 0, x1, x2, 1)
@@ -265,7 +265,7 @@ function OverviewIntroOverlay({ active, onComplete }: { active: boolean; onCompl
 			})
 			set_base_positions(next_positions)
 		}
-	}, [active])
+	}, [active, overlay_origin?.x, overlay_origin?.y])
 
 	const apply_delta = React.useCallback(
 		(delta: number) => {
@@ -374,7 +374,7 @@ function OverviewIntroOverlay({ active, onComplete }: { active: boolean; onCompl
 
 	React.useLayoutEffect(() => {
 		if (!active || reduce_motion) return
-		let raf = requestAnimationFrame(measure_deltas)
+		const raf = requestAnimationFrame(measure_deltas)
 		const timeout = window.setTimeout(measure_deltas, 120)
 
 		const on_resize = () => measure_deltas()

@@ -109,9 +109,13 @@ function Kicker({ id, icon, title, description, spendIds }: KickerProps) {
 
 export default function TabOverview() {
 	const { goToTab, suppressReveal } = usePbTabsNav()
-	const reveal_lock_ref = React.useRef(false)
-	if (suppressReveal) reveal_lock_ref.current = true
-	const reveal_cards = !suppressReveal && !reveal_lock_ref.current
+	const [reveal_locked, set_reveal_locked] = React.useState(false)
+
+	React.useEffect(() => {
+		if (suppressReveal) set_reveal_locked(true)
+	}, [suppressReveal])
+
+	const reveal_cards = !suppressReveal && !reveal_locked
 	const tab = TabById["overview"]
 	const description = (
 		<span className={cn("relative inline-block", ui.typography.title.lg)}>
