@@ -48,6 +48,8 @@ const typography_class = {
 	"title-sm": ui.typography.title.sm,
 	"title-md": ui.typography.title.md,
 	"title-lg": ui.typography.title.lg,
+	"title-xl": ui.typography.title.xl,
+	"title-xxl": ui.typography.title.xxl,
 } as const satisfies Record<TypographyKey, string>
 
 const panel_opaque_classes = "bg-white text-black dark:bg-black dark:text-white"
@@ -571,24 +573,30 @@ export function PbSubtleText(props: React.ComponentProps<typeof PbText>) {
 /* Components                                                                 */
 /* -------------------------------------------------------------------------- */
 
-export function PbTabIntro({ alias, description, keyPrefix }: { alias: string; description?: string; keyPrefix: string }) {
+export function PbTabIntro({ alias, description, keyPrefix }: { alias: string; description?: React.ReactNode; keyPrefix: string }) {
 	return (
 		<div className={cn("flex flex-col", ui.gap.xs)}>
 			<div className={cn("text-muted-foreground", ui.typography.caption)}>
 				<Renderer.Copy.InlineText text={alias} keyPrefix={`${keyPrefix}-alias`} />
 			</div>
-			{description ? (
-				<p className={cn("text-foreground", ui.typography.title.lg)}>
-					<Renderer.Copy.InlineText text={description} keyPrefix={`${keyPrefix}-description`} />
-				</p>
-			) : null}
+			{description
+				? typeof description === "string"
+					? (
+						<p className={cn("text-foreground", ui.typography.title.lg)}>
+							<Renderer.Copy.InlineText text={description} keyPrefix={`${keyPrefix}-description`} />
+						</p>
+					)
+					: (
+						<div className="text-foreground">{description}</div>
+					)
+				: null}
 		</div>
 	)
 }
 
 export type PbTabShellProps = {
 	alias: string
-	description?: string
+	description?: React.ReactNode
 	keyPrefix: string
 	tabId?: string
 	className?: string

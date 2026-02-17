@@ -52,7 +52,15 @@ const PillRoot = TabsPrimitive.Root
 /* Hooks                                                                      */
 /* -------------------------------------------------------------------------- */
 
-export function useMotionPillRail<K extends string>({ activeKey, spring }: { activeKey: K; spring: MotionSpring }): MotionPillRailState<K> {
+export function useMotionPillRail<K extends string>({
+	activeKey,
+	spring,
+	reduceMotion,
+}: {
+	activeKey: K
+	spring: MotionSpring
+	reduceMotion?: boolean
+}): MotionPillRailState<K> {
 	const listRef = React.useRef<HTMLDivElement>(null)
 	const triggerRefs = React.useRef<Record<K, HTMLElement | null>>({} as Record<K, HTMLElement | null>)
 
@@ -61,6 +69,7 @@ export function useMotionPillRail<K extends string>({ activeKey, spring }: { act
 		railRef: listRef as unknown as React.RefObject<HTMLElement | null>,
 		itemRefs: triggerRefs as unknown as React.RefObject<Record<K, HTMLElement | null>>,
 		spring,
+		reduceMotion,
 	})
 
 	const getTriggerRef = React.useCallback(

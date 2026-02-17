@@ -221,10 +221,12 @@ const typography = {
 		sm: "text-sm font-semibold leading-5",
 		md: "text-base font-semibold leading-6",
 		lg: "text-lg font-semibold leading-7",
+		xl: "text-3xl font-semibold leading-9",
+		xxl: "text-4xl font-semibold leading-10",
 	},
 } as const
 
-export type TypographyKey = "body" | "caption" | "label" | "title-sm" | "title-md" | "title-lg"
+export type TypographyKey = "body" | "caption" | "label" | "title-sm" | "title-md" | "title-lg" | "title-xl" | "title-xxl"
 
 const icon_nude = {
 	xs: "h-3 w-3",
@@ -698,6 +700,16 @@ const table = {
 } as const
 
 /* -------------------------------------------------------------------------- */
+/* Constants: intro                                                           */
+/* -------------------------------------------------------------------------- */
+
+const intro = {
+	overlayPadX: "px-6 sm:px-10 lg:px-16",
+	overlayMaxWidth: "max-w-4xl",
+	overlayTitleColor: "text-[color:color-mix(in_oklch,var(--accent-indigo-fg)_82%,var(--surface-bg)_18%)]",
+} as const
+
+/* -------------------------------------------------------------------------- */
 /* Export                                                                     */
 /* -------------------------------------------------------------------------- */
 
@@ -737,6 +749,7 @@ export const ui = {
 	rangeBar: range_bar,
 	spend,
 	table,
+	intro,
 } as const
 
 
