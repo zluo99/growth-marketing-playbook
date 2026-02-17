@@ -116,7 +116,7 @@ const source_rows = Object.freeze([
     benchmark: {
       b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2b_lead_to_deal_cvr_description: "Mixed intent. Improves with stronger brand demand and cleaner lead routing.",
-      b2c_lead_to_deal_cvr_range: { min: 0.4, max: 1.6 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 1.5 },
       b2c_lead_to_deal_cvr_description: "Varies widely. Strong brand demand and lower friction lift conversion."
     }
   },
@@ -130,7 +130,7 @@ const source_rows = Object.freeze([
     benchmark: {
       b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2b_lead_to_deal_cvr_description: "Offline direct response; effectiveness depends on matchback rate and offer fit.",
-      b2c_lead_to_deal_cvr_range: { min: 0.4, max: 1.6 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 1.5 },
       b2c_lead_to_deal_cvr_description: "Varies by offer and redemption mechanism; best with clear redemption paths and strong CTAs."
     }
   },
@@ -152,9 +152,9 @@ const source_rows = Object.freeze([
     description_long:
       "One to many email: newsletters, announcements, launches. Track `delivered`, `opens`, `open_rate`, `clicks`, `ctr`, `unsubscribes`, plus downstream `leads` and `lead_to_deal_cvr`. Keep `utm_campaign` and `utm_medium` consistent.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 1.0, max: 3.8 },
+      b2b_lead_to_deal_cvr_range: { min: 1.0, max: 4.0 },
       b2b_lead_to_deal_cvr_description: "Higher intent with segmentation and fast follow up. Often mixes expansion and awareness.",
-      b2c_lead_to_deal_cvr_range: { min: 0.7, max: 2.4 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 2.5 },
       b2c_lead_to_deal_cvr_description: "Offer clarity and friction dominate. Strongest with targeted messaging and fast time to value."
     }
   },
@@ -168,7 +168,7 @@ const source_rows = Object.freeze([
     benchmark: {
       b2b_lead_to_deal_cvr_range: { min: 1.0, max: 3.5 },
       b2b_lead_to_deal_cvr_description: "Improves with scoring, personalization, and fast follow up on engagement.",
-      b2c_lead_to_deal_cvr_range: { min: 0.7, max: 2.2 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2c_lead_to_deal_cvr_description: "Improves when messaging reduces friction and clarifies value quickly."
     }
   },
@@ -184,11 +184,11 @@ const source_rows = Object.freeze([
     benchmark: {
       b2b_roas_range: { min: 1.0, max: 3.0 },
       b2b_roas_description: "ROAS improves when event costs are tracked cleanly and follow up converts meetings into qualified pipeline.",
-      b2b_lead_to_deal_cvr_range: { min: 0.6, max: 2.2 },
+      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2b_lead_to_deal_cvr_description: "Higher conversion when meetings are pre booked and qualification is consistent.",
-      b2c_roas_range: { min: 0.9, max: 2.6 },
+      b2c_roas_range: { min: 1.0, max: 2.5 },
       b2c_roas_description: "ROAS depends on offer relevance, attendance quality, and speed from event interaction to purchase path.",
-      b2c_lead_to_deal_cvr_range: { min: 0.4, max: 1.6 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 1.5 },
       b2c_lead_to_deal_cvr_description: "Event to purchase depends on the offer and immediacy of the next step."
     }
   },
@@ -202,7 +202,7 @@ const source_rows = Object.freeze([
     benchmark: {
       b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2b_lead_to_deal_cvr_description: "Depends on lead capture quality, routing, and post event cadence.",
-      b2c_lead_to_deal_cvr_range: { min: 0.35, max: 1.4 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 1.5 },
       b2c_lead_to_deal_cvr_description: "Varies. Strongest with event exclusive offers and fast follow up."
     }
   },
@@ -214,9 +214,9 @@ const source_rows = Object.freeze([
     description_long:
       "Virtual events and webinars. Track `eligible_population`, `conversions`, `cvr`, plus `lead_to_opp_cvr` and `lead_to_deal_cvr`. Keep `utm_source` and `utm_campaign` consistent.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.8, max: 2.8 },
+      b2b_lead_to_deal_cvr_range: { min: 1.0, max: 3.0 },
       b2b_lead_to_deal_cvr_description: "Best when sales follows up on engagement signals quickly.",
-      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 1.8 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2c_lead_to_deal_cvr_description: "Improves with a clear CTA and short time to value after attendance."
     }
   },
@@ -230,9 +230,9 @@ const source_rows = Object.freeze([
     description_long:
       "Owned content distribution. Monitor `pageviews`, `session_duration`, `leads`, and `lead_to_deal_cvr`. Define inclusion rules under `ssot`.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.4, max: 1.6 },
+      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 1.5 },
       b2b_lead_to_deal_cvr_description: "Often top or mid funnel. Depends on offers, gating, and nurture.",
-      b2c_lead_to_deal_cvr_range: { min: 0.3, max: 1.2 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 1.0 },
       b2c_lead_to_deal_cvr_description: "Improves with clear product linkage and low friction conversion."
     }
   },
@@ -244,9 +244,9 @@ const source_rows = Object.freeze([
     description_long:
       "Unpaid social and community distribution. Track `reach`, `clicks`, `ctr`, plus downstream `leads`. Use `utms` to separate from dark social.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.2, max: 0.9 },
+      b2b_lead_to_deal_cvr_range: { min: 0.0, max: 1.0 },
       b2b_lead_to_deal_cvr_description: "Lower intent. Improves with clear CTAs and retargeting.",
-      b2c_lead_to_deal_cvr_range: { min: 0.15, max: 0.7 },
+      b2c_lead_to_deal_cvr_range: { min: 0.0, max: 0.5 },
       b2c_lead_to_deal_cvr_description: "Depends on offer and landing experience."
     }
   },
@@ -258,9 +258,9 @@ const source_rows = Object.freeze([
     description_long:
       "Earned media: press and backlinks. Validate impact with `incrementality` via `geo_test` and `matched_markets` when possible. Otherwise track `cohort` shifts in `leads`, `revenue`, and `arr_from_leads`.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.3, max: 1.4 },
+      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 1.5 },
       b2b_lead_to_deal_cvr_description: "Often influence heavy. Conversion depends on landing relevance and brand strength.",
-      b2c_lead_to_deal_cvr_range: { min: 0.25, max: 1.1 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 1.0 },
       b2c_lead_to_deal_cvr_description: "Spiky traffic. Conversion varies by fit and post click clarity."
     }
   },
@@ -274,7 +274,7 @@ const source_rows = Object.freeze([
     benchmark: {
       b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2b_lead_to_deal_cvr_description: "Varies by query mix. Improves with high intent pages and clear CTAs.",
-      b2c_lead_to_deal_cvr_range: { min: 0.4, max: 1.6 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 1.5 },
       b2c_lead_to_deal_cvr_description: "Higher conversion on bottom funnel queries. UX and speed matter."
     }
   },
@@ -290,9 +290,9 @@ const source_rows = Object.freeze([
     benchmark: {
       b2b_roas_range: { min: 2.0, max: 6.0 },
       b2b_roas_description: "High intent capture. ROAS depends on brand mix, CPC inflation, and landing to routing speed.",
-      b2b_lead_to_deal_cvr_range: { min: 0.6, max: 2.4 },
+      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.5 },
       b2b_lead_to_deal_cvr_description: "Strongest on bottom funnel queries. Declines as you expand to broader terms.",
-      b2c_roas_range: { min: 1.8, max: 5.0 },
+      b2c_roas_range: { min: 2.0, max: 5.0 },
       b2c_roas_description: "Demand capture. ROAS driven by query intent, CPCs, and onsite conversion rate.",
       b2c_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2c_lead_to_deal_cvr_description: "Bottom funnel queries convert best. Shopping and brand terms outperform generic."
@@ -306,13 +306,13 @@ const source_rows = Object.freeze([
     description_long:
       "Paid social prospecting and retargeting. Track `impressions`, `cpm`, `clicks`, `ctr`, `cpa`, `cac`, and `roas`. Validate with `mta` and `incrementality`.",
     benchmark: {
-      b2b_roas_range: { min: 1.2, max: 3.5 },
+      b2b_roas_range: { min: 1.0, max: 3.5 },
       b2b_roas_description: "Prospecting plus retargeting blend. ROAS improves with tight ICP targeting and strong offer to landing match.",
-      b2b_lead_to_deal_cvr_range: { min: 0.25, max: 1.2 },
+      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 1.0 },
       b2b_lead_to_deal_cvr_description: "Often mid funnel. Best when retargeting and lead qualification are disciplined.",
-      b2c_roas_range: { min: 1.3, max: 4.0 },
+      b2c_roas_range: { min: 1.5, max: 4.0 },
       b2c_roas_description: "Creative driven channel. ROAS depends on creative velocity, audience fit, and site conversion rate.",
-      b2c_lead_to_deal_cvr_range: { min: 0.3, max: 1.4 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 1.5 },
       b2c_lead_to_deal_cvr_description: "Performance varies by creative and offer. Scaling needs creative refresh and strong post click UX."
     }
   },
@@ -324,13 +324,13 @@ const source_rows = Object.freeze([
     description_long:
       "Paid video, including online and CTV. Validate assisted impact with `incrementality`, `geo_test`, and `matched_markets`. Track downstream `leads` and `revenue` and keep `attribution_window` rules consistent.",
     benchmark: {
-      b2b_roas_range: { min: 1.1, max: 3.0 },
+      b2b_roas_range: { min: 1.0, max: 3.0 },
       b2b_roas_description: "Performance video can drive direct response. ROAS depends on creative, audience, and landing path.",
-      b2b_lead_to_deal_cvr_range: { min: 0.2, max: 0.9 },
+      b2b_lead_to_deal_cvr_range: { min: 0.0, max: 1.0 },
       b2b_lead_to_deal_cvr_description: "Often mid funnel. Improves when retargeting pools and conversion paths are tight.",
-      b2c_roas_range: { min: 1.2, max: 3.5 },
+      b2c_roas_range: { min: 1.0, max: 3.5 },
       b2c_roas_description: "Creative first DR channel. ROAS depends on offer clarity, hook rate, and onsite conversion.",
-      b2c_lead_to_deal_cvr_range: { min: 0.15, max: 0.8 },
+      b2c_lead_to_deal_cvr_range: { min: 0.0, max: 1.0 },
       b2c_lead_to_deal_cvr_description: "Best when creative iteration is fast and post click experience is optimized."
     }
   },
@@ -342,13 +342,13 @@ const source_rows = Object.freeze([
     description_long:
       "Programmatic display and retargeting. Track `cpm`, `ctr`, and `cvr`. Validate `roas` with a disciplined `attribution_window` because view through settings can inflate credit.",
     benchmark: {
-      b2b_roas_range: { min: 1.3, max: 4.0 },
+      b2b_roas_range: { min: 1.5, max: 4.0 },
       b2b_roas_description: "Best as retargeting and ABM support. ROAS depends on audience quality, frequency control, and view through bias.",
-      b2b_lead_to_deal_cvr_range: { min: 0.25, max: 1.1 },
+      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 1.0 },
       b2b_lead_to_deal_cvr_description: "Generally mid to low intent. Strongest with retargeting pools and clean suppression.",
-      b2c_roas_range: { min: 1.2, max: 3.5 },
+      b2c_roas_range: { min: 1.0, max: 3.5 },
       b2c_roas_description: "Retargeting heavy. ROAS is sensitive to attribution settings and frequency caps.",
-      b2c_lead_to_deal_cvr_range: { min: 0.2, max: 0.9 },
+      b2c_lead_to_deal_cvr_range: { min: 0.0, max: 1.0 },
       b2c_lead_to_deal_cvr_description: "Works best with tight audiences and strong offers. Watch diminishing returns at high frequency."
     }
   },
@@ -362,11 +362,11 @@ const source_rows = Object.freeze([
     benchmark: {
       b2b_roas_range: { min: 2.0, max: 7.0 },
       b2b_roas_description: "High intent marketplace traffic. ROAS driven by category fit, profile quality, and competitive bidding.",
-      b2b_lead_to_deal_cvr_range: { min: 0.9, max: 3.5 },
+      b2b_lead_to_deal_cvr_range: { min: 1.0, max: 3.5 },
       b2b_lead_to_deal_cvr_description: "Often late stage. Strongest when routing is fast and leads are treated as bottom funnel.",
-      b2c_roas_range: { min: 1.6, max: 5.5 },
+      b2c_roas_range: { min: 1.5, max: 5.5 },
       b2c_roas_description: "Comparable to marketplaces. ROAS depends on offer competitiveness and attribution hygiene.",
-      b2c_lead_to_deal_cvr_range: { min: 0.7, max: 2.8 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 3.0 },
       b2c_lead_to_deal_cvr_description: "High intent when fit is good. Ensure tracking prevents last click arbitrage."
     }
   },
@@ -378,11 +378,11 @@ const source_rows = Object.freeze([
     description_long:
       "Fixed or tiered CPL programs. Monitor `cost_per_lead`, `lead_to_deal_cvr`, `opp_to_deal_cvr`, and unit economics via `cac` and `roas`. Keep `utms` clean to avoid partner leakage.",
     benchmark: {
-      b2b_roas_range: { min: 1.2, max: 3.5 },
+      b2b_roas_range: { min: 1.0, max: 3.5 },
       b2b_roas_description: "ROAS depends on qualification rigor, lead routing speed, and partner quality.",
-      b2b_lead_to_deal_cvr_range: { min: 0.4, max: 2.0 },
+      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2b_lead_to_deal_cvr_description: "Varies by partner and filters. Watch duplicates and low intent submissions.",
-      b2c_roas_range: { min: 0.9, max: 3.0 },
+      b2c_roas_range: { min: 1.0, max: 3.0 },
       b2c_roas_description: "Depends on partner quality, offer fit, and conversion flow."
     }
   },
@@ -398,9 +398,9 @@ const source_rows = Object.freeze([
     benchmark: {
       b2b_roas_range: { min: 2.0, max: 6.0 },
       b2b_roas_description: "Performance aligned when payouts track conversions. ROAS depends on partner quality and incremental mix.",
-      b2b_lead_to_deal_cvr_range: { min: 0.8, max: 3.0 },
+      b2b_lead_to_deal_cvr_range: { min: 1.0, max: 3.0 },
       b2b_lead_to_deal_cvr_description: "Quality depends on partner ICP overlap and enablement.",
-      b2c_roas_range: { min: 1.6, max: 4.5 },
+      b2c_roas_range: { min: 1.5, max: 4.5 },
       b2c_roas_description: "Efficient when audiences align. ROAS is sensitive to attribution windows and coupon or last click behavior.",
       b2c_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2c_lead_to_deal_cvr_description: "Best with clean rules, suppression, and clear handoffs."
@@ -414,7 +414,7 @@ const source_rows = Object.freeze([
     description_long:
       "Partner co marketing. Measure `leads`, `opportunities_from_leads`, and `lead_to_deal_cvr`. Align on shared `utm` and `kpis`.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.8, max: 3.0 },
+      b2b_lead_to_deal_cvr_range: { min: 1.0, max: 3.0 },
       b2b_lead_to_deal_cvr_description: "Quality depends on partner ICP overlap and enablement.",
       b2c_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2c_lead_to_deal_cvr_description: "Best with clear handoffs and attribution hygiene."
@@ -428,7 +428,7 @@ const source_rows = Object.freeze([
     description_long:
       "Integration marketplaces, listings, and referrals. Track `cvr`, `leads`, `lead_to_opp_cvr`, and `lead_to_deal_cvr`. Connect product to CRM via `identity_graph`.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.8, max: 3.0 },
+      b2b_lead_to_deal_cvr_range: { min: 1.0, max: 3.0 },
       b2b_lead_to_deal_cvr_description: "Quality depends on ICP overlap and partner enablement.",
       b2c_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2c_lead_to_deal_cvr_description: "Best with clear handoffs and measurement hygiene."
@@ -442,7 +442,7 @@ const source_rows = Object.freeze([
     description_long:
       "Channel and reseller sourced. Attribute through CRM linkage and evaluate `opportunities`, `opp_to_deal_cvr`, `deals`, and `sales_cycle_time`.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.8, max: 3.0 },
+      b2b_lead_to_deal_cvr_range: { min: 1.0, max: 3.0 },
       b2b_lead_to_deal_cvr_description: "Depends on partner sourced lead quality and sales process alignment.",
       b2c_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2c_lead_to_deal_cvr_description: "Depends on partner quality and end customer experience."
@@ -460,11 +460,11 @@ const source_rows = Object.freeze([
     benchmark: {
       b2b_roas_range: { min: 3.0, max: 10.0 },
       b2b_roas_description: "When costs are measurable, ROAS depends on activation to revenue lift and incremental upgrades.",
-      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.2 },
+      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2b_lead_to_deal_cvr_description: "Depends on activation to sales handoff and product qualification.",
       b2c_roas_range: { min: 2.5, max: 9.0 },
       b2c_roas_description: "ROAS depends on activation lift and upgrade propensity. Validate with retention cohorts and incremental upgrades.",
-      b2c_lead_to_deal_cvr_range: { min: 0.3, max: 1.5 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 1.5 },
       b2c_lead_to_deal_cvr_description: "Improves with onboarding and in product conversion surfaces."
     }
   },
@@ -478,11 +478,11 @@ const source_rows = Object.freeze([
     benchmark: {
       b2b_roas_range: { min: 3.0, max: 10.0 },
       b2b_roas_description: "ROAS hinges on signup to activation and assisted conversion. Validate with experiments when possible.",
-      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.2 },
+      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2b_lead_to_deal_cvr_description: "Depends on activation quality and SDR follow up on product signals.",
       b2c_roas_range: { min: 2.5, max: 9.0 },
       b2c_roas_description: "ROAS driven by conversion rate improvements and downstream paid conversion.",
-      b2c_lead_to_deal_cvr_range: { min: 0.3, max: 1.5 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 1.5 },
       b2c_lead_to_deal_cvr_description: "Improves with short paths to value and strong conversion prompts."
     }
   },
@@ -496,11 +496,11 @@ const source_rows = Object.freeze([
     benchmark: {
       b2b_roas_range: { min: 3.0, max: 10.0 },
       b2b_roas_description: "ROAS driven by incremental upgrades from packaging, pricing, and in product prompts. Validate with A/B tests and cohorts.",
-      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.2 },
+      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2b_lead_to_deal_cvr_description: "Depends on upgrade triggers and how sales assist is routed.",
       b2c_roas_range: { min: 2.5, max: 9.0 },
       b2c_roas_description: "ROAS depends on incremental upgrades and retention impact.",
-      b2c_lead_to_deal_cvr_range: { min: 0.3, max: 1.5 },
+      b2c_lead_to_deal_cvr_range: { min: 0.5, max: 1.5 },
       b2c_lead_to_deal_cvr_description: "Improves with clear upgrade prompts and minimal friction."
     }
   },
@@ -528,9 +528,9 @@ const source_rows = Object.freeze([
     description_long:
       "Employee introductions and referrals. Compare `opportunities`, `deals`, and `sales_cycle_time` versus other channels. Use `identity_graph` when stitching is needed.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 1.2, max: 4.5 },
+      b2b_lead_to_deal_cvr_range: { min: 1.0, max: 4.5 },
       b2b_lead_to_deal_cvr_description: "Often high quality. Volume is limited by network size and enablement.",
-      b2c_lead_to_deal_cvr_range: { min: 0.9, max: 3.0 },
+      b2c_lead_to_deal_cvr_range: { min: 1.0, max: 3.0 },
       b2c_lead_to_deal_cvr_description: "Works when sharing is authentic and the offer is simple."
     }
   },
@@ -544,7 +544,7 @@ const source_rows = Object.freeze([
     description_long:
       "Phone and dialer outreach to new or target prospects. Attribute via CRM dispositions and judge on `opportunities`, `deals`, and `opp_to_deal_cvr`.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.2, max: 0.9 },
+      b2b_lead_to_deal_cvr_range: { min: 0.0, max: 1.0 },
       b2b_lead_to_deal_cvr_description: "Cold channel. Depends on ICP targeting and message market fit."
     }
   },
@@ -556,7 +556,7 @@ const source_rows = Object.freeze([
     description_long:
       "Cold outbound email sequences. Monitor `delivered`, `opens`, `open_rate`, and `clicks`, but judge on outcomes: `opportunities`, `deals`, and `opp_to_deal_cvr`.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.2, max: 0.9 },
+      b2b_lead_to_deal_cvr_range: { min: 0.0, max: 1.0 },
       b2b_lead_to_deal_cvr_description: "Depends on ICP targeting and message market fit. Routing matters."
     }
   },
@@ -568,7 +568,7 @@ const source_rows = Object.freeze([
     description_long:
       "Cold and warm SMS in prospecting sequences. Attribute via platform plus CRM outcomes. Use shortlinks and `utms` when clicks exist. Judge on `opportunities` and `deals`.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.2, max: 0.9 },
+      b2b_lead_to_deal_cvr_range: { min: 0.0, max: 1.0 },
       b2b_lead_to_deal_cvr_description: "Depends on deliverability, consent hygiene, and offer fit."
     }
   },
@@ -580,7 +580,7 @@ const source_rows = Object.freeze([
     description_long:
       "Manual outbound DMs and comments. Attribute via logged outreach plus CRM, and use `utms` when driving clicks. Judge on `opportunities` and `deals`.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.2, max: 0.9 },
+      b2b_lead_to_deal_cvr_range: { min: 0.0, max: 1.0 },
       b2b_lead_to_deal_cvr_description: "Depends on ICP, offer, and multi touch orchestration."
     }
   },
@@ -592,7 +592,7 @@ const source_rows = Object.freeze([
     description_long:
       "In person walk in outreach. Attribute via logged visits and CRM. Use QR, PURL, and `utms` for follow ups. Judge on `opportunities`, `deals`, and `sales_cycle_time`.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.2, max: 1.0 },
+      b2b_lead_to_deal_cvr_range: { min: 0.0, max: 1.0 },
       b2b_lead_to_deal_cvr_description: "Highly variable. Depends on location targeting, offer relevance, and fast follow up."
     }
   },
@@ -606,7 +606,7 @@ const source_rows = Object.freeze([
     description_long:
       "Purchased intent and enrichment signals used to prioritize outreach. Not a delivery channel. Measure lift versus a `control_group` using `opportunities` and `deals`, and use `treatment_group` when possible.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.15, max: 0.7 },
+      b2b_lead_to_deal_cvr_range: { min: 0.0, max: 0.5 },
       b2b_lead_to_deal_cvr_description: "Improves when intent is routed quickly and paired with relevant messaging."
     }
   },
@@ -618,11 +618,11 @@ const source_rows = Object.freeze([
     description_long:
       "Purchased lists used for outreach. Judge on `lead_to_opp_cvr`, `opp_to_deal_cvr`, `cost_per_opportunity`, and unit economics via `cac` and `roas`, with consent and compliance hygiene.",
     benchmark: {
-      b2b_roas_range: { min: 0.8, max: 2.5 },
+      b2b_roas_range: { min: 1.0, max: 2.5 },
       b2b_roas_description: "Usually low efficiency. ROAS depends on list verification, ICP fit, deliverability, and fast routing.",
-      b2b_lead_to_deal_cvr_range: { min: 0.15, max: 0.7 },
+      b2b_lead_to_deal_cvr_range: { min: 0.0, max: 0.5 },
       b2b_lead_to_deal_cvr_description: "Cold and low intent. Improves with enrichment, segmentation, and tight messaging.",
-      b2c_roas_range: { min: 0.7, max: 2.0 },
+      b2c_roas_range: { min: 0.5, max: 2.0 },
       b2c_roas_description: "Rare in B2C and riskier. ROAS depends on compliance, list quality, and offer market fit."
     }
   },
@@ -636,7 +636,7 @@ const source_rows = Object.freeze([
     description_long:
       "Human led 1:1 or exec led ABM touches for named accounts. Attribute at the account level via logged touches and matchback. Judge on `opportunities`, `deals`, and `sales_cycle_time`.",
     benchmark: {
-      b2b_lead_to_deal_cvr_range: { min: 0.6, max: 2.4 },
+      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.5 },
       b2b_lead_to_deal_cvr_description: "Higher ACV accounts close at lower rates but higher value. Orchestration matters."
     }
   },
@@ -648,11 +648,11 @@ const source_rows = Object.freeze([
     description_long:
       "Paid ads targeted to named accounts. Attribute with `utms` plus account matching. Judge on `opportunities`, `deals`, and `roas`, with fast follow up on engagement.",
     benchmark: {
-      b2b_roas_range: { min: 1.2, max: 3.5 },
+      b2b_roas_range: { min: 1.0, max: 3.5 },
       b2b_roas_description: "ROAS depends on account selection, audience quality, and sales follow up velocity.",
-      b2b_lead_to_deal_cvr_range: { min: 0.4, max: 1.8 },
+      b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2b_lead_to_deal_cvr_description: "Best when engagement signals trigger follow up and meetings.",
-      b2c_roas_range: { min: 0.9, max: 3.0 },
+      b2c_roas_range: { min: 1.0, max: 3.0 },
       b2c_roas_description: "Rare in B2C; ROAS depends on targeting and offer fit. Treat as experimental when present."
     }
   }
@@ -1023,3 +1023,4 @@ if (process.env.NODE_ENV !== "production") {
   if (missing_vendor_placement.length)
     console.warn("[definitions] utm_source+utm_placement not found in placement catalog:", Array.from(new Set(missing_vendor_placement)).sort())
 }
+
