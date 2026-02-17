@@ -21,8 +21,14 @@ type RenderLetter = (opts: {
 	char: string
 	index: number
 	role: OverviewLetterRole
-	props: React.HTMLAttributes<HTMLSpanElement>
+	props: OverviewLetterSpanProps
 }) => React.ReactNode
+
+type OverviewLetterSpanProps = React.HTMLAttributes<HTMLSpanElement> & {
+	"data-overview-letter"?: number
+	"data-overview-role"?: OverviewLetterRole
+	"data-overview-separator"?: "true"
+}
 
 export type OverviewOverlayLayout = "stack" | "inline"
 
@@ -41,7 +47,7 @@ export type OverviewOverlayLettersProps = {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Component                                                                  */
+/* Components                                                                 */
 /* -------------------------------------------------------------------------- */
 
 function render_inline_letters({
@@ -68,7 +74,7 @@ function render_inline_letters({
 		nodes.push(
 			<span key={`word-${current_word[0]?.index ?? index}`} className="inline-block">
 				{current_word.map(({ char, index: letter_index }) => {
-					const props: React.HTMLAttributes<HTMLSpanElement> = {
+					const props: OverviewLetterSpanProps = {
 						"data-overview-letter": letter_index,
 						"data-overview-role": role,
 						"data-overview-separator": markSeparator ? "true" : undefined,
@@ -90,7 +96,7 @@ function render_inline_letters({
 		if (char === " ") {
 			flush_word()
 			const space_index = index
-			const props: React.HTMLAttributes<HTMLSpanElement> = {
+			const props: OverviewLetterSpanProps = {
 				"data-overview-letter": space_index,
 				"data-overview-role": role,
 				"data-overview-separator": markSeparator ? "true" : undefined,
