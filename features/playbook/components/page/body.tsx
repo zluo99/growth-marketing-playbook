@@ -80,7 +80,7 @@ function scroll_window_to_top() {
 /* Hooks                                                                      */
 /* -------------------------------------------------------------------------- */
 
-function useActiveTabFromUrl(default_tab: TabId) {
+function useActiveTabFromUrl(default_tab: TabId, opts?: { allowRootPath?: boolean }) {
 	const pathname = usePathname()
 	const [active_tab, set_active_tab] = React.useState<TabId>(() => tab_from_pathname(pathname) ?? default_tab)
 	const active_tab_ref = React.useRef(active_tab)
@@ -106,10 +106,12 @@ function useActiveTabFromUrl(default_tab: TabId) {
 
 	React.useEffect(() => {
 		if (typeof window === "undefined") return
-		if (tab_from_pathname(window.location.pathname)) return
+		const has_tab = tab_from_pathname(window.location.pathname)
+		if (has_tab) return
+		if (opts?.allowRootPath) return
 		const next = tab_path_for(window.location.pathname, active_tab)
 		if (window.location.pathname !== next) window.history.replaceState(window.history.state, "", next)
-	}, [active_tab])
+	}, [active_tab, opts?.allowRootPath])
 
 	const push_tab = React.useCallback(
 		(id: TabId) => {
@@ -223,9 +225,17 @@ function BottomTabNavButtons() {
 /* Default export                                                             */
 /* -------------------------------------------------------------------------- */
 
-export default function PbBody() {
+export default function PbBody({
+	allowRootPath = false,
+	introActive = false,
+	suppressReveal = false,
+}: {
+	allowRootPath?: boolean
+	introActive?: boolean
+	suppressReveal?: boolean
+}) {
 	const reduce_motion = useReducedMotionBool()
-	const { activeTab, pushTab } = useActiveTabFromUrl("overview")
+	const { activeTab, pushTab } = useActiveTabFromUrl("overview", { allowRootPath })
 	useScrollToTopOnTabChange(activeTab)
 
 	const idx = tab_order.indexOf(activeTab)
@@ -251,15 +261,29 @@ export default function PbBody() {
 	)
 
 	const ctx = React.useMemo<PbBodyTabContextValue>(
-		() => ({ activeTab, nextTab: next_tab, prevTab: prev_tab, goToTab: go_to_tab, goToNext: go_to_next, goToPrev: go_to_prev }),
-		[activeTab, go_to_next, go_to_prev, go_to_tab, next_tab, prev_tab]
+		() => ({
+			activeTab,
+			nextTab: next_tab,
+			prevTab: prev_tab,
+			goToTab: go_to_tab,
+			goToNext: go_to_next,
+			goToPrev: go_to_prev,
+			suppressReveal,
+		}),
+		[activeTab, go_to_next, go_to_prev, go_to_tab, next_tab, prev_tab, suppressReveal]
 	)
 
 	return (
 		<Renderer.Provider>
 			<PbBodyTabContext.Provider value={ctx}>
 				<PillRoot value={activeTab} onValueChange={on_value_change} className={cn("w-full flex flex-col")}>
-					<PbHeader activeTab={activeTab} onGoToTab={pushTab} reduceMotion={reduce_motion} />
+					<PbHeader
+						activeTab={activeTab}
+						onGoToTab={pushTab}
+						reduceMotion={reduce_motion}
+						introActive={introActive}
+						suppressMotion={suppressReveal}
+					/>
 
 					<PillContent value={activeTab} className={cn("outline-none", ui.gap.lg, "mt-9")}>
 						<div className={cn("flex flex-col", ui.gap.lg)}>

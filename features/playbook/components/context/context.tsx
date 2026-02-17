@@ -19,6 +19,7 @@ export type PbBodyTabContextValue = {
 	goToTab: (id: TabId) => void
 	goToNext: () => void
 	goToPrev: () => void
+	suppressReveal: boolean
 }
 
 /* -------------------------------------------------------------------------- */

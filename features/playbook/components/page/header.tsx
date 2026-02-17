@@ -140,13 +140,20 @@ function useTabBarHide({
 	bar_height,
 	is_stuck,
 	y_target,
+	enabled = true,
 }: {
 	bar_ref: React.RefObject<HTMLDivElement | null>
 	bar_height: number
 	is_stuck: boolean
 	y_target: ReturnType<typeof useMotionValue<number>>
+	enabled?: boolean
 }) {
 	React.useEffect(() => {
+		if (!enabled) {
+			y_target.set(0)
+			if (bar_ref.current) bar_ref.current.style.pointerEvents = "auto"
+			return
+		}
 		const bar = bar_ref.current
 		if (!bar) return
 
@@ -204,7 +211,7 @@ function useTabBarHide({
 			window.removeEventListener("scroll", on_scroll)
 			window.removeEventListener("resize", on_resize)
 		}
-	}, [bar_height, bar_ref, is_stuck, y_target])
+	}, [bar_height, bar_ref, enabled, is_stuck, y_target])
 }
 
 /* -------------------------------------------------------------------------- */
@@ -290,7 +297,7 @@ function TabsDropdown({ activeTab, onGoToTab }: { activeTab: TabId; onGoToTab: (
 
 const TabsBarRail = React.memo(function TabsBarRail({ activeTab, onGoToTab, reduceMotion }: TabsBarProps) {
 	const content_row_ref = React.useRef<HTMLDivElement>(null)
-	const rail = useMotionPillRail<TabId>({ activeKey: activeTab, spring: uiMotion.nav.pillSpring })
+	const rail = useMotionPillRail<TabId>({ activeKey: activeTab, spring: uiMotion.nav.pillSpring, reduceMotion })
 
 	const settle = useRafThrottle(() => {
 		rail.pill.measure()
@@ -393,11 +400,11 @@ const TabsBarRail = React.memo(function TabsBarRail({ activeTab, onGoToTab, redu
 										chrome={false}
 										className={cn(ui.nav.rail.listChrome, ui.nav.control.height, "items-center")}
 									>
-										<MotionPillIndicator
-											className={cn(ui.nav.rail.indicatorChrome, ui.nav.control.height, ui.radius.control)}
-											pill={rail.pill}
-											transition={uiMotion.nav.pillTween}
-										/>
+									<MotionPillIndicator
+										className={cn(ui.nav.rail.indicatorChrome, ui.nav.control.height, ui.radius.control)}
+										pill={rail.pill}
+										transition={reduceMotion ? undefined : uiMotion.nav.pillTween}
+									/>
 
 										{PlaybookTabs.map((t) => {
 											const is_active = activeTab === t.id
@@ -438,11 +445,16 @@ export function PbHeader({
 	activeTab,
 	onGoToTab,
 	reduceMotion,
+	introActive = false,
+	suppressMotion = false,
 }: {
 	activeTab: TabId
 	onGoToTab: (id: TabId) => void
 	reduceMotion: boolean
+	introActive?: boolean
+	suppressMotion?: boolean
 }) {
+	const reduce_motion = reduceMotion || suppressMotion
 	const [searchOpen, setSearchOpen] = React.useState(false)
 	const sentinel_ref = React.useRef<HTMLDivElement | null>(null)
 	const is_stuck = useStickyState(sentinel_ref)
@@ -452,7 +464,13 @@ export function PbHeader({
 
 	const bar_ref = React.useRef<HTMLDivElement | null>(null)
 	const bar_height = useMeasureHeight(bar_ref)
-	useTabBarHide({ bar_ref, bar_height, is_stuck, y_target })
+	useTabBarHide({ bar_ref, bar_height, is_stuck, y_target, enabled: !introActive && !suppressMotion })
+
+	React.useEffect(() => {
+		if (!reduce_motion) return
+		y_target.set(0)
+		y.set(0)
+	}, [reduce_motion, y, y_target])
 
 	const is_desktop = useIsDesktopBreakpoint()
 	const showTabs = !searchOpen
@@ -463,7 +481,7 @@ export function PbHeader({
 		searchOpen ? "opacity-0 pointer-events-none w-0" : "opacity-100 pointer-events-auto w-full"
 	)
 	const tabs_control = is_desktop ? (
-		<TabsBarRail activeTab={activeTab} onGoToTab={onGoToTab} reduceMotion={reduceMotion} />
+		<TabsBarRail activeTab={activeTab} onGoToTab={onGoToTab} reduceMotion={reduce_motion} />
 	) : (
 		<PillRoot value={activeTab} onValueChange={() => {}} className="w-full">
 			<TabsDropdown activeTab={activeTab} onGoToTab={onGoToTab} />
@@ -474,7 +492,7 @@ export function PbHeader({
 		<>
 			<div ref={sentinel_ref} aria-hidden="true" className="h-0 w-full" />
 
-			<motion.div ref={bar_ref} style={{ y: reduceMotion ? y_target : y }} className={cn("sticky z-50 w-full will-change-transform", "top-3 md:top-4")}>
+			<motion.div ref={bar_ref} style={{ y: reduce_motion ? y_target : y }} className={cn("sticky z-50 w-full will-change-transform", "top-3 md:top-4")}>
 				<div className={cn("pointer-events-none", ui.nav.headerGap)} />
 
 				<div className="w-full">

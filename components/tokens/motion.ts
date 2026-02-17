@@ -59,6 +59,14 @@ export const uiMotion = {
 		durations,
 		easing,
 	},
+	intro: {
+		overlay: {
+			// portion of scroll progress reserved for cascading letters
+			letterStaggerSpan: 0.22,
+			// use the emphasis curve for a tight but smooth finish
+			letterEase: easing.emphasis,
+		},
+	},
 	nav: {
 		pillSpring: springs.pill,
 		pillSpringCompact: springs.pillCompact,
@@ -173,8 +181,9 @@ export function useMotionPill<K extends string>(opts: {
 	itemRefs: React.RefObject<Record<K, AnyEl | null>>
 	railRef: React.RefObject<AnyEl | null>
 	spring: SpringOptions
+	reduceMotion?: boolean
 }) {
-	const reduce_motion = useReducedMotionBool()
+	const reduce_motion = opts.reduceMotion ?? useReducedMotionBool()
 
 	const x_target = useMotionValue(0)
 	const w_target = useMotionValue(0)

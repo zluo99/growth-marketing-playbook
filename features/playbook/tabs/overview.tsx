@@ -22,6 +22,7 @@ import {
 	PbTabPanel,
 	PbTabShell,
 } from "@/features/playbook/components/ui/ui"
+import { OverviewOverlayLetters } from "@/features/playbook/tabs/overview-overlay"
 import { usePbTabsNav } from "@/features/playbook/components/context/context"
 import { GuideCopy } from "@/features/playbook/copy/overview-guide"
 import { TabById } from "@/features/playbook/definitions/tabs"
@@ -107,13 +108,34 @@ function Kicker({ id, icon, title, description, spendIds }: KickerProps) {
 /* -------------------------------------------------------------------------- */
 
 export default function TabOverview() {
-	const { goToTab } = usePbTabsNav()
-	const reveal_cards = true
+	const { goToTab, suppressReveal } = usePbTabsNav()
+	const reveal_lock_ref = React.useRef(false)
+	if (suppressReveal) reveal_lock_ref.current = true
+	const reveal_cards = !suppressReveal && !reveal_lock_ref.current
 	const tab = TabById["overview"]
+	const description = (
+		<span className={cn("relative inline-block", ui.typography.title.lg)}>
+			<span className="sr-only">
+				<Renderer.Copy.InlineText text={tab.description ?? ""} keyPrefix={`${overview_key_prefix}-intro-description`} />
+			</span>
+			<span aria-hidden="true">
+				<OverviewOverlayLetters
+					role="target"
+					layout="inline"
+					includeSeparator
+					keyPrefix={`${overview_key_prefix}-intro`}
+					className={cn("whitespace-normal break-words")}
+					titleClassName={cn("text-foreground")}
+					separatorClassName={cn("text-foreground")}
+					subtitleClassName={cn("text-foreground")}
+				/>
+			</span>
+		</span>
+	)
 	const guide_sequence_text = (GuideCopy.panels[0]?.sequence ?? []).map((id) => `{${id}}`).join(" -> ")
 
 	return (
-		<PbTabShell tabId="overview" alias={tab.alias} description={tab.description} keyPrefix={`${overview_key_prefix}-intro`}>
+		<PbTabShell tabId="overview" alias={tab.alias} description={description} keyPrefix={`${overview_key_prefix}-intro`}>
 			<PbReveal enabled={reveal_cards} className="w-full" data-search-target="tenets-card">
 				<OverviewCard id={TenetsCopy.id} title={TenetsCopy.title} description={TenetsCopy.body} glowClassName={ui.glow.orange}>
 					<div className={cn("flex flex-col", ui.gap.sm)}>

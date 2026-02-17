@@ -35,6 +35,7 @@ type InlineMetricTextProps = {
 type InlineRenderOptions = {
 	keyPrefix?: string
 	onUnknownToken?: (token: string) => React.ReactNode
+	renderText?: (part: string, key: string) => React.ReactNode
 }
 
 type InlineTabTextProps = {
@@ -671,12 +672,12 @@ function render_inline_metric_text({ text, keyPrefix = "metric", onUnknownToken,
 const InlineMetricText = (props: InlineMetricTextProps) => <>{render_inline_metric_text(props)}</>
 
 function render_inline_copy(text: string, opts: InlineRenderOptions = {}) {
-	const { keyPrefix = "copy", onUnknownToken } = opts
+	const { keyPrefix = "copy", onUnknownToken, renderText } = opts
 	return render_inline_metric_text({
 		text,
 		keyPrefix,
 		onUnknownToken,
-		renderText: (part, key) => <React.Fragment key={key}>{part}</React.Fragment>,
+		renderText: renderText ?? ((part, key) => <React.Fragment key={key}>{part}</React.Fragment>),
 	})
 }
 

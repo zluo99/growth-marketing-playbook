@@ -56,6 +56,24 @@ export type SearchCopy = {
 	categoryLabels: Record<string, string>
 }
 
+export type SystemStateCopy = {
+	error: {
+		title: string
+		message: string
+		actionLabel: string
+	}
+	globalError: {
+		title: string
+		message: string
+	}
+	notFound: {
+		title: string
+		message: string
+		actionLabel: string
+		actionHref: string
+	}
+}
+
 /* -------------------------------------------------------------------------- */
 /* Constants                                                                  */
 /* -------------------------------------------------------------------------- */
@@ -118,6 +136,23 @@ export const PageCopy = {
 			copy: "Copy",
 		},
 	},
+	systemStates: {
+		error: {
+			title: "Something went wrong",
+			message: "An unexpected error occurred. You can retry the last action.",
+			actionLabel: "Try again",
+		},
+		globalError: {
+			title: "Application error",
+			message: "A fatal error occurred. Refresh the page to recover.",
+		},
+		notFound: {
+			title: "Page not found",
+			message: "The page you're looking for doesn't exist.",
+			actionLabel: "Go to overview",
+			actionHref: "/overview",
+		},
+	},
 	footer: {
 		brandTitle: BrandCopy.title,
 		brandMarkAlt: "Growth Marketing Playbook home",
@@ -136,6 +171,7 @@ export const PageCopy = {
 	headerTabsNav: TabsNavCopy
 	headerNavigation: HeaderNavCopy
 	bodySearch: SearchCopy
+	systemStates: SystemStateCopy
 	footer: FooterCopy
 }
 
