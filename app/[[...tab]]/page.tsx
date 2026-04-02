@@ -13,7 +13,7 @@ import { clamp_value, cn } from "@/lib/utils"
 
 import PbBody from "@/features/playbook/components/page/body"
 import PbFooter from "@/features/playbook/components/page/footer"
-import { OverviewOverlayLetters } from "@/features/playbook/tabs/overview-overlay"
+import { OverviewOverlayLetters } from "@/features/playbook/tabs/overview-intro"
 import { overview_tab_separator, overview_tab_subtitle, overview_tab_title } from "@/features/playbook/definitions/tabs"
 
 /* -------------------------------------------------------------------------- */

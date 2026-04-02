@@ -13,6 +13,8 @@ import { cn } from "@/lib/utils"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { CodeBlock } from "@/features/playbook/components/ui/code"
+import { PbOverlay } from "@/features/playbook/components/ui/overlay"
+import { useCopyToClipboard } from "@/features/playbook/components/ui/clipboard"
 import {
 	PbBulletList,
 	PbCardContent,
@@ -30,7 +32,6 @@ import {
 } from "@/features/playbook/components/ui/ui"
 import { AnalysisCopy, type AnalysisDiagram, type AnalysisPanel } from "@/features/playbook/copy/journeys-analysis"
 import { ProblemCopy } from "@/features/playbook/copy/journeys-problem"
-import { RButton, RCopy, RCode } from "@/features/playbook/copy/journeys-r"
 import { TabById } from "@/features/playbook/definitions/tabs"
 
 /* -------------------------------------------------------------------------- */
@@ -45,40 +46,6 @@ const journey_section_icons = {
 const journeys_key_prefix = "journeys"
 
 /* -------------------------------------------------------------------------- */
-/* Hooks                                                                      */
-/* -------------------------------------------------------------------------- */
-
-function useCopyToClipboard(timeout_ms = 1200) {
-	const [copied, set_copied] = React.useState(false)
-	const timeout_ref = React.useRef<number | null>(null)
-
-	const clear = React.useCallback(() => {
-		if (timeout_ref.current != null) window.clearTimeout(timeout_ref.current)
-		timeout_ref.current = null
-	}, [])
-
-	React.useEffect(() => clear, [clear])
-
-	const copy = React.useCallback(
-		async (text: string) => {
-			if (!navigator?.clipboard?.writeText) return false
-			try {
-				await navigator.clipboard.writeText(text)
-				set_copied(true)
-				clear()
-				timeout_ref.current = window.setTimeout(() => set_copied(false), timeout_ms)
-				return true
-			} catch {
-				return false
-			}
-		},
-		[clear, timeout_ms]
-	)
-
-	return { copied, copy }
-}
-
-/* -------------------------------------------------------------------------- */
 /* Components                                                                 */
 /* -------------------------------------------------------------------------- */
 
@@ -90,12 +57,12 @@ function CopyCodeButton({ code }: { code: string }) {
 			type="button"
 			className={cn(buttonVariants({ variant: "success", size: "sm" }), ui.surface.state.hover.shadowMd, "min-w-[92px]")}
 			onClick={() => void copy(code)}
-			aria-label={copied ? RButton.copyButton.ariaCopied : RButton.copyButton.ariaCopy}
+			aria-label={copied ? AnalysisCopy.ui.snippetCopyButtonAriaCopied : AnalysisCopy.ui.snippetCopyButtonAria}
 		>
 			{copied ? <Check className={ui.iconNude.lg} /> : <CopyIcon className={ui.iconNude.lg} />}
 			<span>
 				<Renderer.Copy.InlineText
-					text={copied ? RButton.copyButton.labelCopied : RButton.copyButton.label}
+					text={copied ? AnalysisCopy.ui.snippetCopyButtonLabelCopied : AnalysisCopy.ui.snippetCopyButtonLabel}
 					keyPrefix={`${journeys_key_prefix}-copy-button`}
 				/>
 			</span>
@@ -371,9 +338,11 @@ function AnalysisStepTwoBlock({
 function AnalysisStepThreeBlock({
 	panel,
 	onUnknownToken,
+	onOpenSnippet,
 }: {
 	panel: AnalysisPanel
 	onUnknownToken: (token: string) => React.ReactNode
+	onOpenSnippet: () => void
 }) {
 	const rules = panel.bullets.filter(Boolean)
 
@@ -404,6 +373,19 @@ function AnalysisStepThreeBlock({
 					onUnknownToken={onUnknownToken}
 				/>
 			) : null}
+
+			<div className={cn(ui.margin.topMd, "w-full")}>
+				<Button
+					type="button"
+					variant="blueOutline"
+					size="lg"
+					className="w-full"
+					onClick={onOpenSnippet}
+					aria-label={AnalysisCopy.ui.snippetOpenButtonAria}
+				>
+					<Renderer.Copy.InlineText text={AnalysisCopy.ui.snippetOpenButtonLabel} keyPrefix={`${journeys_key_prefix}-open-r-snippet`} />
+				</Button>
+			</div>
 		</PbTabPanel>
 	)
 }
@@ -414,6 +396,7 @@ function AnalysisStepThreeBlock({
 
 export default function TabJourneys() {
 	const warn_unknown_metric = React.useMemo(() => createUnknownMetricLogger("Journeys"), [])
+	const [is_r_modal_open, set_is_r_modal_open] = React.useState(false)
 	const tab = TabById["journeys"]
 	const objects_panel = AnalysisCopy.panels[0]
 	const touches_panel = AnalysisCopy.panels[1]
@@ -477,7 +460,9 @@ export default function TabJourneys() {
 							</div>
 						) : null}
 
-						{analysis_panel ? <AnalysisStepThreeBlock panel={analysis_panel} onUnknownToken={warn_unknown_metric} /> : null}
+						{analysis_panel ? (
+							<AnalysisStepThreeBlock panel={analysis_panel} onUnknownToken={warn_unknown_metric} onOpenSnippet={() => set_is_r_modal_open(true)} />
+						) : null}
 
 						{AnalysisCopy.footer ? (
 							<p className={cn("text-muted-foreground", ui.typography.caption)}>
@@ -488,41 +473,18 @@ export default function TabJourneys() {
 				</PbTabCard>
 			</PbReveal>
 
-			<PbReveal className="w-full">
-				<PbTabCard hover>
-					<PbCardGlow className={ui.glow.green} />
-
-					<PbCardLayer>
-						<PbCardHeader
-							title={
-								<span className={cn(ui.typography.title.lg, ui.margin.allNone)}>
-									<Renderer.Copy.InlineText text={RCode.title} keyPrefix={`${journeys_key_prefix}-rcode-title`} onUnknownToken={warn_unknown_metric} />
-								</span>
-							}
-							description={
-								<PbSubtleText size="body" className={ui.margin.allNone}>
-									<Renderer.Copy.InlineText text={RCode.body} keyPrefix={`${journeys_key_prefix}-rcode-body`} onUnknownToken={warn_unknown_metric} />
-								</PbSubtleText>
-							}
-							action={
-								<div className={cn("flex shrink-0 items-center", ui.gap.sm)}>
-									<CopyCodeButton code={RCopy} />
-								</div>
-							}
-						/>
-
-						<PbCardContent>
-							<div className={cn("flex flex-col", ui.gap.sm)}>
-								<PbTabPanel size="sm" className={cn("overflow-hidden p-0", ui.surface.structure.opaque)}>
-									<CodeBlock code={RCopy} language="r" className={cn("text-foreground")} style={{ maxHeight: `${ui.size.layout.sm}px` }} />
-								</PbTabPanel>
-
-								<PbMetricList items={RCode.bullets} size="caption" onUnknownToken={warn_unknown_metric} />
-							</div>
-						</PbCardContent>
-					</PbCardLayer>
-				</PbTabCard>
-			</PbReveal>
+			<PbOverlay
+				open={is_r_modal_open}
+				onClose={() => set_is_r_modal_open(false)}
+				title={<Renderer.Copy.InlineText text={AnalysisCopy.ui.snippetTitle} keyPrefix={`${journeys_key_prefix}-rcode-modal-title`} />}
+				ariaLabel={AnalysisCopy.ui.snippetTitle}
+				closeAriaLabel={AnalysisCopy.ui.snippetCloseButtonAria}
+				headerActions={<CopyCodeButton code={AnalysisCopy.rSnippet} />}
+			>
+				<PbTabPanel size="sm" className={cn("overflow-hidden p-0", ui.surface.structure.opaque)}>
+					<CodeBlock code={AnalysisCopy.rSnippet} language="r" className={cn("text-foreground")} style={{ maxHeight: `${ui.size.layout.lg}px` }} />
+				</PbTabPanel>
+			</PbOverlay>
 		</PbTabShell>
 	)
 }

@@ -46,6 +46,8 @@ const transitions = {
 	collapseReduced: { duration: durations.reduced, ease: "easeOut" } satisfies Transition,
 	enterReduced: { duration: durations.enterReduced, ease: "easeOut" } satisfies Transition,
 	enterSpring: { type: "spring", ...springs.enter } satisfies Transition,
+	overlayBackdrop: { type: "tween", duration: durations.base, ease: easing.standard } satisfies Transition,
+	overlayPanel: { type: "spring", ...springs.enter } satisfies Transition,
 	reveal: { type: "tween", duration: durations.extended, ease: easing.standard } satisfies Transition,
 	revealReduced: { duration: 0.01 } satisfies Transition,
 }
@@ -92,6 +94,13 @@ export const uiMotion = {
 			swap: { type: "tween", duration: durations.base, ease: easing.standard } satisfies Transition,
 			reduced: transitions.enterReduced,
 			distancePx: 10,
+		},
+	},
+	overlay: {
+		backdrop: transitions.overlayBackdrop,
+		panel: {
+			reduced: transitions.enterReduced,
+			spring: transitions.overlayPanel,
 		},
 	},
 	tabs: {

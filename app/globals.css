@@ -138,7 +138,7 @@
 	--accent-neutral-border-strong-hover: color-mix(in oklch, var(--accent-neutral) var(--accent-mix-border-strong-hover), var(--accent-bg-base) calc(100% - var(--accent-mix-border-strong-hover)));
 	--accent-neutral-fg: color-mix(in oklch, var(--accent-neutral) var(--accent-mix-fg), var(--accent-fg-base) calc(100% - var(--accent-mix-fg)));
 
-	--glow-strength: 20%;
+	--glow-strength: 14%;
 
 	--glow-red: color-mix(in oklch, var(--accent-red) var(--glow-strength), transparent);
 	--glow-orange: color-mix(in oklch, var(--accent-orange) var(--glow-strength), transparent);
@@ -148,6 +148,16 @@
 	--glow-indigo: color-mix(in oklch, var(--accent-indigo) var(--glow-strength), transparent);
 	--glow-purple: color-mix(in oklch, var(--accent-purple) var(--glow-strength), transparent);
 	--glow-neutral: color-mix(in oklch, var(--accent-neutral) var(--glow-strength), transparent);
+	--glow-rainbow-red: color-mix(in oklch, var(--accent-red) 12%, transparent);
+	--glow-rainbow-orange: color-mix(in oklch, var(--accent-orange) 12%, transparent);
+	--glow-rainbow-yellow: color-mix(in oklch, var(--accent-yellow) 9%, transparent);
+	--glow-rainbow-green: color-mix(in oklch, var(--accent-green) 9%, transparent);
+	--glow-rainbow-cyan: color-mix(in oklch, color-mix(in oklch, var(--accent-blue) 52%, var(--accent-green) 48%) 7%, transparent);
+	--glow-rainbow-blue: color-mix(in oklch, var(--accent-blue) 8%, transparent);
+	--glow-rainbow-indigo: color-mix(in oklch, var(--accent-indigo) 8%, transparent);
+	--glow-rainbow-purple: color-mix(in oklch, var(--accent-purple) 12%, transparent);
+	--glow-rainbow-magenta: color-mix(in oklch, color-mix(in oklch, var(--accent-purple) 56%, var(--accent-red) 44%) 11%, transparent);
+	--glow-rainbow-lift: color-mix(in oklch, white 10%, transparent);
 
 	color-scheme: light;
 }
@@ -203,7 +213,7 @@
 	--accent-bg-base: black;
 	--accent-fg-base: white;
 
-	--glow-strength: 20%;
+	--glow-strength: 14%;
 
 	--accent-blue-pill-bg: color-mix(in oklch, var(--accent-blue) 26%, var(--accent-bg-base) 74%);
 	--accent-blue-pill-bg-hover: color-mix(in oklch, var(--accent-blue) 36%, var(--accent-bg-base) 64%);
@@ -214,6 +224,16 @@
 	--accent-blue-soft-row-hover: rgba(20, 38, 64, 0.78);
 	--accent-yellow-highlight-bg: rgba(255, 254, 210, 0.22);
 	--accent-yellow-highlight-fg: #fff8d8;
+	--glow-rainbow-red: color-mix(in oklch, var(--accent-red) 16%, transparent);
+	--glow-rainbow-orange: color-mix(in oklch, var(--accent-orange) 16%, transparent);
+	--glow-rainbow-yellow: color-mix(in oklch, var(--accent-yellow) 12%, transparent);
+	--glow-rainbow-green: color-mix(in oklch, var(--accent-green) 12%, transparent);
+	--glow-rainbow-cyan: color-mix(in oklch, color-mix(in oklch, var(--accent-blue) 52%, var(--accent-green) 48%) 10%, transparent);
+	--glow-rainbow-blue: color-mix(in oklch, var(--accent-blue) 11%, transparent);
+	--glow-rainbow-indigo: color-mix(in oklch, var(--accent-indigo) 11%, transparent);
+	--glow-rainbow-purple: color-mix(in oklch, var(--accent-purple) 16%, transparent);
+	--glow-rainbow-magenta: color-mix(in oklch, color-mix(in oklch, var(--accent-purple) 56%, var(--accent-red) 44%) 14%, transparent);
+	--glow-rainbow-lift: color-mix(in oklch, white 15%, transparent);
 
 
 	color-scheme: dark;
