@@ -10,7 +10,13 @@ export type DefinitionsPanel = {
 	columns?: { table: string; description: string; columns: string }
 }
 
-export type DefinitionsTable = { name: string; description: string; columns: string }
+export type DefinitionsTable = {
+	name: string
+	description: string
+	columns: string
+	grain?: string
+	signatureColumns?: readonly string[]
+}
 
 export type DefinitionsCard = {
 	title: string
@@ -53,16 +59,22 @@ export const DefinitionsCopy: DefinitionsCard = {
 			name: "funnel_cohorted",
 			description: "Cohorted outcomes anchored to lead creation (Lead -> Opportunity -> Deal) plus `arr` from those leads.",
 			columns: "lead_id, lead_created_date, source_l1, source_l2, source_l3, vendor, vertical, opportunities_from_leads, deals_from_leads, arr_from_leads, ltv_from_leads",
+			grain: "One row per lead cohort entity anchored at `lead_created_date`.",
+			signatureColumns: ["lead_id", "lead_created_date", "opportunities_from_leads", "deals_from_leads", "arr_from_leads"] as const,
 		},
 		{
 			name: "funnel_uncohorted",
 			description: "Object-level funnel events (Lead -> Opportunity -> Deal). `arr` lives on Deal records.",
 			columns: "object_id, object_type, object_created_date, source_l1, source_l2, source_l3, vendor, vertical, arr",
+			grain: "One row per CRM object event (`object_id`, `object_type`) by creation date.",
+			signatureColumns: ["object_id", "object_type", "object_created_date", "source_l1", "source_l2"] as const,
 		},
 		{
 			name: "funnel_spend",
 			description: "Marketing spend by date, classified by `spend_type`, `source`, and `vendor`.",
 			columns: "spend_date, spend_type, source_l1, source_l2, source_l3, vendor, spend",
+			grain: "One row per spend posting event by `spend_date` and classification dimensions.",
+			signatureColumns: ["spend_date", "spend_type", "source_l1", "source_l2", "source_l3"] as const,
 		},
 	],
 	dimensions: [

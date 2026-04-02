@@ -112,7 +112,7 @@ const source_rows = Object.freeze([
     source_l3: "Direct",
     description_short: "Visits without a reliable referrer that fall into direct traffic buckets.",
     description_long:
-      "Unattributed sessions with no reliable referrer. Validate via `pageviews` and `session_duration`. Interpret shifts in the context of `attribution_window` and `identity_graph` coverage.",
+      "Unattributed sessions with no reliable referrer. Validate via `pageviews` and `session_duration`. Interpret shifts in the context of `attribution_window`, `identity_graph` coverage, and brand spend changes.",
     benchmark: {
       b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2b_lead_to_deal_cvr_description: "Mixed intent. Improves with stronger brand demand and cleaner lead routing.",
@@ -126,7 +126,7 @@ const source_rows = Object.freeze([
     source_l3: "Direct Mail",
     description_short: "Offline mail or gifting campaigns redeemed via QR, PURL, or codes.",
     description_long:
-      "Offline mail or gifting redeemed via QR, PURL, or codes, plus `matchback` when available. Judge on `leads`, `opportunities`, `deals`, and `sales_cycle_time`.",
+      "Offline mail or gifting redeemed via QR, PURL, or codes, plus `matchback` when available. Judge on `leads`, `opportunities`, `deals`, and `sales_cycle_time`, and validate incremental lift before scaling.",
     benchmark: {
       b2b_lead_to_deal_cvr_range: { min: 0.5, max: 2.0 },
       b2b_lead_to_deal_cvr_description: "Offline direct response; effectiveness depends on matchback rate and offer fit.",
@@ -286,7 +286,7 @@ const source_rows = Object.freeze([
     source_l3: "Paid Search",
     description_short: "Paid search campaigns capturing existing demand via CPC bidding.",
     description_long:
-      "CPC demand capture. Optimize `cpc`, `ctr`, `cvr`, `cac`, and `roas`. Keep `utm_source`, `utm_term`, and `utm_campaign` consistent with a clear `attribution_window`.",
+      "CPC demand capture. Optimize `cpc`, `ctr`, `cvr`, `cac`, and `roas`. Lower funnel intent typically drives stronger `roas`. Keep `utm_source`, `utm_term`, and `utm_campaign` consistent with a clear `attribution_window`.",
     benchmark: {
       b2b_roas_range: { min: 2.0, max: 6.0 },
       b2b_roas_description: "High intent capture. ROAS depends on brand mix, CPC inflation, and landing to routing speed.",
@@ -358,7 +358,7 @@ const source_rows = Object.freeze([
     source_l3: "Review Sites",
     description_short: "Paid listings and placements on software or marketplace review sites.",
     description_long:
-      "Paid marketplace and review placements. Judge on `lead_to_deal_cvr`, `cost_per_deal`, and `roas`. Keep `utm_source` consistent so marketplace traffic stays isolated.",
+      "Paid marketplace and review placements. Judge on `lead_to_deal_cvr`, `cost_per_deal`, and `roas`. Validate ICP fit before scaling. Keep `utm_source` consistent so marketplace traffic stays isolated.",
     benchmark: {
       b2b_roas_range: { min: 2.0, max: 7.0 },
       b2b_roas_description: "High intent marketplace traffic. ROAS driven by category fit, profile quality, and competitive bidding.",
@@ -376,7 +376,7 @@ const source_rows = Object.freeze([
     source_l3: "Pay Per Lead",
     description_short: "Fixed or tiered cost-per-lead programs with partners.",
     description_long:
-      "Fixed or tiered CPL programs. Monitor `cost_per_lead`, `lead_to_deal_cvr`, `opp_to_deal_cvr`, and unit economics via `cac` and `roas`. Keep `utms` clean to avoid partner leakage.",
+      "Fixed or tiered CPL programs. Monitor `cost_per_lead`, `lead_to_deal_cvr`, `opp_to_deal_cvr`, and unit economics via `cac` and `roas`. Speed to lead is a primary lever. Keep `utms` clean to avoid partner leakage.",
     benchmark: {
       b2b_roas_range: { min: 1.0, max: 3.5 },
       b2b_roas_description: "ROAS depends on qualification rigor, lead routing speed, and partner quality.",
@@ -616,7 +616,7 @@ const source_rows = Object.freeze([
     source_l3: "Purchased Lists",
     description_short: "Purchased contact lists used for outbound campaigns.",
     description_long:
-      "Purchased lists used for outreach. Judge on `lead_to_opp_cvr`, `opp_to_deal_cvr`, `cost_per_opportunity`, and unit economics via `cac` and `roas`, with consent and compliance hygiene.",
+      "Purchased lists used for outreach. Judge on `lead_to_opp_cvr`, `opp_to_deal_cvr`, `cost_per_opportunity`, and unit economics via `cac` and `roas`, with consent and compliance hygiene. Selectivity matters due to overhead.",
     benchmark: {
       b2b_roas_range: { min: 1.0, max: 2.5 },
       b2b_roas_description: "Usually low efficiency. ROAS depends on list verification, ICP fit, deliverability, and fast routing.",

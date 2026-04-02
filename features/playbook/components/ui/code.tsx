@@ -5,7 +5,7 @@ import * as React from "react"
 import { ui } from "@/components/tokens/design"
 import { cn } from "@/lib/utils"
 
-type CodeLanguage = "sql" | "r" | "text"
+type CodeLanguage = "sql" | "r" | "markdown" | "text"
 type CodeTokenKind = "plain" | "keyword" | "string" | "comment" | "number" | "function"
 type CodeToken = { kind: CodeTokenKind; value: string }
 
@@ -129,6 +129,7 @@ function token_kind(value: string, language: CodeLanguage): CodeTokenKind {
 	const lower = value.toLowerCase()
 	if (number_re.test(value)) return "number"
 	if (!identifier_re.test(value)) return "plain"
+	if (language === "markdown") return "plain"
 	if (language === "sql" && sql_keywords.has(lower)) return "keyword"
 	if (language === "r" && r_keywords.has(lower)) return "keyword"
 	if (shared_functions.has(lower)) return "function"
@@ -149,6 +150,54 @@ function tokenize_code(code: string, language: CodeLanguage): CodeToken[] {
 	let i = 0
 	while (i < code.length) {
 		const ch = code[i]
+		const is_line_start = i === 0 || code[i - 1] === "\n"
+
+		if (language === "markdown") {
+			const remaining = code.slice(i)
+
+			if (is_line_start) {
+				const heading_match = remaining.match(/^#{1,6}[ \t]+[^\n]*/)
+				if (heading_match?.[0]) {
+					push("keyword", heading_match[0])
+					i += heading_match[0].length
+					continue
+				}
+
+				const quote_match = remaining.match(/^>[ \t]?[^\n]*/)
+				if (quote_match?.[0]) {
+					push("comment", quote_match[0])
+					i += quote_match[0].length
+					continue
+				}
+
+				const list_match = remaining.match(/^(\s*(?:[-*+]|\d+\.)\s+)/)
+				if (list_match?.[1]) {
+					push("keyword", list_match[1])
+					i += list_match[1].length
+					continue
+				}
+			}
+
+			if (code.slice(i, i + 3) === "```") {
+				const close_idx = code.indexOf("```", i + 3)
+				if (close_idx === -1) {
+					push("string", code.slice(i))
+					break
+				}
+				push("string", code.slice(i, close_idx + 3))
+				i = close_idx + 3
+				continue
+			}
+
+			if (ch === "`") {
+				let j = i + 1
+				while (j < code.length && code[j] !== "`") j++
+				if (j < code.length) j += 1
+				push("string", code.slice(i, j))
+				i = j
+				continue
+			}
+		}
 
 		if (language === "sql" && ch === "-" && code[i + 1] === "-") {
 			let j = i + 2

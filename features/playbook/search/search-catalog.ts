@@ -5,6 +5,7 @@
 import { AnalysisCopy } from "@/features/playbook/copy/journeys-analysis"
 import { ProblemCopy } from "@/features/playbook/copy/journeys-problem"
 import { GuideCopy } from "@/features/playbook/copy/overview-guide"
+import { OverviewAICopy } from "@/features/playbook/copy/overview-ai"
 import { TenetsCopy } from "@/features/playbook/copy/overview-tenets"
 import { SourcesCopy } from "@/features/playbook/copy/plays-sources"
 import { SpendCopy } from "@/features/playbook/copy/plays-spend"
@@ -289,6 +290,52 @@ const build_copy_entries = (): SearchEntry[] => {
 			breadcrumbs: [GuideCopy.title],
 		})
 	)
+
+	push({
+		id: "ai-analyst-card",
+		title: OverviewAICopy.title,
+		description: OverviewAICopy.body,
+		tabId: "overview",
+		badge: "AI Analyst",
+		meta: "AI setup",
+		extra: [OverviewAICopy.footer],
+	})
+
+	OverviewAICopy.panels.forEach((panel) =>
+		push({
+			id: `ai-analyst-panel-${panel.id}`,
+			title: panel.title,
+			description: panel.body,
+			tabId: "overview",
+			badge: "AI Analyst panel",
+			meta: OverviewAICopy.title,
+			extra: add_bullets(panel.bullets.map((bullet) => ({ text: bullet }))),
+			breadcrumbs: [OverviewAICopy.title],
+		})
+	)
+
+	OverviewAICopy.analystModules.forEach((module) =>
+		push({
+			id: `ai-analyst-module-${module.id}`,
+			title: module.title,
+			description: module.description,
+			tabId: "overview",
+			badge: "AI Module",
+			meta: OverviewAICopy.title,
+			breadcrumbs: [OverviewAICopy.title],
+		})
+	)
+
+	push({
+		id: "ai-analyst-sample",
+		title: "analyst.md sample",
+		description: OverviewAICopy.analystMdSample.slice(0, 200) + "...",
+		displayDescription: OverviewAICopy.analystMdSample,
+		tabId: "overview",
+		badge: "Sample",
+		meta: OverviewAICopy.title,
+		breadcrumbs: [OverviewAICopy.title],
+	})
 
 	push({
 		id: "problem-card",

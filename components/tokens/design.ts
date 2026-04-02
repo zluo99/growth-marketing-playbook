@@ -41,7 +41,7 @@ const accent = {
 		borderStrongHover: "hover:border-[color:var(--accent-red-border-strong-hover)]",
 		fg: "text-[color:var(--accent-red-fg)]",
 		tint: "bg-[color:color-mix(in_oklch,var(--accent-red-bg)_var(--accent-tint-strength),transparent)]",
-		glow: "bg-[radial-gradient(60%_60%_at_20%_10%,var(--glow-red)_0%,transparent_70%)]",
+		glow: "bg-[radial-gradient(120%_60%_at_50%_10%,var(--glow-red)_0%,transparent_72%)]",
 		track: "bg-[color:var(--accent-red-bg)] border border-[color:var(--accent-red-border)] [background-clip:padding-box]",
 		fill: "bg-[color:var(--accent-red-fg)]/25",
 		dotBorder: "border border-[color:var(--accent-red-border-hover)]",
@@ -55,7 +55,7 @@ const accent = {
 		borderStrongHover: "hover:border-[color:var(--accent-orange-border-strong-hover)]",
 		fg: "text-[color:var(--accent-orange-fg)]",
 		tint: "bg-[color:color-mix(in_oklch,var(--accent-orange-bg)_var(--accent-tint-strength),transparent)]",
-		glow: "bg-[radial-gradient(60%_60%_at_20%_10%,var(--glow-orange)_0%,transparent_70%)]",
+		glow: "bg-[radial-gradient(120%_60%_at_50%_10%,var(--glow-orange)_0%,transparent_72%)]",
 		track: "bg-[color:var(--accent-orange-bg)] border border-[color:var(--accent-orange-border)] [background-clip:padding-box]",
 		fill: "bg-[color:var(--accent-orange-fg)]/25",
 		dotBorder: "border border-[color:var(--accent-orange-border-hover)]",
@@ -69,7 +69,7 @@ const accent = {
 		borderStrongHover: "hover:border-[color:var(--accent-yellow-border-strong-hover)]",
 		fg: "text-[color:var(--accent-yellow-fg)]",
 		tint: "bg-[color:color-mix(in_oklch,var(--accent-yellow-bg)_var(--accent-tint-strength),transparent)]",
-		glow: "bg-[radial-gradient(60%_60%_at_20%_10%,var(--glow-yellow)_0%,transparent_70%)]",
+		glow: "bg-[radial-gradient(120%_60%_at_50%_10%,var(--glow-yellow)_0%,transparent_72%)]",
 		track: "bg-[color:var(--accent-yellow-bg)] border border-[color:var(--accent-yellow-border)] [background-clip:padding-box]",
 		fill: "bg-[color:var(--accent-yellow-fg)]/25",
 		dotBorder: "border border-[color:var(--accent-yellow-border-hover)]",
@@ -83,7 +83,7 @@ const accent = {
 		borderStrongHover: "hover:border-[color:var(--accent-green-border-strong-hover)]",
 		fg: "text-[color:var(--accent-green-fg)]",
 		tint: "bg-[color:color-mix(in_oklch,var(--accent-green-bg)_var(--accent-tint-strength),transparent)]",
-		glow: "bg-[radial-gradient(60%_60%_at_20%_10%,var(--glow-green)_0%,transparent_70%)]",
+		glow: "bg-[radial-gradient(120%_60%_at_50%_10%,var(--glow-green)_0%,transparent_72%)]",
 		track: "bg-[color:var(--accent-green-bg)] border border-[color:var(--accent-green-border)] [background-clip:padding-box]",
 		fill: "bg-[color:var(--accent-green-fg)]/25",
 		dotBorder: "border border-[color:var(--accent-green-border-hover)]",
@@ -97,7 +97,7 @@ const accent = {
 		borderStrongHover: "hover:border-[color:var(--accent-blue-border-strong-hover)]",
 		fg: "text-[color:var(--accent-blue-fg)]",
 		tint: "bg-[color:color-mix(in_oklch,var(--accent-blue-bg)_var(--accent-tint-strength),transparent)]",
-		glow: "bg-[radial-gradient(60%_60%_at_20%_10%,var(--glow-blue)_0%,transparent_70%)]",
+		glow: "bg-[radial-gradient(120%_60%_at_50%_10%,var(--glow-blue)_0%,transparent_72%)]",
 		track: "bg-[color:var(--accent-blue-bg)] border border-[color:var(--accent-blue-border)] [background-clip:padding-box]",
 		fill: "bg-[color:var(--accent-blue-fg)]/25",
 		dotBorder: "border border-[color:var(--accent-blue-border-hover)]",
@@ -111,7 +111,7 @@ const accent = {
 		borderStrongHover: "hover:border-[color:var(--accent-indigo-border-strong-hover)]",
 		fg: "text-[color:var(--accent-indigo-fg)]",
 		tint: "bg-[color:color-mix(in_oklch,var(--accent-indigo-bg)_var(--accent-tint-strength),transparent)]",
-		glow: "bg-[radial-gradient(60%_60%_at_20%_10%,var(--glow-indigo)_0%,transparent_70%)]",
+		glow: "bg-[radial-gradient(120%_60%_at_50%_10%,var(--glow-indigo)_0%,transparent_72%)]",
 		track: "bg-[color:var(--accent-indigo-bg)] border border-[color:var(--accent-indigo-border)] [background-clip:padding-box]",
 		fill: "bg-[color:var(--accent-indigo-fg)]/25",
 		dotBorder: "border border-[color:var(--accent-indigo-border-hover)]",
@@ -125,7 +125,7 @@ const accent = {
 		borderStrongHover: "hover:border-[color:var(--accent-purple-border-strong-hover)]",
 		fg: "text-[color:var(--accent-purple-fg)]",
 		tint: "bg-[color:color-mix(in_oklch,var(--accent-purple-bg)_var(--accent-tint-strength),transparent)]",
-		glow: "bg-[radial-gradient(60%_60%_at_20%_10%,var(--glow-purple)_0%,transparent_70%)]",
+		glow: "bg-[radial-gradient(120%_60%_at_50%_10%,var(--glow-purple)_0%,transparent_72%)]",
 		track: "bg-[color:var(--accent-purple-bg)] border border-[color:var(--accent-purple-border)] [background-clip:padding-box]",
 		fill: "bg-[color:var(--accent-purple-fg)]/25",
 		dotBorder: "border border-[color:var(--accent-purple-border-hover)]",
@@ -139,7 +139,7 @@ const accent = {
 		borderStrongHover: "hover:border-[color:var(--accent-neutral-border-strong-hover)]",
 		fg: "text-[color:var(--accent-neutral-fg)]",
 		tint: "bg-[color:color-mix(in_oklch,var(--accent-neutral-bg)_var(--accent-tint-strength),transparent)]",
-		glow: "bg-[radial-gradient(60%_60%_at_20%_10%,var(--glow-neutral)_0%,transparent_70%)]",
+		glow: "bg-[radial-gradient(120%_60%_at_50%_10%,var(--glow-neutral)_0%,transparent_72%)]",
 		track: "bg-[color:var(--accent-neutral-bg)] border border-[color:var(--accent-neutral-border)] [background-clip:padding-box]",
 		fill: "bg-[color:var(--accent-neutral-fg)]/25",
 		dotBorder: "border border-[color:var(--accent-neutral-border-hover)]",
@@ -409,6 +409,71 @@ const icon_state = {
 } as const
 
 /* -------------------------------------------------------------------------- */
+/* Constants: radius & controls                                               */
+/* -------------------------------------------------------------------------- */
+
+const radius = {
+	base: "rounded-[var(--radius)]",
+	control: "rounded-[var(--radius-control)]",
+} as const
+
+const control = {
+	base: "ui-control",
+	ghost: "ui-control-ghost [color:inherit]",
+} as const
+
+const overlay = {
+	container: "fixed inset-0 z-[2147483646] flex items-center justify-center p-3 sm:p-6",
+	maxWidth: "max-w-[var(--app-max-w)]",
+	backdrop: "bg-background/55 backdrop-blur-sm",
+	panel: join_classes(
+		"relative overflow-hidden",
+		surface.structure.border,
+		search.menuBg,
+		search.activeBorderBlue,
+		search.menuShadow,
+		search.menuShadowHover,
+		search.menuHover,
+		search.menuFocusRing
+	),
+	closeButton: join_classes(
+		"group rounded-full p-2 transition",
+		text_interactive_all,
+		search.focusRing,
+		surface.structure.border,
+		"bg-background",
+		search.hoverBorderBlue,
+		search.controlHoverBg,
+		search.controlHoverBlueTint,
+		surface.state.hover.shadowSm
+	),
+	closeIcon: join_classes(icon_nude.md, search.iconColor),
+	moduleChip: {
+		base: join_classes(
+			"inline-flex h-8 items-center justify-center px-2.5",
+			typography.label,
+			"rounded-[var(--radius-control)]",
+			"ui-control",
+			motion.duration,
+			surface.state.focus.ring,
+			"border",
+			surface.state.hover.shadowSm
+		),
+		inactive: join_classes(
+			"!border-[color:var(--border)] !bg-background !text-muted-foreground",
+			"hover:!bg-[color:var(--surface-bg-hover)]",
+			"hover:!border-[color:var(--border-hover)]",
+			"hover:text-foreground"
+		),
+		active: join_classes(
+			"!border-[color:var(--accent-blue-soft-border-hover)] !bg-[color:var(--accent-blue-soft-bg)] !text-foreground",
+			"hover:!bg-[color:var(--accent-blue-soft-row-hover)]",
+			"hover:!border-[color:var(--accent-blue-soft-border-hover)]"
+		),
+	},
+} as const
+
+/* -------------------------------------------------------------------------- */
 /* Constants: status                                                          */
 /* -------------------------------------------------------------------------- */
 
@@ -430,18 +495,8 @@ const status = {
 } as const
 
 /* -------------------------------------------------------------------------- */
-/* Constants: radius, controls, buttons                                       */
+/* Constants: buttons                                                         */
 /* -------------------------------------------------------------------------- */
-
-const radius = {
-	base: "rounded-[var(--radius)]",
-	control: "rounded-[var(--radius-control)]",
-} as const
-
-const control = {
-	base: "ui-control",
-	ghost: "ui-control-ghost [color:inherit]",
-} as const
 
 const icon_frame_base = join_classes("inline-flex items-center justify-center", surface.structure.border, "bg-background", radius.control)
 
@@ -651,6 +706,8 @@ const glow = {
 	indigo: accent.indigo.glow,
 	purple: accent.purple.glow,
 	neutral: accent.neutral.glow,
+	rainbow:
+		"mix-blend-normal dark:mix-blend-screen bg-[radial-gradient(128%_42%_at_50%_5%,var(--glow-rainbow-lift)_0%,transparent_58%),radial-gradient(96%_36%_at_16%_8%,var(--glow-rainbow-blue)_0%,transparent_66%),radial-gradient(96%_36%_at_50%_8%,var(--glow-rainbow-green)_0%,transparent_66%),radial-gradient(92%_34%_at_86%_8%,var(--glow-rainbow-orange)_0%,transparent_64%)]",
 } as const
 
 const metrics = {
@@ -732,6 +789,7 @@ export const ui = {
 	surface,
 	component,
 	search,
+	overlay,
 	text: text_state,
 	icon: icon_state,
 	status,
