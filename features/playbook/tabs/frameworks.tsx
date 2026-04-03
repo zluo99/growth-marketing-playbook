@@ -33,6 +33,7 @@ import {
 } from "@/features/playbook/copy/frameworks"
 import { TabById } from "@/features/playbook/definitions/tabs"
 import { PlaybookEvents, PlaybookStorage, read_preference, remove_preference, write_preference } from "@/features/playbook/components/context/preferences"
+import { search_target_for_framework } from "@/features/playbook/search/targets"
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
@@ -618,7 +619,7 @@ export default function TabFrameworks() {
 							{row.map((fw) => (
 								<div
 									key={fw.id}
-									data-search-target={`framework:${fw.id}`}
+									data-search-target={search_target_for_framework(fw.id)}
 									data-search-align="focus"
 									data-search-focus-offset={12}
 									className="w-full"

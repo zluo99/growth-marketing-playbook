@@ -18,7 +18,7 @@ export type ExampleCopy = {
 
 export const ExampleCopy: ExampleCopy = {
 	title: "Example Report: Direct Mail",
-	body: "Connect sends to `arr`, then validate lift with `incremental_lift_arr`. Example layout for decision-ready reporting:",
+	body: "Connect `mail_sends` to cohort outcomes, then validate lift with `incremental_lift_arr`. Example layout for a decision-ready report:",
 	ui: {
 		exampleItemLabel: "Workspace example item {n}",
 	},
@@ -28,8 +28,7 @@ export const ExampleCopy: ExampleCopy = {
 			title: "Funnel impact",
 			subtitle: "Show the funnel as number tiles.",
 			bullets: [
-				"Trend `mail_sends`.",
-				"Overlay cohort outcomes: `leads`, `deals_from_leads`, `arr_from_leads`.",
+				"Trend `mail_sends` against cohort outcomes: `leads`, `deals_from_leads`, `arr_from_leads`.",
 				"Layer conversion rates: `lead_to_opp_cvr`, `opp_to_deal_cvr`, `cvr`.",
 			],
 		},
@@ -39,7 +38,7 @@ export const ExampleCopy: ExampleCopy = {
 			subtitle: "Drill down for context.",
 			bullets: [
 				"Efficiency: `total_spend`, `roas`, `cost_per_deal`, `cac`, `payback`.",
-				"Health: `opportunities`, `sales_cycle_time`.",
+				"Pipeline health: `opportunities`, `sales_cycle_time`.",
 			],
 		},
 		{
@@ -48,7 +47,7 @@ export const ExampleCopy: ExampleCopy = {
 			subtitle: "Counterfactual matters.",
 			bullets: [
 				"Use a `control_group`.",
-				"Report `incrementality`, not attribution.",
+				"Report `incrementality`, not attribution credit.",
 				"Expect lag from `mail_sends` to `arr`.",
 			],
 		},

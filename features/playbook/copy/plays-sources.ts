@@ -9,8 +9,8 @@ export type SourcesCard = {
 
 export const SourcesCopy: SourcesCard = {
 	title: "Sources",
-	body: "Browse the canonical `source` taxonomy. Use column four to drill in.",
-	footer: "Hover metrics, terms, and `utms` for definitions.",
+	body: "Browse the governed `source` taxonomy. Use column four to drill into description, vendor, `utms`, or benchmark context.",
+	footer: "Hover any metric, term, vendor, or `utm` field for the governed definition.",
 	downloadLabel: "Download CSV",
 	fieldDropdownLabel: "Select field",
 	naLabel: "N/A",

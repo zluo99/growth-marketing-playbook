@@ -49,6 +49,7 @@ export const buttonVariants = cva(button_base_class, {
 		size: {
 			default: ui.button.size.default,
 			icon: ui.button.size.icon,
+			iconSm: ui.button.size.iconSm,
 			lg: ui.button.size.lg,
 			sm: ui.button.size.sm,
 		},

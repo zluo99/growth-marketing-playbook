@@ -30,23 +30,23 @@ export type DefinitionsCard = {
 
 export const DefinitionsCopy: DefinitionsCard = {
 	title: "Core definitions",
-	body: "Align with Finance, publish to the `semantic_model`, and wire into the `attribution_model`.",
+	body: "Align with Finance first, then publish governed fields into the `semantic_model` and `attribution_model`.",
 	icon: "sparkles",
 	panels: [
 		{
 			id: "1",
 			title: "Attributes to standardize",
-			body: "Treat attributes as governance, not preference. Drift turns every metric into reconciliation.",
+			body: "Treat attributes as governance, not preference. If they drift, every metric turns into reconciliation work.",
 		},
 		{
 			id: "2",
 			title: "Typical measures",
-			body: "Measures capture outcomes, unit economics, and efficiency.",
+			body: "Measures capture outcomes, unit economics, and operating efficiency.",
 		},
 		{
 			id: "3",
 			title: "Available tables",
-			body: "If you are lucky, these tables already exist. Start here:",
+			body: "If these tables already exist, start here.",
 			columns: {
 				table: "Table",
 				description: "Description",
@@ -57,14 +57,14 @@ export const DefinitionsCopy: DefinitionsCard = {
 	tables: [
 		{
 			name: "funnel_cohorted",
-			description: "Cohorted outcomes anchored to lead creation (Lead -> Opportunity -> Deal) plus `arr` from those leads.",
+			description: "Cohorted outcomes anchored to lead creation (Lead -> Opportunity -> Deal) plus `arr` from the same lead cohorts.",
 			columns: "lead_id, lead_created_date, source_l1, source_l2, source_l3, vendor, vertical, opportunities_from_leads, deals_from_leads, arr_from_leads, ltv_from_leads",
 			grain: "One row per lead cohort entity anchored at `lead_created_date`.",
 			signatureColumns: ["lead_id", "lead_created_date", "opportunities_from_leads", "deals_from_leads", "arr_from_leads"] as const,
 		},
 		{
 			name: "funnel_uncohorted",
-			description: "Object-level funnel events (Lead -> Opportunity -> Deal). `arr` lives on Deal records.",
+			description: "Object-level funnel events (Lead -> Opportunity -> Deal). Keep `arr` on Deal records.",
 			columns: "object_id, object_type, object_created_date, source_l1, source_l2, source_l3, vendor, vertical, arr",
 			grain: "One row per CRM object event (`object_id`, `object_type`) by creation date.",
 			signatureColumns: ["object_id", "object_type", "object_created_date", "source_l1", "source_l2"] as const,

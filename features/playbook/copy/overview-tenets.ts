@@ -23,26 +23,26 @@ export type TenetsCard = {
 export const TenetsCopy: TenetsCard = {
 	id: "tenets",
 	title: "Tenets",
-	body: "Marketing and Finance share one scoreboard. These tenets anchor decisions to a `semantic_model` and the `ssot`.",
+	body: "Marketing and Finance use one scoreboard. Govern `source`, `spend_type`, and core outcomes in the `semantic_model`, then reconcile to the `ssot`.",
 
 	panels: [
 		{
 			id: "1",
 			title: "Shared governance",
-			body: "Every `source` and `spend_type` is a governed contract in the `semantic_model`. Planning, reporting, and Finance use the same spine.",
+			body: "Every `source` and `spend_type` is governed in the `semantic_model`. Planning, reporting, and Finance all read from the same spine.",
 			icon: "scale",
 		},
 		{
 			id: "2",
 			title: "Two spend types, one strategy",
-			body: "`brand` builds demand and `performance` captures it. Classify every play by `spend_type` so strategy drives the plan.",
+			body: "`brand` creates demand and `performance` captures it. Classify every play by `spend_type` so budget follows strategy.",
 			icon: "flask",
 		},
 		{
 			id: "3",
 			title: "Optimize what pays back",
 			body:
-				"Lead with your `north_star_metric` (`arr`, `deals`), then unit economics (`roas`, `cac`, `payback`, `ltv`). Watch bottlenecks. When attribution is fuzzy, require `incrementality`.",
+				"Lead with your `north_star_metric` (`arr`, `deals`), then pressure-test unit economics (`roas`, `cac`, `payback`, `ltv`). Watch bottlenecks. When attribution is fuzzy, require `incrementality`.",
 			icon: "target",
 		},
 

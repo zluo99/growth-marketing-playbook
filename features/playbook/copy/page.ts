@@ -1,3 +1,5 @@
+import type { DefinitionSearchCategory, SearchCategory } from "@/features/playbook/search/schema"
+
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
 /* -------------------------------------------------------------------------- */
@@ -46,14 +48,14 @@ export type SearchCopy = {
 	resultsAriaLabel: string
 	tabsLabel: string
 	definitionsLabel: string
-	definitionGroupLabels: Record<string, string>
+	definitionGroupLabels: Record<DefinitionSearchCategory, string>
 	emptyState: string
 	noTabMatches: string
 	noDefinitionMatches: string
 	resultsCountLabel: string
 	loadingCatalog: string
 	catalogError: string
-	categoryLabels: Record<string, string>
+	categoryLabels: Record<SearchCategory, string>
 }
 
 export type SystemStateCopy = {
@@ -109,16 +111,10 @@ export const PageCopy = {
 		definitionGroupLabels: {
 			term: "Terms",
 			metric: "Metrics",
-			source: "Sources",
-			spend: "Spend",
-			vertical: "Verticals",
-			utm_medium: "UTM Mediums",
-			utm_source: "UTM Sources",
-			utm_placement: "UTM Placements",
 		},
 		emptyState: "No matches yet. Try another phrase.",
 		noTabMatches: "No tab matches",
-		noDefinitionMatches: "No definitions found",
+		noDefinitionMatches: "No reference matches",
 		resultsCountLabel: "{count} results",
 		loadingCatalog: "Loading search...",
 		catalogError: "Search unavailable. Refresh to retry.",
@@ -126,13 +122,7 @@ export const PageCopy = {
 			tab: "Tab",
 			framework: "Framework",
 			term: "Term",
-			source: "Source",
 			metric: "Metric",
-			spend: "Spend",
-			vertical: "Vertical",
-			utm_medium: "UTM Medium",
-			utm_source: "UTM Source",
-			utm_placement: "UTM Placement",
 			copy: "Copy",
 		},
 	},
@@ -156,7 +146,7 @@ export const PageCopy = {
 	footer: {
 		brandTitle: BrandCopy.title,
 		brandMarkAlt: "Growth Marketing Playbook home",
-		disclaimer: "© {year} John Luo. Content uses spoofed data, best practices, and experience.",
+		disclaimer: "Copyright {year} John Luo. Content uses spoofed data, best practices, and experience.",
 		themeLabel: "Theme",
 		themeOptions: {
 			light: "Light",
@@ -174,6 +164,4 @@ export const PageCopy = {
 	systemStates: SystemStateCopy
 	footer: FooterCopy
 }
-
-
 

@@ -18,7 +18,7 @@ import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { getFocusViewportBounds } from "@/features/playbook/components/ui/ui"
 import { TabById, type TabId } from "@/features/playbook/definitions/tabs"
 import { PlaybookEvents, PlaybookStorage, write_preference } from "@/features/playbook/components/context/preferences"
-import type { Catalog, SearchCategory, SearchEntry } from "@/features/playbook/search/search-types"
+import { definition_search_categories, is_definition_search_category, type Catalog, type DefinitionSearchCategory, type SearchCategory, type SearchEntry } from "@/features/playbook/search/schema"
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
@@ -36,6 +36,8 @@ type ResultContentProps = {
 	show_trailing_ellipsis: boolean
 	hierarchy_node?: React.ReactNode
 }
+
+type InteractiveSearchEntry = SearchEntry
 
 /* -------------------------------------------------------------------------- */
 /* Constants                                                                  */
@@ -92,15 +94,17 @@ const definition_card_class = cn(
 	"rounded-[var(--radius-control)] px-3 py-2 transition-colors duration-150",
 	ui.typography.body,
 	ui.search.definitionBorder,
-	ui.search.definitionBg,
-	ui.component.outline.hover,
-	ui.surface.state.hover.shadowSm
+	ui.search.definitionBg
 )
 
-const category_labels: Record<SearchCategory, string> = PageCopy.bodySearch.categoryLabels as Record<SearchCategory, string>
+const category_labels: Record<SearchCategory, string> = PageCopy.bodySearch.categoryLabels
 const definition_group_labels = PageCopy.bodySearch.definitionGroupLabels
 
-const spend_panel_ids = new Set(SpendCopy.panels.map((panel) => panel.id))
+const spend_panel_ids = new Set<string>(SpendCopy.panels.map((panel) => panel.id))
+const search_highlight_class = cn(
+	"rounded-[0.2em] [-webkit-box-decoration-break:clone] [box-decoration-break:clone]",
+	ui.highlight.search
+)
 
 /* -------------------------------------------------------------------------- */
 /* Helpers                                                                    */
@@ -109,6 +113,13 @@ const spend_panel_ids = new Set(SpendCopy.panels.map((panel) => panel.id))
 const escape_regexp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 const to_dom_id = (value: string) => value.toLowerCase().replace(/[^a-z0-9_-]/g, "-")
 const normalize_value = (value?: string) => (value ?? "").trim().toLowerCase()
+const tokenize_search_query = (value: string) =>
+	Array.from(new Set(normalize_value(value).split(/[^a-z0-9_:+.-]+/).map((token) => token.trim()).filter(Boolean)))
+const build_query_regex = (query: string) => {
+	const tokens = tokenize_search_query(query)
+	if (!tokens.length) return null
+	return new RegExp(`(${tokens.map(escape_regexp).join("|")})`, "gi")
+}
 const result_dom_id = (entry: SearchEntry) => `search-result-${to_dom_id(entry.id)}`
 const is_text_input_target = (target: EventTarget | null) => {
 	if (!target || !(target instanceof HTMLElement)) return false
@@ -128,21 +139,28 @@ const render_with_tooltips = (text: string | React.ReactNode) => {
 	}
 }
 
+const is_result_actionable = (entry: SearchEntry) => Boolean(entry.tabId || entry.scrollTarget)
+const is_definition_search_entry = (entry: SearchEntry): entry is SearchEntry & { category: DefinitionSearchCategory } =>
+	is_definition_search_category(entry.category)
+const create_definition_groups = (): Record<DefinitionSearchCategory, SearchEntry[]> => ({
+	term: [],
+	metric: [],
+})
+
 const highlight_matches = (
 	text: string,
 	query: string,
 	renderChunk: (chunk: string) => React.ReactNode = (chunk) => chunk
 ) => {
-	if (!query) return <>{renderChunk(text)}</>
-
-	const highlight_classes = cn("rounded-sm font-semibold", ui.highlight.search)
-	const regex = new RegExp(`(${escape_regexp(query)})`, "gi")
+	const regex = build_query_regex(query)
+	if (!regex) return <>{renderChunk(text)}</>
 
 	const highlight_text = (value: string, keyPrefix: string) => {
+		regex.lastIndex = 0
 		const parts = value.split(regex)
 		return parts.map((part, idx) =>
 			idx % 2 === 1 ? (
-				<span key={`${keyPrefix}-${idx}`} className={highlight_classes}>
+				<span key={`${keyPrefix}-${idx}`} className={search_highlight_class}>
 					{part}
 				</span>
 			) : (
@@ -188,13 +206,15 @@ const apply_search_highlights = (root: HTMLElement, query: string, className: st
 	const trimmed = query.trim()
 	if (!trimmed) return 0
 
-	const regex = new RegExp(`(${escape_regexp(trimmed)})`, "gi")
+	const regex = build_query_regex(trimmed)
+	if (!regex) return 0
 	const nodes: Text[] = []
 	const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
 		acceptNode: (node) => {
-			const parent = (node as Text).parentElement
+			if (!(node instanceof Text)) return NodeFilter.FILTER_REJECT
+			const parent = node.parentElement
 			if (!parent) return NodeFilter.FILTER_REJECT
-			if (!(node as Text).nodeValue?.trim()) return NodeFilter.FILTER_REJECT
+			if (!node.nodeValue?.trim()) return NodeFilter.FILTER_REJECT
 			if (parent.closest(`[${highlight_attr}]`)) return NodeFilter.FILTER_REJECT
 			if (parent.closest("[data-search-ignore]")) return NodeFilter.FILTER_REJECT
 			const tag = parent.tagName
@@ -203,7 +223,9 @@ const apply_search_highlights = (root: HTMLElement, query: string, className: st
 		},
 	})
 
-	while (walker.nextNode()) nodes.push(walker.currentNode as Text)
+	while (walker.nextNode()) {
+		if (walker.currentNode instanceof Text) nodes.push(walker.currentNode)
+	}
 
 	let hitCount = 0
 	nodes.forEach((textNode) => {
@@ -237,7 +259,7 @@ const apply_search_highlights = (root: HTMLElement, query: string, className: st
 
 const resolve_spend_panel_id = (entry: SearchEntry) => {
 	const match = entry.id.match(/spend-panel-(\d+)$/)
-	const candidate = match?.[1] as `${number}` | undefined
+	const candidate = match?.[1]
 	if (candidate && spend_panel_ids.has(candidate)) return candidate
 	if (entry.tabId !== "plays") return null
 	const title_key = normalize_value(entry.title)
@@ -312,22 +334,6 @@ const render_hierarchy_label = (entry: SearchEntry, query: string) => {
 	)
 }
 
-const render_source_hierarchy_label = (entry: SearchEntry, query: string) => {
-	const hierarchy_parts = (entry.breadcrumbs ?? []).filter(Boolean)
-	if (!hierarchy_parts.length) return null
-
-	return (
-		<span className="inline-flex items-center gap-1 min-w-0">
-			{hierarchy_parts.map((label, idx) => (
-				<React.Fragment key={`${label}-${idx}`}>
-					{idx > 0 ? <ArrowRight className={cn(ui.iconNude.sm, "opacity-60 shrink-0")} aria-hidden="true" /> : null}
-					<span className="min-w-0 truncate leading-tight">{highlight_matches(label, query, render_with_tooltips)}</span>
-				</React.Fragment>
-			))}
-		</span>
-	)
-}
-
 const resolve_description_source = (entry: SearchEntry, query: string) => {
 	const base = entry.displayDescription ?? entry.description ?? ""
 	if (!query) return base
@@ -342,11 +348,27 @@ type DefinitionSectionProps = {
 	label: string
 	entries: SearchEntry[]
 	query: string
+	onSelect: (entry: SearchEntry) => void
+	activeResultId?: string
+	hoveredResultId?: string | null
+	getResultIndex: (entry: InteractiveSearchEntry) => number
+	onHoverResult: (entry: InteractiveSearchEntry | null) => void
 	renderTitle?: (result: SearchEntry, title_node: React.ReactNode, query: string) => React.ReactNode
 	renderFooter?: (result: SearchEntry) => React.ReactNode
 }
 
-function DefinitionSection({ label, entries, query, renderTitle, renderFooter }: DefinitionSectionProps) {
+function DefinitionSection({
+	label,
+	entries,
+	query,
+	onSelect,
+	activeResultId,
+	hoveredResultId,
+	getResultIndex,
+	onHoverResult,
+	renderTitle,
+	renderFooter,
+}: DefinitionSectionProps) {
 	if (!entries.length) return null
 	return (
 		<div className={cn("flex flex-col", ui.gap.xs)}>
@@ -359,12 +381,56 @@ function DefinitionSection({ label, entries, query, renderTitle, renderFooter }:
 					const description_node = description_source ? highlight_matches(description_source, query, render_with_tooltips) : null
 					const title_node = highlight_matches(result.title, query, render_with_tooltips)
 					const title_content = renderTitle ? renderTitle(result, title_node, query) : <div className={cn(ui.typography.body, "font-semibold")}>{title_node}</div>
+					const actionable = is_result_actionable(result)
+					const is_hovered = hoveredResultId === result.id
+					const is_active_row = activeResultId === result.id || is_hovered
+					const card_class = cn(
+						definition_card_class,
+						actionable && "w-full text-left cursor-pointer focus-visible:outline-none",
+						!actionable && "cursor-default select-text",
+						actionable && ui.search.focusRing,
+						actionable && ui.component.outline.hover,
+						actionable && ui.surface.state.hover.shadowSm,
+						actionable && ui.search.rowHoverBorderBlue,
+						actionable && ui.search.rowHoverBgBlue,
+						is_active_row &&
+							cn(
+								ui.search.rowActiveShadow,
+								"text-foreground",
+								ui.search.rowActiveBorderBlue,
+								ui.search.rowActiveBgBlue
+							)
+					)
+					const footer_content = renderFooter ? renderFooter(result) : null
 
-					return (
-						<div key={result.id} className={definition_card_class} role="presentation">
+					const content = (
+						<>
 							{title_content}
 							{description_node ? <p className={cn("mt-1 text-muted-foreground", ui.typography.caption)}>{description_node}</p> : null}
-							{renderFooter ? renderFooter(result) : null}
+							{footer_content}
+						</>
+					)
+
+					return actionable ? (
+						<button
+							key={result.id}
+							type="button"
+							id={result_dom_id(result)}
+							role="option"
+							aria-selected={is_active_row}
+							className={card_class}
+							onClick={() => onSelect(result)}
+							onMouseEnter={() => {
+								onHoverResult(result)
+							}}
+							onMouseLeave={() => onHoverResult(null)}
+							data-search-result-index={getResultIndex(result)}
+						>
+							{content}
+						</button>
+					) : (
+						<div key={result.id} className={card_class} role="presentation">
+							{content}
 						</div>
 					)
 				})}
@@ -390,7 +456,7 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 	const [isOpen, setIsOpen] = React.useState(false)
 	const [query, setQuery] = React.useState("")
 	const [cursor, setCursor] = React.useState(-1)
-	const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null)
+	const [hoveredResultId, setHoveredResultId] = React.useState<string | null>(null)
 	const [catalog, setCatalog] = React.useState<Catalog | null>(null)
 	const [catalogStatus, setCatalogStatus] = React.useState<"idle" | "loading" | "ready" | "error">("idle")
 	const [isCoarsePointer, setIsCoarsePointer] = React.useState(false)
@@ -433,7 +499,7 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 
 		try {
 			if (!catalog_promise_ref.current) {
-				catalog_promise_ref.current = import("@/features/playbook/search/search-catalog").then((module) => module.buildCatalog())
+				catalog_promise_ref.current = import("@/features/playbook/search/catalog").then((module) => module.buildCatalog())
 			}
 
 			const loaded_catalog = await catalog_promise_ref.current
@@ -449,25 +515,51 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 	const filtered_results = React.useMemo(() => {
 		if (!normalized_query) return []
 		if (!catalog) return []
+		const query_tokens = tokenize_search_query(normalized_query)
+		if (!query_tokens.length) return []
 
 		const normalized_info = (value?: string) => (value ?? "").toLowerCase()
+		const boundary_index = (text: string, token: string) => text.search(new RegExp(`\\b${escape_regexp(token)}`, "i"))
 		const matches: { entry: SearchEntry; score: number }[] = []
 
 		for (const entry of catalog.entries) {
-			const base_index = entry.searchable.indexOf(normalized_query)
-			if (base_index < 0) continue
+			const title = normalized_info(entry.title)
+			const description = normalized_info(entry.description)
+			const meta = normalized_info(entry.meta)
+			const keywords = (entry.keywords ?? []).map((value) => normalized_info(value))
+			const chunks = (entry.searchChunks ?? []).map((value) => normalized_info(value))
+			const field_pool = [entry.searchable, title, description, meta, ...keywords, ...chunks]
+			if (!query_tokens.every((token) => field_pool.some((field) => field.includes(token)))) continue
 
-			const title_index = normalized_info(entry.title).indexOf(normalized_query)
-			const description_index = normalized_info(entry.description).indexOf(normalized_query)
-			const meta_index = normalized_info(entry.meta).indexOf(normalized_query)
+			let score = entry.priority ?? 100
+			const full_query_index = entry.searchable.indexOf(normalized_query)
+			if (title === normalized_query) score -= 1200
+			else if (title.startsWith(normalized_query)) score -= 900
+			else if (keywords.some((keyword) => keyword === normalized_query)) score -= 820
+			else if (keywords.some((keyword) => keyword.startsWith(normalized_query))) score -= 700
+			else if (full_query_index >= 0) score -= Math.max(320 - Math.min(full_query_index, 320), 0)
 
-			let priority = 0
-			if (title_index >= 0) priority -= 1000
-			else if (description_index >= 0) priority += 100
-			else if (meta_index >= 0) priority += 200
-			else priority += 400
+			for (const token of query_tokens) {
+				const title_index = title.indexOf(token)
+				const keyword_exact = keywords.some((keyword) => keyword === token)
+				const keyword_prefix = keywords.some((keyword) => keyword.startsWith(token))
+				const keyword_match = keywords.some((keyword) => keyword.includes(token))
+				const chunk_match = chunks.some((chunk) => chunk.includes(token))
 
-			matches.push({ entry, score: base_index + priority })
+				if (title_index === 0) score -= 160
+				else if (title_index > 0 && boundary_index(title, token) >= 0) score -= 120
+				else if (title_index > 0) score -= 80
+
+				if (keyword_exact) score -= 110
+				else if (keyword_prefix) score -= 75
+				else if (keyword_match) score -= 45
+
+				if (meta.includes(token)) score -= 35
+				if (description.includes(token)) score -= 20
+				if (chunk_match) score -= 12
+			}
+
+			matches.push({ entry, score })
 		}
 
 		matches.sort((a, b) => {
@@ -475,45 +567,32 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 			return a.entry.title.localeCompare(b.entry.title)
 		})
 
-		return matches.slice(0, 30).map((match) => match.entry)
+		return matches.slice(0, 40).map((match) => match.entry)
 	}, [catalog, normalized_query])
 
 	const display_results = React.useMemo(() => (normalized_query ? filtered_results : []), [filtered_results, normalized_query])
 	const { tab_results, definition_sections, has_definition_entries } = React.useMemo(() => {
-		const tab_results: SearchEntry[] = []
-		const definition_results: SearchEntry[] = []
-
-		for (const entry of display_results) {
-			if (
-				entry.category === "term" ||
-				entry.category === "metric" ||
-				entry.category === "source" ||
-				entry.category === "spend" ||
-				entry.category === "vertical" ||
-				entry.category === "utm_medium" ||
-				entry.category === "utm_source" ||
-				entry.category === "utm_placement"
-			) {
-				definition_results.push(entry)
-				continue
-			}
-			tab_results.push(entry)
-		}
+		const tab_results = display_results.filter((entry) => !is_definition_search_entry(entry))
+		const definition_results = display_results.filter(is_definition_search_entry)
 
 		const definition_groups = definition_results.reduce(
 			(acc, entry) => {
-				const key = entry.category
-				;(acc[key] ??= []).push(entry)
+				acc[entry.category].push(entry)
 				return acc
 			},
-			{} as Record<string, SearchEntry[]>
+			create_definition_groups()
 		)
 
-		const definition_sections = [
-			{ key: "term", label: definition_group_labels.term },
-			{
-				key: "metric",
-				label: definition_group_labels.metric,
+		const definition_section_overrides: Partial<
+			Record<
+				DefinitionSearchCategory,
+				{
+					renderTitle?: (result: SearchEntry, title_node: React.ReactNode, query: string) => React.ReactNode
+					renderFooter?: (result: SearchEntry) => React.ReactNode
+				}
+			>
+		> = {
+			metric: {
 				renderFooter: (result: SearchEntry) =>
 					result.formula ? (
 						<div className="mt-0.5">
@@ -521,26 +600,13 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 						</div>
 					) : null,
 			},
-			{
-				key: "source",
-				label: definition_group_labels.source,
-				renderTitle: (result: SearchEntry, title_node: React.ReactNode, query: string) => {
-					const hierarchy_node = render_source_hierarchy_label(result, query)
-					return hierarchy_node ? (
-						<div className={cn("min-w-0 font-semibold", ui.typography.body)}>{hierarchy_node}</div>
-					) : (
-						<div className={cn("font-semibold", ui.typography.body)}>{title_node}</div>
-					)
-				},
-			},
-			{ key: "spend", label: definition_group_labels.spend },
-			{ key: "vertical", label: definition_group_labels.vertical },
-			{ key: "utm_medium", label: definition_group_labels.utm_medium },
-			{ key: "utm_source", label: definition_group_labels.utm_source },
-			{ key: "utm_placement", label: definition_group_labels.utm_placement },
-		].map((section) => ({
-			...section,
-			entries: definition_groups[section.key] ?? [],
+		}
+
+		const definition_sections = definition_search_categories.map((key) => ({
+			key,
+			label: definition_group_labels[key],
+			entries: definition_groups[key],
+			...(definition_section_overrides[key] ?? {}),
 		}))
 
 		const has_definition_entries = definition_sections.some((section) => section.entries.length)
@@ -548,9 +614,18 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 		return { tab_results, definition_sections, has_definition_entries }
 	}, [display_results])
 
-	const active_result = cursor >= 0 ? tab_results[cursor] : null
+	const interactive_results = React.useMemo(
+		() => [...tab_results, ...definition_sections.flatMap((section) => section.entries)].filter(is_result_actionable),
+		[definition_sections, tab_results]
+	)
+	const interactive_result_index_by_id = React.useMemo(() => {
+		const index_by_id = new Map<string, number>()
+		interactive_results.forEach((entry, index) => index_by_id.set(entry.id, index))
+		return index_by_id
+	}, [interactive_results])
+	const get_result_index = React.useCallback((entry: InteractiveSearchEntry) => interactive_result_index_by_id.get(entry.id) ?? -1, [interactive_result_index_by_id])
+	const active_result = cursor >= 0 ? interactive_results[cursor] : null
 	const active_descendant = active_result ? result_dom_id(active_result) : undefined
-	const interactive_results = tab_results
 
 	React.useEffect(() => {
 		if (!isOpen) return
@@ -567,22 +642,19 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 		if (catalogStatus !== "idle") return
 
 		let cancelled = false
-		const win = window as typeof window & {
-			requestIdleCallback?: (callback: (deadline: { didTimeout: boolean; timeRemaining: () => number }) => void, opts?: { timeout: number }) => number
-			cancelIdleCallback?: (handle: number) => void
-		}
+		const request_idle_callback = "requestIdleCallback" in window ? window.requestIdleCallback.bind(window) : null
+		const cancel_idle_callback = "cancelIdleCallback" in window ? window.cancelIdleCallback.bind(window) : null
 
 		const run = () => {
 			if (cancelled) return
 			void load_catalog()
 		}
 
-		const can_use_idle_callback = typeof win.requestIdleCallback === "function"
-		const handle = can_use_idle_callback ? win.requestIdleCallback(() => run(), { timeout: idle_catalog_timeout_ms }) : window.setTimeout(run, idle_catalog_timeout_ms)
+		const handle = request_idle_callback ? request_idle_callback(() => run(), { timeout: idle_catalog_timeout_ms }) : window.setTimeout(run, idle_catalog_timeout_ms)
 
 		return () => {
 			cancelled = true
-			if (can_use_idle_callback && typeof win.cancelIdleCallback === "function") win.cancelIdleCallback(handle)
+			if (request_idle_callback && cancel_idle_callback) cancel_idle_callback(handle)
 			else window.clearTimeout(handle)
 		}
 	}, [catalogStatus, load_catalog])
@@ -596,7 +668,7 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 	}, [interactive_results.length])
 
 	React.useEffect(() => {
-		if (!normalized_query) setHoveredIndex(null)
+		if (!normalized_query) setHoveredResultId(null)
 	}, [normalized_query])
 
 	const clear_scroll_timeout = React.useCallback(() => {
@@ -617,11 +689,9 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 		return () => document.removeEventListener("pointerdown", handle_pointer_down, true)
 	}, [])
 
-	const highlight_class_name = cn("rounded-sm font-semibold", ui.highlight.search)
-
 	const find_target = React.useCallback((target?: string) => {
 		if (!target || typeof document === "undefined") return null
-		return document.querySelector(`[data-search-target="${target}"]`) as HTMLElement | null
+		return document.querySelector<HTMLElement>(`[data-search-target="${target}"]`)
 	}, [])
 
 	const scroll_to_target_now = React.useCallback(
@@ -662,7 +732,7 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 				if (anchor) {
 					if (trimmed) {
 						clear_search_highlights()
-						const hits = apply_search_highlights(anchor, trimmed, highlight_class_name)
+						const hits = apply_search_highlights(anchor, trimmed, search_highlight_class)
 						has_highlight_ref.current = hits > 0
 					}
 					return
@@ -677,14 +747,14 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 			clear_scroll_timeout()
 			scroll_timeout_ref.current = window.setTimeout(schedule, 220)
 		},
-		[clear_scroll_timeout, highlight_class_name, scroll_to_target_now]
+		[clear_scroll_timeout, scroll_to_target_now]
 	)
 
 	const close = React.useCallback(
 		({ preserveQuery = false }: { preserveQuery?: boolean } = {}) => {
 			clear_scroll_timeout()
 			setIsOpen(false)
-			setHoveredIndex(null)
+			setHoveredResultId(null)
 			setCursor(-1)
 			input_ref.current?.blur()
 			if (!preserveQuery) setQuery("")
@@ -776,7 +846,7 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 	React.useEffect(() => {
 		if (!isOpen) return
 		const handle_pointer_down = (event: PointerEvent) => {
-			const target = event.target as Node | null
+			const target = event.target instanceof Node ? event.target : null
 			if (!target) return
 			if (wrapper_ref.current?.contains(target)) return
 			close({ preserveQuery: true })
@@ -936,12 +1006,13 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 
 											{tab_results.length ? (
 												<div className={cn("flex flex-col", ui.gap.xs)}>
-													{tab_results.map((result, result_index) => {
+													{tab_results.map((result) => {
 														const description_source = resolve_description_source(result, normalized_query)
 														const description_node = description_source
 															? highlight_matches(description_source, normalized_query, render_with_tooltips)
 															: null
 														const hierarchy_node = render_hierarchy_label(result, normalized_query)
+														const result_index = get_result_index(result)
 
 														const raw_description = result.description ?? ""
 														const description_lower = raw_description.toLowerCase()
@@ -951,12 +1022,13 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 														const show_trailing_ellipsis =
 															match_index >= 0 && match_index + normalized_query.length < raw_description.length
 
-														const is_hovered = hoveredIndex === result_index
-														const is_active_row = is_hovered || cursor === result_index
+														const is_hovered = hoveredResultId === result.id
+														const is_active_row = is_hovered || active_result?.id === result.id
 
 														const active_row_classes = is_active_row
 															? cn(
-																	"shadow-[0_12px_24px_rgba(0,0,0,0.15)] text-foreground",
+																	ui.search.rowActiveShadow,
+																	"text-foreground",
 																	ui.search.rowActiveBorderBlue,
 																	ui.search.rowActiveBgBlue
 																)
@@ -980,10 +1052,10 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 																aria-selected={is_active_row}
 																onClick={() => handle_select(result)}
 																onMouseEnter={() => {
-																	setHoveredIndex(result_index)
+																	setHoveredResultId(result.id)
 																	setCursor(result_index)
 																}}
-																onMouseLeave={() => setHoveredIndex(null)}
+																onMouseLeave={() => setHoveredResultId(null)}
 																className={className}
 															>
 																<ResultContent
@@ -1010,12 +1082,24 @@ export function Search({ onGoToTab, onOpenChange }: SearchProps) {
 											</div>
 
 											<div className={cn("flex flex-col text-foreground", ui.typography.body, ui.gap.xs)}>
-												{definition_sections.map((section) => (
+														{definition_sections.map((section) => (
 													<DefinitionSection
 														key={section.key}
 														label={section.label}
 														entries={section.entries}
 														query={normalized_query}
+														onSelect={handle_select}
+														activeResultId={active_result?.id}
+														hoveredResultId={hoveredResultId}
+														getResultIndex={get_result_index}
+														onHoverResult={(entry) => {
+															if (!entry) {
+																setHoveredResultId(null)
+																return
+															}
+															setHoveredResultId(entry.id)
+															setCursor(get_result_index(entry))
+														}}
 														renderTitle={section.renderTitle}
 														renderFooter={section.renderFooter}
 													/>

@@ -41,13 +41,13 @@ export type AnalysisCard = {
 
 export const AnalysisCopy: AnalysisCard = {
 	title: "Journey analysis",
-	body: "Build `mta` in sequence. Stabilize `object_model`, stabilize `touch_model`, then analyze one `object_touch_model` base.",
+	body: "Build `mta` in sequence: stabilize `object_model`, stabilize `touch_model`, then analyze one `object_touch_model` base.",
 
 	panels: [
 		{
 			id: "1",
 			title: "Unify objects",
-			body: "Set one identity layer first.",
+			body: "Set the identity layer first.",
 			bullets: [
 				"Anchor the `identity_graph` on `prospect_id`, then map one-to-many `object_id` records (lead, opportunity, deal).",
 				"Standardize `source` and `utms` once in `object_model` so downstream cuts stay consistent.",
@@ -68,10 +68,9 @@ export const AnalysisCopy: AnalysisCard = {
 			body: "Compare models without drift.",
 			bullets: [
 				"Run first-touch, last-touch, decay, and `markov_model` from the same `object_touch_model` base.",
-				"Rank leverage with `removal_effect`, path frequency, and conversion by `touch_count`.",
-				"Normalize columns once, then materialize one journey base aligned to `object_touch_model`.",
-				"Score leverage with `markov_model` and `removal_effect` on reduced `journey_path` values.",
-				"Ship guardrails next to output: top `journey_path` volume, `cvr` by `touch_count`, and a `source_l2` cut at `prospect_id`.",
+				"Normalize columns once, then materialize one governed journey base aligned to `object_touch_model`.",
+				"Rank leverage with `removal_effect`, top `journey_path` volume, and `cvr` by `touch_count`.",
+				"Ship guardrails beside every output: path volume, a `source_l2` cut at `prospect_id`, and model assumptions.",
 			],
 		},
 	],
@@ -225,7 +224,7 @@ source_l2_cvr
 removal_effect
 `.trim(),
 
-	footer: "If `object_model` or `touch_model` is unstable, pause. Stable inputs are required before `mta` comparisons.",
+	footer: "If `object_model` or `touch_model` is unstable, pause. Stable inputs are required before comparing `mta` models.",
 	ui: {
 		analysisItemLabel: "Step {n}",
 		snippetTitle: "R snippet",

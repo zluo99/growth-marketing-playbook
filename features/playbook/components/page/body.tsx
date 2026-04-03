@@ -25,7 +25,7 @@ import TabPlays from "../../tabs/plays"
 import { Renderer } from "../ui/renderer"
 import { LoaderCardSkeleton } from "../ui/loader"
 import { PbHeader } from "./header"
-import { PbBodyTabContext, type PbBodyTabContextValue, usePbTabsNav } from "../context/context"
+import { PbBodyTabContext, type PbBodyTabContextValue, usePbTabsNav } from "../context/tab-nav"
 
 /* -------------------------------------------------------------------------- */
 /* Constants                                                                  */

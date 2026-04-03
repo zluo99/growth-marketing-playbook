@@ -9,7 +9,6 @@ import { motion, type HTMLMotionProps, type MotionProps, type Transition } from 
 
 import { ui, type TypographyKey } from "@/components/tokens/design"
 import { uiMotion, useRafThrottle, useReducedMotionBool } from "@/components/tokens/motion"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useMounted } from "@/lib/hooks/use-mounted"
@@ -213,10 +212,6 @@ function useFocusStack(
 
 		const { top, max, scrollable: is_scrollable, vh, viewport_top, viewport_bottom } = get_scroll_metrics(scroll_root)
 		const root_rect = root_ref.current?.getBoundingClientRect()
-		const stack_overflows_viewport = root_rect ? root_rect.height > vh + 1 : false
-		const has_scroll_room = is_scrollable && stack_overflows_viewport && max > FocusMinScrollableDistancePx
-
-		set_scrollable((prev) => (prev === has_scroll_room ? prev : has_scroll_room))
 
 		const highlighted_item = find_highlighted_item(root_ref.current)
 		const focus_offset_px = resolve_search_focus_offset(highlighted_item, focusOffsetPx)
@@ -229,9 +224,6 @@ function useFocusStack(
 		const ratios = ratio_ref.current
 		let next_vis = Array.from({ length: count }, (_, i) => ratios[i] ?? 0)
 
-		const is_at_top = top <= topStickPx + 4
-		const is_at_bottom = max - top <= bottomStickPx + 4
-
 		const rect_cache = new Map<number, DOMRect>()
 		const get_rect = (idx: number) => {
 			if (rect_cache.has(idx)) return rect_cache.get(idx) ?? null
@@ -241,6 +233,33 @@ function useFocusStack(
 			rect_cache.set(idx, rect)
 			return rect
 		}
+
+		const is_at_top = top <= topStickPx + 4
+		const is_at_bottom = max - top <= bottomStickPx + 4
+		const first_rect = count > 0 ? get_rect(0) : null
+		const last_rect = count > 0 ? get_rect(count - 1) : null
+		const is_at_stack_bottom = last_rect
+			? last_rect.bottom <= viewport_bottom - bottomStickPx - 4
+			: root_rect
+				? root_rect.bottom <= viewport_bottom - bottomStickPx - 4
+				: false
+
+		const can_center_reach_focus_line = (rect: DOMRect | null) => {
+			if (!rect) return false
+			const center = rect.top + rect.height / 2
+			const min_center = center - (max - top)
+			const max_center = center + top
+			return min_center <= focus_y && max_center >= focus_y
+		}
+
+		const has_scroll_room =
+			is_scrollable &&
+			count > 1 &&
+			max > FocusMinScrollableDistancePx &&
+			can_center_reach_focus_line(first_rect) &&
+			can_center_reach_focus_line(last_rect)
+
+		set_scrollable((prev) => (prev === has_scroll_room ? prev : has_scroll_room))
 
 		const has_visible_ratio = next_vis.some((ratio) => ratio > 0)
 		if (!has_visible_ratio) {
@@ -288,10 +307,13 @@ function useFocusStack(
 
 		if (count > 0) {
 			if (is_at_top && first_visible >= 0) best_idx = first_visible
-			else if (is_at_bottom) best_idx = count - 1
+			else if (is_at_bottom || is_at_stack_bottom) best_idx = count - 1
 		}
 
 		if (
+			!is_at_top &&
+			!is_at_bottom &&
+			!is_at_stack_bottom &&
 			best_idx >= 0 &&
 			active_index >= 0 &&
 			active_index < count &&
@@ -726,18 +748,6 @@ export function PbCardGlow(props: React.HTMLAttributes<HTMLDivElement>) {
 
 export function PbCardLayer({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
 	return <div {...props} className={cn("relative z-10", className)} />
-}
-
-/* -------------------------------------------------------------------------- */
-/* Components                                                                 */
-/* -------------------------------------------------------------------------- */
-
-export function PbHeaderTag({ children, className }: { children: React.ReactNode; className?: string }) {
-	return (
-		<Badge data-slot="pb-header-tag" className={cn("h-6 leading-none", ui.metrics.pillSecondary, className)}>
-			{render_inline_copy(children, "pb-header-tag")}
-		</Badge>
-	)
 }
 
 export function PbNumberBadge({ className, number, ariaLabel }: { className?: string; number: React.ReactNode; ariaLabel?: string }) {
