@@ -18,14 +18,14 @@ export type GuideCard = {
 }
 
 export const GuideCopy: GuideCard = {
-	title: "Execution guide",
-	body: "Start with measurement, then scale plays.",
+	title: "Execution flow",
+	body: "Move in order so each step inherits governed inputs.",
 
 	panels: [
 		{
 			id: "1",
 			title: "Recommended sequence",
-			body: "Build in order so each step has clean inputs.",
+			body: "Build the pipeline in order so reporting, journeys, and plays all reuse the same governed model.",
 			sequence: [
 				"reports-sql",
 				"reports-workspace",
@@ -36,7 +36,7 @@ export const GuideCopy: GuideCard = {
 		{
 			id: "2",
 			title: "Decision cadence",
-			body: "Reporting is definitions, trends, and reconciliation. Decisions are explicit moves with thresholds, windows, and owners. If you cannot state the move in one sentence with `arr`, `roas`, and `cac`, it is not decision-ready.",
+			body: "Reporting explains definitions, trends, and reconciliation. Decisions name the move, threshold, window, and owner. If you cannot state the move in one sentence with `arr`, `roas`, and `cac`, it is not decision-ready.",
 		},
 	],
 

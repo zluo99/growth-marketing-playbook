@@ -33,6 +33,7 @@ import {
 import { AnalysisCopy, type AnalysisDiagram, type AnalysisPanel } from "@/features/playbook/copy/journeys-analysis"
 import { ProblemCopy } from "@/features/playbook/copy/journeys-problem"
 import { TabById } from "@/features/playbook/definitions/tabs"
+import { SearchTargets } from "@/features/playbook/search/targets"
 
 /* -------------------------------------------------------------------------- */
 /* Constants                                                                  */
@@ -177,7 +178,7 @@ function AnalysisStepOneBlock({
 	const rules = panel.bullets.filter(Boolean)
 
 	return (
-		<PbTabPanel className="h-full overflow-hidden" data-search-target="analysis-step-1">
+		<PbTabPanel className="h-full overflow-hidden" data-search-target={SearchTargets.journeys.analysisStep1}>
 			<div className={cn("flex items-start justify-between", ui.gap.sm)}>
 				<div className="min-w-0">
 					<div className={cn("text-foreground", ui.typography.title.md)}>
@@ -265,7 +266,7 @@ function AnalysisStepTwoBlock({
 	const rules = panel.bullets.filter(Boolean)
 
 	return (
-		<PbTabPanel className="h-full overflow-hidden" data-search-target="analysis-step-2">
+		<PbTabPanel className="h-full overflow-hidden" data-search-target={SearchTargets.journeys.analysisStep2}>
 			<div className={cn("flex items-start justify-between", ui.gap.sm)}>
 				<div className="min-w-0">
 					<div className={cn("text-foreground", ui.typography.title.md)}>
@@ -347,7 +348,7 @@ function AnalysisStepThreeBlock({
 	const rules = panel.bullets.filter(Boolean)
 
 	return (
-		<PbTabPanel className="overflow-hidden" data-search-target="analysis-step-3">
+		<PbTabPanel className="overflow-hidden" data-search-target={SearchTargets.journeys.analysisStep3}>
 			<div className={cn("flex items-start justify-between", ui.gap.sm)}>
 				<div className="min-w-0">
 					<div className={cn("text-foreground", ui.typography.title.md)}>
@@ -404,7 +405,7 @@ export default function TabJourneys() {
 
 	return (
 		<PbTabShell tabId="journeys" alias={tab.alias} description={tab.description} keyPrefix={`${journeys_key_prefix}-intro`}>
-			<PbReveal className="w-full" data-search-target="problem-card">
+			<PbReveal className="w-full" data-search-target={SearchTargets.journeys.problemCard}>
 				<PbTabCard hover>
 					<PbCardHeader
 						title={
@@ -437,7 +438,7 @@ export default function TabJourneys() {
 				</PbTabCard>
 			</PbReveal>
 
-			<PbReveal className="w-full" data-search-target="analysis-card">
+			<PbReveal className="w-full" data-search-target={SearchTargets.journeys.analysisCard}>
 				<PbTabCard hover>
 					<PbCardHeader
 						title={

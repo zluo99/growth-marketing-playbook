@@ -30,6 +30,7 @@ import { UtmMediumByValue } from "@/features/playbook/definitions/utm-medium-to-
 import { getTermByToken } from "@/features/playbook/definitions/terms"
 import { VendorDescriptionByName } from "@/features/playbook/definitions/utm-source-to-vendors"
 import { PlaybookEvents, PlaybookStorage, read_preference, write_preference } from "@/features/playbook/components/context/preferences"
+import { SearchTargets, search_target_for_source } from "@/features/playbook/search/targets"
 import { downloadCsv } from "@/lib/csv"
 
 /* -------------------------------------------------------------------------- */
@@ -872,7 +873,7 @@ export default function TabPlays() {
 	return (
 		<Renderer.Provider>
 			<PbTabShell tabId="plays" alias={tab.alias} description={tab.description} keyPrefix={`${plays_key_prefix}-intro`}>
-				<PbReveal className="w-full" ref={spend_card_ref} data-search-target="spend-card">
+				<PbReveal className="w-full" ref={spend_card_ref} data-search-target={SearchTargets.plays.spendCard}>
 					<PbTabCard hover shadow className="w-full">
 						<PbCardLayer>
 							<PbCardHeader
@@ -954,7 +955,7 @@ export default function TabPlays() {
 					</PbTabCard>
 				</PbReveal>
 
-				<PbReveal className="w-full" data-search-target="sources-card">
+				<PbReveal className="w-full" data-search-target={SearchTargets.plays.sourcesCard}>
 					<PbTabCard hover>
 						<PbCardGlow className={ui.glow.blue} />
 						<PbCardLayer>
@@ -1020,7 +1021,11 @@ export default function TabPlays() {
 
 										<TableBody>
 											{display_rows.map((r) => (
-												<TableRow key={`${r.raw.source_l1}__${r.raw.source_l2}__${r.raw.source_l3}`} divider={r.divider}>
+												<TableRow
+													key={`${r.raw.source_l1}__${r.raw.source_l2}__${r.raw.source_l3}`}
+													divider={r.divider}
+													data-search-target={search_target_for_source(r.raw.source_l3)}
+												>
 													<TableCell className={table_cell_class} muted={r.repeatMuted?.[0]}>
 														<span className={table_text_class}>{r.source_l1}</span>
 													</TableCell>

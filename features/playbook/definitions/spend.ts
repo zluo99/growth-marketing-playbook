@@ -20,7 +20,7 @@ export const SpendDefinitions = Object.freeze([
     id: "brand",
     alias: "Brand",
     description:
-      "Upper and mid funnel programs that build future demand and preference. Judge on reach, lift, and downstream conversion, not clicks alone.",
+      "Programs that build future demand and preference. Judge on reach, lift, and downstream conversion, not clicks alone.",
     source_l3: [
       // Inbound / Events
       "Local Events",
@@ -47,7 +47,7 @@ export const SpendDefinitions = Object.freeze([
     id: "performance",
     alias: "Performance",
     description:
-      "Direct response programs that harvest in market demand. Optimize on CAC, ROAS, and payback, then pressure test incrementality as you scale.",
+      "Programs that capture in-market demand. Optimize on CAC, ROAS, and payback, then pressure-test incrementality as you scale.",
     source_l3: [
       // Inbound / Events
       "Local Events",
@@ -74,7 +74,7 @@ export const SpendDefinitions = Object.freeze([
     id: "commission",
     alias: "Commission",
     description:
-      "Variable payout spend tied to referral outcomes. Track as commission so referral economics remain distinct from brand and performance budgets.",
+      "Variable payout spend tied to referral outcomes. Track it separately so referral economics stay distinct from brand and performance budgets.",
     source_l3: [
       // Inbound / Referral
       "Customer Referral",
@@ -85,7 +85,7 @@ export const SpendDefinitions = Object.freeze([
     id: "overhead",
     alias: "Overhead",
     description:
-      "Shared people, tools, and fixed costs not tied to a single channel. Include intentionally when you need fully loaded financial metrics.",
+      "Shared people, tools, and fixed costs not tied to one channel. Include intentionally when you need fully loaded financial metrics.",
     source_l3: [
       // Inbound / Direct
       "Direct",

@@ -15,6 +15,9 @@ export const PlaybookStorage = {
 		paneHeight: "reports_sql:pane_height",
 		editorWidthPct: "reports_sql:editor_width_pct",
 	},
+	overview: {
+		aiAnalystModules: "overview:ai_analyst_modules",
+	},
 } as const
 
 export const PlaybookEvents = {

@@ -16,12 +16,12 @@ export const TermDefinitions = [
   {
     id: "activation",
     alias: "Activation",
-    description: "First moment a user experiences core product value, often predictive of retention",
+    description: "First moment a user experiences core product value; often predictive of retention",
   },
   {
     id: "attribution_model",
     alias: "Attribution Model",
-    description: "Rules and logic used to assign credit for an outcome to specific marketing touches",
+    description: "Rules used to assign outcome credit to specific marketing touches",
   },
   {
     id: "attribution_window",
@@ -36,7 +36,7 @@ export const TermDefinitions = [
   {
     id: "cash_conversion",
     alias: "Cash Conversion",
-    description: "Efficiency of converting earnings into cash after working-capital changes and one-time items",
+    description: "How efficiently earnings turn into cash after working-capital changes and one-time items",
   },
   {
     id: "churn",
@@ -46,7 +46,7 @@ export const TermDefinitions = [
   {
     id: "cohort",
     alias: "Cohort",
-    description: "Group anchored to the same start date or event for consistent tracking over time",
+    description: "Group anchored to the same start date or event for consistent measurement over time",
   },
   {
     id: "control_group",
@@ -61,22 +61,22 @@ export const TermDefinitions = [
   {
     id: "holdout",
     alias: "Holdout",
-    description: "Deliberate control design where eligible entities are withheld from exposure to measure lift",
+    description: "Control design that withholds eligible entities from exposure to measure lift",
   },
   {
     id: "geo_test",
     alias: "Geo Test",
-    description: "Experiment design that varies spend or exposure by geography to estimate incremental impact",
+    description: "Experiment that varies spend or exposure by geography to estimate incremental impact",
   },
   {
     id: "matched_markets",
     alias: "Matched Markets",
-    description: "Set of similar geographies used to construct credible controls for lift measurement",
+    description: "Set of similar geographies used to construct credible controls",
   },
   {
     id: "matchback",
     alias: "Matchback",
-    description: "Method that links offline exposure to downstream outcomes using identity keys",
+    description: "Method that links offline exposure to downstream outcomes through identity keys",
   },
   {
     id: "five_forces",
@@ -96,12 +96,12 @@ export const TermDefinitions = [
   {
     id: "icp",
     alias: "ICP",
-    description: "Ideal customer profile defined by strongest fit, economics, win rate, and retention potential",
+    description: "Ideal customer profile defined by fit, economics, win rate, and retention potential",
   },
   {
     id: "identity_graph",
     alias: "Identity Graph",
-    description: "Reconciled map that links multiple identifiers and objects to one prospect_id for consistent attribution and measurement",
+    description: "Reconciled identity map that links multiple identifiers and objects to one prospect_id",
   },
   {
     id: "object_model",
@@ -111,17 +111,17 @@ export const TermDefinitions = [
   {
     id: "touch_model",
     alias: "Touch Model",
-    description: "Unified touch-event layer that normalizes interactions across sales and marketing systems into one schema",
+    description: "Unified touch-event layer that normalizes interactions across sales and marketing systems",
   },
   {
     id: "object_touch_model",
     alias: "Object-Touch Model",
-    description: "Joined journey layer combining object and touch models into one prospect-level analytical dataset for path and attribution modeling",
+    description: "Prospect-level journey layer that joins object and touch models for path and attribution analysis",
   },
   {
     id: "incrementality",
     alias: "Incrementality",
-    description: "Causal impact proven via treatment versus control rather than attribution rules",
+    description: "Causal impact measured through treatment versus control, not attribution rules",
   },
   {
     id: "ip",
@@ -136,12 +136,12 @@ export const TermDefinitions = [
   {
     id: "markov_model",
     alias: "Markov Model",
-    description: "Attribution approach that estimates channel contribution from path transitions and removal effects",
+    description: "Attribution model that estimates channel contribution from path transitions and removal effects",
   },
   {
     id: "month",
     alias: "Month",
-    description: "Calendar month bucket used for reporting rollups (typically normalized to the first day of the month)",
+    description: "Calendar month bucket used for reporting rollups",
   },
   {
     id: "moat",
@@ -151,7 +151,7 @@ export const TermDefinitions = [
   {
     id: "mta",
     alias: "Multi-Touch Attribution",
-    description: "Multi-touch attribution that distributes credit across eligible touches rather than using a single touch",
+    description: "Attribution model that distributes credit across eligible touches rather than a single touch",
   },
   {
     id: "north_star_metric",
@@ -166,17 +166,17 @@ export const TermDefinitions = [
   {
     id: "pmf",
     alias: "PMF",
-    description: "Product-market fit demonstrated by durable pull for a defined segment and repeatable value delivery",
+    description: "Product-market fit demonstrated by durable pull from a defined segment",
   },
   {
     id: "qa",
     alias: "QA",
-    description: "Quality assurance process that validates data and campaigns before decisions are made",
+    description: "Process that validates data and campaigns before decisions are made",
   },
   {
     id: "qoe",
     alias: "QoE",
-    description: "Quality of earnings view that normalizes profitability by adjusting for one-time items and accounting noise",
+    description: "Normalized view of earnings that adjusts for one-time items and accounting noise",
   },
   {
     id: "removal_effect",
@@ -186,17 +186,17 @@ export const TermDefinitions = [
   {
     id: "sales_cycle",
     alias: "Sales Cycle",
-    description: "Customer journey from first meaningful intent through close, often segmented by motion and reset after inactivity",
+    description: "Customer journey from first meaningful intent through close",
   },
   {
     id: "week_start",
     alias: "Week Start",
-    description: "Week bucket anchor date used for reporting rollups (for example, Sunday start-of-week)",
+    description: "Week bucket anchor date used for reporting rollups",
   },
   {
     id: "semantic_model",
     alias: "Semantic Model",
-    description: "Governed business layer that maps terms to physical schemas to enforce consistent definitions and trusted reporting",
+    description: "Governed business layer that maps business terms to physical schemas for consistent reporting",
   },
   {
     id: "sga",
@@ -206,12 +206,12 @@ export const TermDefinitions = [
   {
     id: "source_description",
     alias: "Source Description",
-    description: "Descriptions of attribution sources used for reporting and rollups",
+    description: "Description used to explain attribution sources in reporting and rollups",
   },
   {
     id: "data",
     alias: "Data",
-    description: "Dataset origin label used to distinguish records pulled from different source tables in a unified query",
+    description: "Dataset origin label used to distinguish records pulled from different source tables",
   },
   {
     id: "ssot",
@@ -221,7 +221,7 @@ export const TermDefinitions = [
   {
     id: "sta",
     alias: "Single-Touch Attribution",
-    description: "Single-touch attribution that assigns all credit to a single touchpoint in the customer journey (typically first or last)",
+    description: "Attribution model that assigns all credit to a single touchpoint",
   },
   {
     id: "tam_sam",
@@ -231,12 +231,12 @@ export const TermDefinitions = [
   {
     id: "utm",
     alias: "UTM",
-    description: "Standard URL parameters used to label inbound traffic for attribution across channels and platforms",
+    description: "A standard URL parameter used to label inbound traffic for attribution",
   },
   {
     id: "utms",
     alias: "UTMs",
-    description: "Standard URL parameters used to label inbound traffic for attribution across channels and platforms",
+    description: "Standard URL parameters used to label inbound traffic for attribution",
   },
   {
     id: "utm_source",
@@ -275,7 +275,8 @@ export const TermDefinitions = [
   },
 ] as const satisfies readonly TermDefinitionShape[]
 
-type TermDefinition = (typeof TermDefinitions)[number]
+export type TermDefinition = (typeof TermDefinitions)[number]
+export type TermId = TermDefinition["id"]
 
 const normalize = (s: string) => s.trim().toLowerCase()
 
@@ -283,6 +284,13 @@ const TermIndex = TermDefinitions.reduce<Record<string, TermDefinition>>((acc, t
   for (const token of [term.id, term.alias]) acc[normalize(token)] = term
   return acc
 }, {})
+
+export const TermById = Object.freeze(
+  TermDefinitions.reduce((acc, term) => {
+    acc[term.id] = term
+    return acc
+  }, {} as Record<TermId, TermDefinition>)
+)
 
 /* -------------------------------------------------------------------------- */
 /* Export                                                                     */

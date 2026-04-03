@@ -14,10 +14,11 @@ import { cn } from "@/lib/utils"
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { LoaderCardSkeleton } from "@/features/playbook/components/ui/loader"
 import { PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbMetricList, PbNumberBadge, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell, createUnknownMetricLogger, useLazyGate } from "@/features/playbook/components/ui/ui"
-import { usePbTabsNav } from "@/features/playbook/components/context/context"
+import { usePbTabsNav } from "@/features/playbook/components/context/tab-nav"
 import { SheetsCopy, SlidesCopy, WorkspaceUiCopy } from "@/features/playbook/copy/reports-workspace-google"
 import { ExampleCopy as WorkspaceExample } from "@/features/playbook/copy/reports-workspace-example"
 import { TabById, type TabId } from "@/features/playbook/definitions/tabs"
+import { SearchTargets } from "@/features/playbook/search/targets"
 
 /* -------------------------------------------------------------------------- */
 /* Components                                                                 */
@@ -217,7 +218,7 @@ export default function TabReportsWorkspace() {
 		>
 			<EmbedCard id="sheets" copy={SheetsCopy} height={ui.size.layout.lg} onTabClick={goToTab} />
 			<EmbedCard id="slides" copy={SlidesCopy} height={ui.size.layout.md} onTabClick={goToTab} />
-			<PbReveal className="w-full" data-search-target="workspace-example">
+			<PbReveal className="w-full" data-search-target={SearchTargets.reportsWorkspace.exampleCard}>
 				<PbTabCard hover>
 					<PbCardGlow className={ui.glow.yellow} />
 					<PbCardLayer>

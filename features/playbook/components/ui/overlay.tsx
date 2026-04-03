@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from "framer-motion"
 
 import { ui } from "@/components/tokens/design"
 import { uiMotion, useReducedMotionBool } from "@/components/tokens/motion"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 import { PbCardContent, PbCardHeader, PbCardLayer, PbTabCard } from "@/features/playbook/components/ui/ui"
@@ -75,14 +76,15 @@ export function PbOverlay({
 	const action = (
 		<div className={cn("flex shrink-0 items-center", ui.gap.sm)}>
 			{headerActions}
-			<button
-				type="button"
+			<Button
+				variant="outline"
+				size="iconSm"
 				onClick={onClose}
-				className={cn(ui.overlay.closeButton, "inline-flex h-9 w-9 items-center justify-center p-0 leading-none")}
+				className="shrink-0"
 				aria-label={closeAriaLabel}
 			>
-				<CloseIcon className={ui.overlay.closeIcon} />
-			</button>
+				<CloseIcon className={cn(ui.iconNude.md, ui.motion.duration, "pointer-events-none transition-colors")} />
+			</Button>
 		</div>
 	)
 
@@ -102,7 +104,7 @@ export function PbOverlay({
 					/>
 
 					<motion.div
-						className={cn("relative z-10 w-full", maxWidthClassName ?? ui.overlay.maxWidth)}
+						className={cn("relative z-10 flex h-full min-h-0 w-full max-h-full md:h-auto", maxWidthClassName ?? ui.overlay.maxWidth)}
 						role="dialog"
 						aria-modal="true"
 						aria-label={ariaLabel}
@@ -111,10 +113,15 @@ export function PbOverlay({
 						exit={{ opacity: 0, y: 8, scale: 0.99 }}
 						transition={panel_transition}
 					>
-						<PbTabCard hover={false} shadow className={cn("max-h-[88vh]", ui.overlay.panel, panelClassName)}>
-							<PbCardLayer>
+						<PbTabCard
+							shadow
+							className={cn("flex h-full min-h-0 w-full flex-col max-h-full md:h-auto md:max-h-[88vh]", panelClassName)}
+						>
+							<PbCardLayer className="flex h-full min-h-0 flex-1 flex-col">
 								<PbCardHeader title={title} action={action} />
-								<PbCardContent className={contentClassName}>{children}</PbCardContent>
+								<PbCardContent className={cn("min-h-0 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]", contentClassName)}>
+									{children}
+								</PbCardContent>
 							</PbCardLayer>
 						</PbTabCard>
 					</motion.div>

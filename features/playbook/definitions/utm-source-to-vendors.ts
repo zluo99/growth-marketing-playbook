@@ -83,8 +83,6 @@ export const VendorsBySourceL3 = Object.freeze(
   }, {} as Record<SourceL3, readonly string[]>)
 )
 
-export const VendorNames = Object.freeze(Array.from(new Set(UtmSourceVendorDefinitions.map((r) => r.vendor))).sort())
-
 if (process.env.NODE_ENV !== "production") {
   const seenSources = new Set<string>()
   const duplicateSources = new Set<string>()

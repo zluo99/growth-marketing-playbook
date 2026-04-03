@@ -348,17 +348,18 @@ const search = {
 	menuFocusRing:
 		"focus-within:border-[color:var(--accent-blue-soft-border-hover)] focus-within:ring-2 focus-within:ring-[color:var(--accent-blue-soft-ring)] focus-within:ring-offset-2 focus-within:ring-offset-background",
 	menuScrollGutter: "[scrollbar-gutter:stable]",
-	menuContentPadding: "p-4",
+	menuContentPadding: spacing.panelMd,
 
 	rowHoverBorderBlue:
 		"hover:border-[color:var(--accent-blue-soft-border-hover)] focus-within:border-[color:var(--accent-blue-soft-border-hover)]",
 	rowActiveBorderBlue: "border-[color:var(--accent-blue-soft-border-hover)]",
 	rowHoverBgBlue: "hover:bg-[color:var(--accent-blue-soft-row-hover)]",
 	rowActiveBgBlue: "bg-[color:var(--accent-blue-soft-bg)]",
+	rowActiveShadow: "shadow-[0_12px_24px_rgba(0,0,0,0.15)] dark:shadow-[0_12px_24px_rgba(0,0,0,0.45)]",
 	rowBg: "bg-[color:var(--surface-bg)]",
 	rowBorder: component.outline.base,
 
-	definitionBg: "bg-white dark:bg-black",
+	definitionBg: surface.structure.subtleGreyFrosted,
 	definitionBorder: component.outline.base,
 
 	focusRing: motion.focusRingSearch,
@@ -423,7 +424,7 @@ const control = {
 } as const
 
 const overlay = {
-	container: "fixed inset-0 z-[2147483646] flex items-center justify-center p-3 sm:p-6",
+	container: "fixed inset-0 z-[2147483646] flex items-stretch justify-center overflow-hidden p-3 sm:p-6 md:items-center",
 	maxWidth: "max-w-[var(--app-max-w)]",
 	backdrop: "bg-background/55 backdrop-blur-sm",
 	panel: join_classes(
@@ -436,18 +437,6 @@ const overlay = {
 		search.menuHover,
 		search.menuFocusRing
 	),
-	closeButton: join_classes(
-		"group rounded-full p-2 transition",
-		text_interactive_all,
-		search.focusRing,
-		surface.structure.border,
-		"bg-background",
-		search.hoverBorderBlue,
-		search.controlHoverBg,
-		search.controlHoverBlueTint,
-		surface.state.hover.shadowSm
-	),
-	closeIcon: join_classes(icon_nude.md, search.iconColor),
 	moduleChip: {
 		base: join_classes(
 			"inline-flex h-8 items-center justify-center px-2.5",
@@ -514,6 +503,7 @@ const button = {
 	size: {
 		default: join_classes(size.controls.md.h, size.controls.md.px, "text-sm"),
 		icon: join_classes(size.controls.md.box, "p-0"),
+		iconSm: join_classes(size.controls.sm.box, "p-0"),
 		lg: join_classes(size.controls.lg.h, size.controls.lg.px, "text-sm"),
 		sm: join_classes(size.controls.sm.h, size.controls.sm.px, "text-sm"),
 	},

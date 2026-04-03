@@ -19,7 +19,7 @@ export type ProblemCard = {
 
 export const ProblemCopy: ProblemCard = {
 	title: "Problem statement",
-	body: "Teams need a reliable way to move spend toward `arr` and `deals`, not debate attribution noise.",
+	body: "Teams need a reliable way to connect spend to `arr` and `deals`, not debate attribution noise.",
 
 	sections: [
 		{
@@ -30,7 +30,7 @@ export const ProblemCopy: ProblemCard = {
 			bullets: [
 				"`sta` is simple, but it breaks across a real `sales_cycle` with many touches.",
 				"Without governed `object_model` and `touch_model`, `source` and `utms` drift between reports.",
-				"Without a `prospect_id`-anchored `identity_graph` that links `object_id` values, credit and budgets become opinion.",
+				"Without a `prospect_id`-anchored `identity_graph` linking `object_id` values, credit and budget decisions become opinion.",
 			],
 		},
 		{

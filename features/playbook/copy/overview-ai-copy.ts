@@ -20,6 +20,7 @@ export type AnalystModule = {
 	title: string
 	description: string
 	defaultEnabled: boolean
+	recommendedWhen?: string
 }
 
 export type OverviewAICard = {
@@ -51,34 +52,35 @@ export type OverviewAICard = {
 export const OverviewAICopy: OverviewAICard = {
 	id: "ai-analyst",
 	title: "AI analyst setup",
-	body: "A successful AI analyst requires three things: a stable operating foundation, a governed `semantic_model`, and a modular `analyst.md` contract.",
+	body: "AI works after the operating system works: stable foundations, a governed `semantic_model`, and a self-contained `analyst.md` contract that can travel with modeled CSVs.",
 
 	panels: [
 		{
 			id: "1",
-			title: "Stabilize the operating foundation",
-			body: "Do not ask AI to compensate for unresolved governance or reconciliation gaps.",
+			title: "Stabilize the foundation",
+			body: "Do not use AI to paper over governance or reconciliation gaps.",
 			bullets: [
 				"Confirm `ssot` reconciliation, ownership, and `qa` before using AI outputs for decisions.",
-				"If foundation checks fail, require a blocker list instead of directional analysis.",
+				"If those checks fail, return a blocker list instead of directional analysis.",
 			],
 		},
 		{
 			id: "2",
-			title: "Enforce `semantic_model` contract",
+			title: "Enforce the `semantic_model`",
 			body: "AI needs governed business meaning, not ad hoc SQL columns.",
 			bullets: [
 				"Define canonical metrics, dimensions, `source` taxonomy, and `spend_type` in one `semantic_model`.",
-				"Require AI outputs to reconcile to Finance and to mark non-modeled results as directional.",
+				"Require AI outputs to reconcile to Finance and mark non-modeled results as directional.",
 			],
 		},
 		{
 			id: "3",
-			title: "Run `analyst.md` as modular governance",
-			body: "Treat `analyst.md` as a versioned operating contract, not a one-time prompt.",
+			title: "Run `analyst.md` as governance",
+			body: "Treat `analyst.md` as a versioned operating contract that should still work when paired only with modeled CSVs.",
 			bullets: [
 				"Use MECE context modules so each block contributes unique governed context.",
-				"Enable semantic, funnel, CSV, taxonomy, and SQL modules together for governed ingestion and analysis.",
+				"Use the portable CSV bundle by default: semantic, metric, funnel, CSV, and taxonomy. Add SQL only when transformation scaffolds are needed.",
+				"Copy the full generated markdown, not only the base sample, when an external LLM needs a portable semantic layer.",
 				"Update modules when definitions or models change, and keep ownership explicit.",
 			],
 		},
@@ -94,13 +96,14 @@ export const OverviewAICopy: OverviewAICard = {
 		{
 			id: "metric_dictionary",
 			title: "Metric dictionary",
-			description: "Derived KPI formula dictionary that complements, not duplicates, semantic contract fields.",
+			description: "Derived KPI formulas that complement, not duplicate, semantic contract fields.",
 			defaultEnabled: true,
+			recommendedWhen: "Enable when the analyst needs to compute governed KPIs from fields present in the CSVs.",
 		},
 		{
 			id: "funnel_context",
 			title: "Funnel model context",
-			description: "Table grain, anchors, and unique field definitions for funnel tables.",
+			description: "Table grain, anchors, and table-level context for funnel models.",
 			defaultEnabled: true,
 		},
 		{
@@ -113,13 +116,15 @@ export const OverviewAICopy: OverviewAICard = {
 			id: "source_taxonomy",
 			title: "Source taxonomy",
 			description: "Canonical source hierarchy and spend-type mapping for consistent channel rollups.",
-			defaultEnabled: false,
+			defaultEnabled: true,
+			recommendedWhen: "Enable whenever uploaded CSVs include `source_l1`, `source_l2`, or `source_l3`.",
 		},
 		{
 			id: "sql_reference",
 			title: "SQL reference",
-			description: "Approved SQL scaffolds for consistent transformation and analysis structure.",
+			description: "Optional SQL scaffolds for reproducible transformation and analysis structure.",
 			defaultEnabled: false,
+			recommendedWhen: "Enable only when the model must reason through transformation logic or produce SQL-like aggregation steps.",
 		},
 	],
 
@@ -128,7 +133,13 @@ export const OverviewAICopy: OverviewAICard = {
 
 ## Mission
 - Produce decision-ready analysis for Marketing, RevOps, and Finance.
-- Default to governed definitions and reconciled outcomes over speed.
+- Default to governed definitions, reconciled outcomes, and explicit blockers over speed.
+
+## Operating mode
+- This file is designed to travel with uploaded CSVs as the full analyst context.
+- Treat uploaded CSVs as modeled inputs, not open-ended warehouse discovery data.
+- Do not assume hidden joins, unstated source systems, or business logic outside this contract.
+- If a required metric, dimension, table, or definition is missing from this file or the CSVs, stop and return the gap.
 
 ## Foundation Gate
 - This analyst assumes the playbook foundation exists:
@@ -156,12 +167,17 @@ export const OverviewAICopy: OverviewAICard = {
 ## Working Instructions
 - Always state:
   - question
+  - tables used and how each CSV was mapped
   - semantic metric definitions used
-  - time window and cohort anchor
+  - grain, time window, and cohort anchor
   - assumptions and known data risks
 - Reconcile first:
   - verify spend and ARR alignment to \`ssot\`
   - flag drift between attribution readout and Finance totals
+- When CSVs are modeled exports:
+  - preserve the delivered grain
+  - never back-solve missing entity rows from aggregated data
+  - label off-contract fields or unsupported derivations as \`directional\`
 - If confidence is low, stop and return:
   - missing context
   - proposed checks
@@ -172,6 +188,7 @@ export const OverviewAICopy: OverviewAICard = {
 2. Evidence table
 3. Risks and assumptions
 4. Recommended next action
+5. Blockers or definition gaps (only when present)
 
 ## Versioning
 - Owner: RevOps + Data
@@ -191,7 +208,8 @@ export const OverviewAICopy: OverviewAICard = {
 		overlayCopyButtonAria: "Copy analyst markdown",
 		overlayCopyButtonAriaCopied: "Copied analyst markdown",
 		overlayModulesLabel: "Context modules",
-		overlayModulesHelp: "Click modules to include or remove MECE governed context blocks in analyst.md.",
+		overlayModulesHelp:
+			"Use the portable CSV bundle by default: semantic, metric, funnel, CSV, and source taxonomy. Add SQL reference only when transformation scaffolds are needed.",
 		overlayModulesEnableAllLabel: "Select all",
 		overlayModulesClearLabel: "Clear all",
 		overlayModuleToggleAria: "Toggle module: {title}",

@@ -40,7 +40,7 @@ export const VerticalDefinitions = [
   },
 ] as const satisfies readonly VerticalDefinitionShape[]
 
-type VerticalDefinition = (typeof VerticalDefinitions)[number]
+export type VerticalDefinition = (typeof VerticalDefinitions)[number]
 
 /* -------------------------------------------------------------------------- */
 /* Export                                                                     */
@@ -49,10 +49,6 @@ type VerticalDefinition = (typeof VerticalDefinitions)[number]
 export type Vertical = VerticalDefinition
 export type VerticalId = Vertical["id"]
 export type VerticalAlias = Vertical["alias"]
-
-export const VerticalIds = Object.freeze(
-  VerticalDefinitions.map((vertical) => vertical.id) as unknown as readonly VerticalId[]
-)
 
 export const VerticalAliases = Object.freeze(
   VerticalDefinitions.map((vertical) => vertical.alias) as unknown as readonly VerticalAlias[]

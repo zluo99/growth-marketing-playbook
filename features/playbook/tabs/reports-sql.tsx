@@ -27,6 +27,7 @@ import { TabById } from "@/features/playbook/definitions/tabs"
 import { getTermByToken } from "@/features/playbook/definitions/terms"
 import { type SqlQueryResult } from "@/features/playbook/sql/sql-types"
 import { useSqlWorker } from "@/features/playbook/sql/use-sql-worker"
+import { SearchTargets } from "@/features/playbook/search/targets"
 import { downloadCsv } from "@/lib/csv"
 
 /* -------------------------------------------------------------------------- */
@@ -783,7 +784,7 @@ export default function TabReportsSql() {
 
 	return (
 		<PbTabShell tabId="reports-sql" alias={tab.alias} description={tab.description} keyPrefix={`${reports_sql_key_prefix}-intro`}>
-				<PbReveal enabled={reveal_cards} className="w-full" data-search-target="funnel-card">
+				<PbReveal enabled={reveal_cards} className="w-full" data-search-target={SearchTargets.reportsSql.funnelCard}>
 					<PbTabCard hover>
 						<PbCardGlow className={ui.glow.yellow} />
 						<PbCardLayer>
@@ -803,7 +804,7 @@ export default function TabReportsSql() {
 					</PbTabCard>
 				</PbReveal>
 
-				<PbReveal enabled={reveal_cards} className="w-full" data-search-target="definitions-card">
+				<PbReveal enabled={reveal_cards} className="w-full" data-search-target={SearchTargets.reportsSql.definitionsCard}>
 					<PbTabCard hover>
 						<PbCardHeader
 							title={<PbTitleWithIcon icon={icon_for(DefinitionsCopy.icon)} text={<Renderer.Copy.InlineText text={DefinitionsCopy.title} keyPrefix={`${reports_sql_key_prefix}-defs-title`} />} />}
@@ -861,7 +862,7 @@ export default function TabReportsSql() {
 				</PbReveal>
 
 				<div ref={playground_root_ref} data-slot="sql-playground">
-					<PbReveal enabled={reveal_cards} className="w-full" data-search-target="pg-card">
+					<PbReveal enabled={reveal_cards} className="w-full" data-search-target={SearchTargets.reportsSql.pgCard}>
 						<PbTabCard hover>
 							<PbCardHeader
 								className="flex flex-col md:flex-row md:items-start md:justify-between"
