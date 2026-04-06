@@ -1,7 +1,7 @@
-export type PgPresetId = "funnel_monthly" | "funnel_monthly_roi" | "funnel_weekly"
-export type PgPreset<K extends string> = { id: K; description: string; code: string }
+type PgPresetId = "funnel_monthly" | "funnel_monthly_roi" | "funnel_weekly"
+type PgPreset<K extends string> = { id: K; description: string; code: string }
 
-export type PgCopy = {
+type PgCopy = {
 	title: string
 	body: string
 	icon: "code"

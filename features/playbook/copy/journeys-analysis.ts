@@ -1,4 +1,4 @@
-export type AnalysisPanelId = `${number}`
+type AnalysisPanelId = `${number}`
 
 export type AnalysisPanel = {
 	id: AnalysisPanelId
@@ -19,7 +19,7 @@ export type AnalysisDiagram = {
 	}[]
 }
 
-export type AnalysisCard = {
+type AnalysisCard = {
 	title: string
 	body: string
 	panels: readonly AnalysisPanel[]

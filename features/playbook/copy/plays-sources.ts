@@ -1,4 +1,4 @@
-export type SourcesCard = {
+type SourcesCard = {
 	title: string
 	body: string
 	footer: string

@@ -1,8 +1,8 @@
 import type { MetricId } from "@/features/playbook/definitions/metrics"
 
-export type DefinitionsPanelId = `${number}`
+type DefinitionsPanelId = `${number}`
 
-export type DefinitionsPanel = {
+type DefinitionsPanel = {
 	id: DefinitionsPanelId
 	title: string
 	body: string
@@ -10,7 +10,7 @@ export type DefinitionsPanel = {
 	columns?: { table: string; description: string; columns: string }
 }
 
-export type DefinitionsTable = {
+type DefinitionsTable = {
 	name: string
 	description: string
 	columns: string
@@ -18,7 +18,7 @@ export type DefinitionsTable = {
 	signatureColumns?: readonly string[]
 }
 
-export type DefinitionsCard = {
+type DefinitionsCard = {
 	title: string
 	body: string
 	icon: "sparkles"

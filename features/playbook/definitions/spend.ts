@@ -4,7 +4,7 @@ import { type SourceL3 } from "./sources"
 /* Types                                                                      */
 /* -------------------------------------------------------------------------- */
 
-export type SpendDefinition = {
+type SpendDefinition = {
   id: string
   alias: string
   description: string

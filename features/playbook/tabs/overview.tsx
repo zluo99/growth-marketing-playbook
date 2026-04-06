@@ -213,9 +213,6 @@ export default function TabOverview() {
 		})
 	}, [])
 
-	const set_all_modules = React.useCallback(() => set_enabled_module_ids(overview_ai_all_module_ids), [])
-	const clear_modules = React.useCallback(() => set_enabled_module_ids([]), [])
-
 	const description = (
 		<span className={cn("relative inline-block", ui.typography.title.lg)}>
 			<span className="sr-only">
@@ -326,9 +323,9 @@ export default function TabOverview() {
 				closeAriaLabel={OverviewAICopy.ui.overlayCloseAria}
 				headerActions={<AnalystCopyButton markdown={analyst_markdown} />}
 			>
-				<div className={cn("flex flex-col", ui.gap.sm)}>
-					<PbTabPanel size="sm" className={cn(ui.surface.structure.opaque)}>
-						<div className={cn("flex flex-wrap items-start justify-between", ui.gap.sm)}>
+				<div className={cn("flex h-full min-h-0 min-w-0 flex-col [@media(max-height:48rem)]:h-auto", ui.gap.sm)}>
+					<PbTabPanel size="sm" className={cn("shrink-0", ui.surface.structure.opaque)}>
+						<div className={cn("flex flex-wrap items-start", ui.gap.sm)}>
 							<div className="min-w-0">
 								<div className={cn("text-foreground", ui.typography.title.md)}>
 									<Renderer.Copy.InlineText text={OverviewAICopy.ui.overlayModulesLabel} keyPrefix={`${overview_key_prefix}-analyst-modules-title`} />
@@ -336,20 +333,6 @@ export default function TabOverview() {
 								<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.caption)}>
 									{render_inline_text(OverviewAICopy.ui.overlayModulesHelp, `${overview_key_prefix}-analyst-modules-help`)}
 								</p>
-							</div>
-							<div className={cn("flex flex-wrap", ui.gap.sm)}>
-								<Button type="button" size="sm" variant="outline" className="h-8 px-2.5" onClick={set_all_modules}>
-									<Renderer.Copy.InlineText
-										text={OverviewAICopy.ui.overlayModulesEnableAllLabel}
-										keyPrefix={`${overview_key_prefix}-analyst-modules-enable-all`}
-									/>
-								</Button>
-								<Button type="button" size="sm" variant="outline" className="h-8 px-2.5" onClick={clear_modules}>
-									<Renderer.Copy.InlineText
-										text={OverviewAICopy.ui.overlayModulesClearLabel}
-										keyPrefix={`${overview_key_prefix}-analyst-modules-clear`}
-									/>
-								</Button>
 							</div>
 						</div>
 
@@ -373,8 +356,20 @@ export default function TabOverview() {
 						</div>
 					</PbTabPanel>
 
-					<PbTabPanel size="sm" className={cn("overflow-hidden p-0", ui.surface.structure.opaque)}>
-						<CodeBlock code={analyst_markdown} language="markdown" className="text-foreground" style={{ maxHeight: `${ui.size.layout.lg}px` }} />
+							<PbTabPanel
+						size="sm"
+						className={cn(
+							"min-h-0 min-w-0 flex-1 overflow-hidden p-0",
+							"[@media(max-height:48rem)]:h-auto [@media(max-height:48rem)]:flex-none [@media(max-height:48rem)]:overflow-visible",
+							ui.surface.structure.opaque
+						)}
+					>
+						<CodeBlock
+							code={analyst_markdown}
+							language="markdown"
+							compactViewportOuterScroll
+							className={cn("min-h-0 h-full max-h-full text-foreground")}
+						/>
 					</PbTabPanel>
 				</div>
 			</PbOverlay>

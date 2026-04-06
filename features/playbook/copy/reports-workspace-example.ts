@@ -1,13 +1,13 @@
-export type ExamplePanelId = `${number}`
+type ExamplePanelId = `${number}`
 
-export type ExamplePanel = {
+type ExamplePanel = {
 	id: ExamplePanelId
 	title: string
 	subtitle: string
 	bullets: readonly string[]
 }
 
-export type ExampleCopy = {
+type ExampleCopy = {
 	title: string
 	body: string
 	panels: readonly ExamplePanel[]

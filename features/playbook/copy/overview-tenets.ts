@@ -1,10 +1,10 @@
 import type { SpendId } from "@/features/playbook/definitions/spend"
 
-export type TenetsIcon = "scale" | "target" | "flask"
+type TenetsIcon = "scale" | "target" | "flask"
 
-export type TenetsPanelId = `${number}`
+type TenetsPanelId = `${number}`
 
-export type TenetsPanel = {
+type TenetsPanel = {
 	id: TenetsPanelId
 	title: string
 	body: string
@@ -12,7 +12,7 @@ export type TenetsPanel = {
 	spend_ids?: readonly SpendId[]
 }
 
-export type TenetsCard = {
+type TenetsCard = {
 	id: "tenets"
 	title: string
 	body: string
@@ -23,13 +23,13 @@ export type TenetsCard = {
 export const TenetsCopy: TenetsCard = {
 	id: "tenets",
 	title: "Tenets",
-	body: "Marketing and Finance use one scoreboard. Govern `source`, `spend_type`, and core outcomes in the `semantic_model`, then reconcile to the `ssot`.",
+	body: "Marketing and Finance use one scoreboard. Govern `source`, `spend_type`, and core outcomes. Ensure everything is documented in the `ssot`.",
 
 	panels: [
 		{
 			id: "1",
 			title: "Shared governance",
-			body: "Every `source` and `spend_type` is governed in the `semantic_model`. Planning, reporting, and Finance all read from the same spine.",
+			body: "Every `source` and `spend_type` is tightly governed. Planning, reporting, and Finance all read from the same book.",
 			icon: "scale",
 		},
 		{

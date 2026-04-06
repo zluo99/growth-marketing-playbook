@@ -4,22 +4,22 @@ import type { DefinitionSearchCategory, SearchCategory } from "@/features/playbo
 /* Types                                                                      */
 /* -------------------------------------------------------------------------- */
 
-export type BrandCopy = {
+type BrandCopy = {
 	title: string
 	byline: string
 }
 
-export type HeaderContentCopy = {
+type HeaderContentCopy = {
 	linkedinUrl: string
 	email: string
 }
 
-export type TabsNavCopy = {
+type TabsNavCopy = {
 	prevLabel: string
 	nextLabel: string
 }
 
-export type FooterCopy = {
+type FooterCopy = {
 	brandTitle: string
 	brandMarkAlt: string
 	disclaimer: string
@@ -33,7 +33,7 @@ export type FooterCopy = {
 	linkedinLabel: string
 }
 
-export type HeaderNavCopy = {
+type HeaderNavCopy = {
 	homeButtonAria: string
 	homeImageAlt: string
 	tabsLabel: string
@@ -41,7 +41,7 @@ export type HeaderNavCopy = {
 	scrollRightAria: string
 }
 
-export type SearchCopy = {
+type SearchCopy = {
 	placeholder: string
 	ariaLabel: string
 	closeButtonAria: string
@@ -58,7 +58,7 @@ export type SearchCopy = {
 	categoryLabels: Record<SearchCategory, string>
 }
 
-export type SystemStateCopy = {
+type SystemStateCopy = {
 	error: {
 		title: string
 		message: string

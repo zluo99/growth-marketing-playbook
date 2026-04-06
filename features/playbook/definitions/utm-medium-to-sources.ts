@@ -4,13 +4,13 @@ import type { SourceL3 } from "./sources"
 /* Definition: Canonical utm_medium -> source_l3 mapping                      */
 /* -------------------------------------------------------------------------- */
 
-export type UtmMediumDefinition = {
+type UtmMediumDefinition = {
   utm_medium: string
   source_l3: SourceL3
   description: string | null
 }
 
-export const UtmMediumDefinitions = Object.freeze([
+const UtmMediumDefinitions = Object.freeze([
   { utm_medium: "direct", source_l3: "Direct", description: "Matches the widely used direct medium label in analytics tooling; use when you must force attribution away from referrer-loss collapsing into direct." },
   { utm_medium: "direct_mail", source_l3: "Direct Mail", description: "Uses a clear snake_case label that is common in offline-to-online tracking; avoids overloading direct while staying readable in reports." },
   { utm_medium: "{unmapped}", source_l3: "Other & Unmapped", description: "Sentinel medium representing either empty or unmapped values; keeps hygiene gaps explicit without inventing additional mediums." },
@@ -59,7 +59,7 @@ export const UtmMediumDefinitions = Object.freeze([
   { utm_medium: "abm_ads", source_l3: "ABM Advertising", description: "Uses abm_ prefix for grouping; ads suffix is short and conventional while mapping 1:1 to ABM Advertising." }
 ] as const satisfies readonly UtmMediumDefinition[])
 
-export type UtmMedium = (typeof UtmMediumDefinitions)[number]["utm_medium"]
+type UtmMedium = (typeof UtmMediumDefinitions)[number]["utm_medium"]
 
 export const UtmMediumByValue = Object.freeze(
   UtmMediumDefinitions.reduce(

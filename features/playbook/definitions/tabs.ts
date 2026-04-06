@@ -25,7 +25,7 @@ export type TabMeta = {
 export const overview_tab_title = "A technical playbook to run the growth marketing function"
 export const overview_tab_subtitle = "Designed and created by John Luo"
 export const overview_tab_separator = " • "
-export const overview_tab_description = `${overview_tab_title}${overview_tab_separator}${overview_tab_subtitle}`
+const overview_tab_description = `${overview_tab_title}${overview_tab_separator}${overview_tab_subtitle}`
 
 export const PlaybookTabs = [
 	{

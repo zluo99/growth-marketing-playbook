@@ -1,4 +1,4 @@
-export type GoogleWorkspaceCard = {
+type GoogleWorkspaceCard = {
 	embedUrl: string
 	openUrl: string
 	openLabel: string
@@ -6,7 +6,7 @@ export type GoogleWorkspaceCard = {
 	body: string
 }
 
-export type WorkspaceUiCopy = {
+type WorkspaceUiCopy = {
 	preloadSheetsTitle: string
 	preloadSlidesTitle: string
 }

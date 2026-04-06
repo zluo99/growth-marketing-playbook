@@ -2,7 +2,7 @@
 /* Types                                                                      */
 /* -------------------------------------------------------------------------- */
 
-export type UtmPlacementDefinition = {
+type UtmPlacementDefinition = {
   utm_source: string
   utm_placement: string
   placement: string

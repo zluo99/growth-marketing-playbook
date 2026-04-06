@@ -1,17 +1,17 @@
 import type { TabId } from "../definitions/tabs"
 
-export type GuideSequenceId = Extract<TabId, "reports-sql" | "reports-workspace" | "journeys" | "plays">
+type GuideSequenceId = Extract<TabId, "reports-sql" | "reports-workspace" | "journeys" | "plays">
 
-export type GuidePanelId = `${number}`
+type GuidePanelId = `${number}`
 
-export type GuidePanel = {
+type GuidePanel = {
 	id: GuidePanelId
 	title: string
 	body: string
 	sequence?: readonly GuideSequenceId[]
 }
 
-export type GuideCard = {
+type GuideCard = {
 	title: string
 	body: string
 	panels: readonly GuidePanel[]
@@ -25,7 +25,7 @@ export const GuideCopy: GuideCard = {
 		{
 			id: "1",
 			title: "Recommended sequence",
-			body: "Build the pipeline in order so reporting, journeys, and plays all reuse the same governed model.",
+			body: "Build the pipeline in order so reporting, journeys, and plays all reuse the same governed inputs.",
 			sequence: [
 				"reports-sql",
 				"reports-workspace",
@@ -36,7 +36,7 @@ export const GuideCopy: GuideCard = {
 		{
 			id: "2",
 			title: "Decision cadence",
-			body: "Reporting explains definitions, trends, and reconciliation. Decisions name the move, threshold, window, and owner. If you cannot state the move in one sentence with `arr`, `roas`, and `cac`, it is not decision-ready.",
+			body: "Reporting explains definitions, trends, and reconciliation. Decisions name the move, magnitude, and owner. If you cannot state the move in one sentence with `arr`, `roas`, and `cac`, it is not decision-ready.",
 		},
 	],
 

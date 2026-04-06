@@ -2,7 +2,7 @@
 /* Types                                                                      */
 /* -------------------------------------------------------------------------- */
 
-export type FrameworkType = "Consulting" | "Data" | "Marketing"
+type FrameworkType = "Consulting" | "Data" | "Marketing"
 export type FrameworkThemeKey = Lowercase<FrameworkType>
 
 export type FrameworkPillar = {
@@ -37,7 +37,7 @@ export type Framework = {
 /* Constants                                                                  */
 /* -------------------------------------------------------------------------- */
 
-export const FrameworkTypeValues = ["Consulting", "Data", "Marketing"] as const satisfies ReadonlyArray<FrameworkType>
+const FrameworkTypeValues = ["Consulting", "Data", "Marketing"] as const satisfies ReadonlyArray<FrameworkType>
 
 export const FrameworkDefinitions: readonly Framework[] = [
 	{
@@ -459,11 +459,11 @@ export const FrameworkPillarKey = (framework_id: string, pillar_name: string) =>
 /* UI Copy Types                                                              */
 /* -------------------------------------------------------------------------- */
 
-export type InfoMap = Record<string, string>
+type InfoMap = Record<string, string>
 
 export type FrameworkFilterValue = "all" | FrameworkType
 
-export type FrameworksUiCopy = {
+type FrameworksUiCopy = {
 	fallbackDescription: string
 	filtersGroupLabel: string
 	filterBarLabel: string

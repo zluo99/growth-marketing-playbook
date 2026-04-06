@@ -41,7 +41,7 @@ type SourceRow = SourceRowDraft
 export type SourceL2 = SourceRow["source_l2"]
 export type SourceL3 = SourceRow["source_l3"]
 
-export type SourceBenchmark = Readonly<{
+type SourceBenchmark = Readonly<{
   source_l3: SourceL3
   b2b_roas_range: Range | null
   b2b_roas_description: string | null
@@ -55,7 +55,7 @@ export type SourceBenchmark = Readonly<{
 
 export type UtmField = "utm_source" | "utm_medium" | "utm_campaign" | "utm_content" | "utm_term" | "utm_placement"
 
-export type UtmSourceVariant = { utm_source: string; utm_placement?: string; placement?: string; vendor?: string }
+type UtmSourceVariant = { utm_source: string; utm_placement?: string; placement?: string; vendor?: string }
 
 export type UtmValues = {
   utm_source?: string
@@ -90,7 +90,7 @@ export type Source = {
   lines: readonly string[]
 }
 
-export type SourceFieldRef = { kind: "metric"; id: MetricId } | { kind: "term"; token: string } | { kind: "text" }
+type SourceFieldRef = { kind: "metric"; id: MetricId } | { kind: "term"; token: string } | { kind: "text" }
 
 type SourceFieldDef = Readonly<{
   alias: string

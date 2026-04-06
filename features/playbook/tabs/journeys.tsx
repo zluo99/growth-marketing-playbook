@@ -482,8 +482,20 @@ export default function TabJourneys() {
 				closeAriaLabel={AnalysisCopy.ui.snippetCloseButtonAria}
 				headerActions={<CopyCodeButton code={AnalysisCopy.rSnippet} />}
 			>
-				<PbTabPanel size="sm" className={cn("overflow-hidden p-0", ui.surface.structure.opaque)}>
-					<CodeBlock code={AnalysisCopy.rSnippet} language="r" className={cn("text-foreground")} style={{ maxHeight: `${ui.size.layout.lg}px` }} />
+				<PbTabPanel
+					size="sm"
+					className={cn(
+						"flex h-full min-h-0 min-w-0 overflow-hidden p-0",
+						"[@media(max-height:48rem)]:h-auto [@media(max-height:48rem)]:overflow-visible",
+						ui.surface.structure.opaque
+					)}
+				>
+					<CodeBlock
+						code={AnalysisCopy.rSnippet}
+						language="r"
+						compactViewportOuterScroll
+						className={cn("min-h-0 h-full max-h-full text-foreground")}
+					/>
 				</PbTabPanel>
 			</PbOverlay>
 		</PbTabShell>
