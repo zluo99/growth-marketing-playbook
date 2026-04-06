@@ -4,7 +4,7 @@ import { type SourceL3 } from "./sources"
 /* Types                                                                      */
 /* -------------------------------------------------------------------------- */
 
-export type UtmSourceVendorDefinition = {
+type UtmSourceVendorDefinition = {
   utm_source: string
   vendor: string
   description: string
@@ -56,7 +56,7 @@ export const UtmSourceVendorDefinitions = Object.freeze([
   { utm_source: "apollo", vendor: "Apollo", description: "Prospecting database and outbound platform for contacts, sequencing, and list sourcing.", source_l3: ["Outbound Email", "Data Signals", "Purchased Lists"] }
 ] as const satisfies readonly UtmSourceVendorDefinition[])
 
-export type UtmSourceId = (typeof UtmSourceVendorDefinitions)[number]["utm_source"]
+type UtmSourceId = (typeof UtmSourceVendorDefinitions)[number]["utm_source"]
 
 /* -------------------------------------------------------------------------- */
 /* Utils                                                                      */

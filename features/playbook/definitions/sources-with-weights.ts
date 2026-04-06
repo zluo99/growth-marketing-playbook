@@ -41,7 +41,7 @@ export const SourceL2Weights = Object.freeze(
 /* Definition: Seed defaults                                                  */
 /* -------------------------------------------------------------------------- */
 
-export type SourceSeedDefinition = Readonly<{
+type SourceSeedDefinition = Readonly<{
 	conversion_rates: Readonly<{
 		lead_to_opp_by_l1: Readonly<Record<SourceL1, number>>
 		opp_to_deal_by_l1: Readonly<Record<SourceL1, number>>

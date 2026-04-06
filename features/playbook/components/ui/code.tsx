@@ -14,6 +14,7 @@ type CodeBlockProps = {
 	language?: CodeLanguage
 	className?: string
 	style?: React.CSSProperties
+	compactViewportOuterScroll?: boolean
 }
 
 type CodeTextareaProps = {
@@ -280,9 +281,22 @@ function HighlightedCode({ code, language }: { code: string; language: CodeLangu
 	)
 }
 
-export function CodeBlock({ code, language = "text", className, style }: CodeBlockProps) {
+const compact_viewport_outer_scroll_class =
+	"[@media(max-height:48rem)]:h-auto [@media(max-height:48rem)]:max-h-none [@media(max-height:48rem)]:overflow-y-visible [@media(max-height:48rem)]:overflow-x-auto"
+
+export function CodeBlock({ code, language = "text", className, style, compactViewportOuterScroll = false }: CodeBlockProps) {
 	return (
-		<pre className={cn(ui.margin.allNone, "overflow-auto font-mono leading-relaxed", ui.typography.caption, ui.spacing.panelMd, className)} style={style}>
+		<pre
+			className={cn(
+				ui.margin.allNone,
+				"min-w-0 w-full max-w-full overflow-x-auto overflow-y-auto font-mono leading-relaxed",
+				ui.typography.caption,
+				ui.spacing.panelMd,
+				compactViewportOuterScroll && compact_viewport_outer_scroll_class,
+				className
+			)}
+			style={style}
+		>
 			<code>
 				<HighlightedCode code={code} language={language} />
 			</code>

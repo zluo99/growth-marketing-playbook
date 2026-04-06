@@ -1,8 +1,8 @@
 import type { MetricId } from "@/features/playbook/definitions/metrics"
 
-export type FunnelPanelId = `${number}`
+type FunnelPanelId = `${number}`
 
-export type FunnelPanel = {
+type FunnelPanel = {
 	id: FunnelPanelId
 	title: string
 	body: string
@@ -10,7 +10,7 @@ export type FunnelPanel = {
 	note?: { title: string; items: readonly string[] }
 }
 
-export type FunnelCard = {
+type FunnelCard = {
 	title: string
 	body: string
 	icon: "route"

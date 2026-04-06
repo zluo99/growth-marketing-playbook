@@ -163,7 +163,7 @@ OverviewAICopy.analystModules.forEach((module) =>
 
 push({
 	id: "ai-analyst-sample",
-	title: "analyst.md sample",
+	title: "analyst.md (generated)",
 	description: `${default_analyst_markdown.slice(0, 200)}...`,
 	displayDescription: default_analyst_markdown,
 	tabId: "overview",

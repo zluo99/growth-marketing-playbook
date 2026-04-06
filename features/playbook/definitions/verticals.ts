@@ -12,7 +12,7 @@ type VerticalDefinitionShape = {
 /* Definition: Verticals                                                      */
 /* -------------------------------------------------------------------------- */
 
-export const VerticalDefinitions = [
+const VerticalDefinitions = [
   {
     id: "restaurants",
     alias: "Restaurants",
@@ -40,15 +40,14 @@ export const VerticalDefinitions = [
   },
 ] as const satisfies readonly VerticalDefinitionShape[]
 
-export type VerticalDefinition = (typeof VerticalDefinitions)[number]
+type VerticalDefinition = (typeof VerticalDefinitions)[number]
 
 /* -------------------------------------------------------------------------- */
 /* Export                                                                     */
 /* -------------------------------------------------------------------------- */
 
-export type Vertical = VerticalDefinition
-export type VerticalId = Vertical["id"]
-export type VerticalAlias = Vertical["alias"]
+type Vertical = VerticalDefinition
+type VerticalAlias = Vertical["alias"]
 
 export const VerticalAliases = Object.freeze(
   VerticalDefinitions.map((vertical) => vertical.alias) as unknown as readonly VerticalAlias[]

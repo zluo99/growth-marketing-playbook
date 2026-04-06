@@ -1,9 +1,9 @@
-export type ProblemPanelId = `${number}`
+type ProblemPanelId = `${number}`
 
-export type ProblemSectionIcon = "alert" | "rocket"
-export type ProblemSectionGlow = "red" | "green"
+type ProblemSectionIcon = "alert" | "rocket"
+type ProblemSectionGlow = "red" | "green"
 
-export type ProblemSection = {
+type ProblemSection = {
 	id: ProblemPanelId
 	title: string
 	icon: ProblemSectionIcon
@@ -11,7 +11,7 @@ export type ProblemSection = {
 	bullets: readonly string[]
 }
 
-export type ProblemCard = {
+type ProblemCard = {
 	title: string
 	body: string
 	sections: readonly ProblemSection[]

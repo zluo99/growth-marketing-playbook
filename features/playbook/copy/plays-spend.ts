@@ -9,14 +9,14 @@ export type SpendPillar = {
 	bullets: readonly SpendBullet[]
 }
 
-export type SpendSection = {
+type SpendSection = {
 	id: SpendId
 	title: string
 	body?: string
 	bullets: readonly SpendBullet[]
 }
 
-export type SpendPanelId = `${number}`
+type SpendPanelId = `${number}`
 
 export type SpendPanel = {
 	id: SpendPanelId
@@ -25,7 +25,7 @@ export type SpendPanel = {
 	sections?: readonly SpendSection[]
 }
 
-export type SpendCard = {
+type SpendCard = {
 	title: string
 	pillars: readonly SpendPillar[]
 	panels: readonly SpendPanel[]
