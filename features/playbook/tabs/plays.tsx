@@ -835,8 +835,8 @@ export default function TabPlays() {
 		write_preference(PlaybookStorage.plays.sourcesHierarchyOpen, JSON.stringify(next))
 	}, [])
 
-	const source_l1_group_keys = hierarchy_group_keys_by_depth[0] ?? []
-	const source_l2_group_keys = hierarchy_group_keys_by_depth[1] ?? []
+	const source_l1_group_keys = React.useMemo(() => hierarchy_group_keys_by_depth[0] ?? [], [hierarchy_group_keys_by_depth])
+	const source_l2_group_keys = React.useMemo(() => hierarchy_group_keys_by_depth[1] ?? [], [hierarchy_group_keys_by_depth])
 	const l1_all_open = source_l1_group_keys.every((key) => open_group_keys.includes(key))
 	const l2_all_open = source_l2_group_keys.every((key) => open_group_keys.includes(key))
 
