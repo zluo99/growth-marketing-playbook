@@ -139,6 +139,11 @@ export const TermDefinitions = [
     description: "Attribution model that estimates channel contribution from path transitions and removal effects",
   },
   {
+    id: "metrics.yml",
+    alias: "metrics.yml",
+    description: "dbt metric contract file used to publish governed KPI definitions",
+  },
+  {
     id: "month",
     alias: "Month",
     description: "Calendar month bucket used for reporting rollups",
@@ -152,6 +157,11 @@ export const TermDefinitions = [
     id: "mta",
     alias: "Multi-Touch Attribution",
     description: "Attribution model that distributes credit across eligible touches rather than a single touch",
+  },
+  {
+    id: "models.yml",
+    alias: "models.yml",
+    description: "dbt model contract file used to document schema, tests, grain, and anchors",
   },
   {
     id: "north_star_metric",
@@ -197,6 +207,11 @@ export const TermDefinitions = [
     id: "semantic_model",
     alias: "Semantic Model",
     description: "Governed business layer that maps business terms to physical schemas for consistent reporting",
+  },
+  {
+    id: "skill.md",
+    alias: "skill.md",
+    description: "Operating guide for how this playbook's dbt bundle should be read and maintained",
   },
   {
     id: "sga",

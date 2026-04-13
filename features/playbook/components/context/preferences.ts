@@ -17,6 +17,7 @@ export const PlaybookStorage = {
 	},
 	overview: {
 		aiAnalystModules: "overview:ai_analyst_modules",
+		aiDbtFile: "overview:ai_dbt_file",
 	},
 } as const
 

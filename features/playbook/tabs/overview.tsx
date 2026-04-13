@@ -7,6 +7,7 @@
 import * as React from "react"
 import { Check, Copy as CopyIcon, FlaskConical, Scale, Target } from "lucide-react"
 
+import { Dropdown } from "@/components/nav/dropdown"
 import { ui } from "@/components/tokens/design"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -38,10 +39,10 @@ import { TenetsCopy } from "@/features/playbook/copy/overview-tenets"
 import { OverviewAICopy } from "@/features/playbook/copy/overview-ai-copy"
 import { SearchTargets } from "@/features/playbook/search/targets"
 import {
-	AnalystModuleIds,
-	build_analyst_markdown,
-	parse_ai_analyst_modules_preference,
-	type AnalystModuleId,
+	DbtFileDefinitions,
+	build_dbt_file_content,
+	parse_ai_dbt_file_preference,
+	type DbtFileId,
 } from "@/features/playbook/copy/overview-ai-md"
 
 /* -------------------------------------------------------------------------- */
@@ -120,10 +121,7 @@ function Kicker({ id, icon, title, description, spendIds }: KickerProps) {
 
 type OverviewAiPanel = (typeof OverviewAICopy.panels)[number]
 
-const overview_ai_modules = OverviewAICopy.analystModules
-const overview_ai_all_module_ids = AnalystModuleIds
-
-function AnalystCopyButton({ markdown }: { markdown: string }) {
+function DbtCopyButton({ content }: { content: string }) {
 	const { copied, copy } = useCopyToClipboard()
 	return (
 		<Button
@@ -131,14 +129,14 @@ function AnalystCopyButton({ markdown }: { markdown: string }) {
 			className={cn("min-w-[92px]", ui.surface.state.hover.shadowMd)}
 			variant="success"
 			size="sm"
-			onClick={() => void copy(markdown)}
+			onClick={() => void copy(content)}
 			aria-label={copied ? OverviewAICopy.ui.overlayCopyButtonAriaCopied : OverviewAICopy.ui.overlayCopyButtonAria}
 		>
 			{copied ? <Check className={ui.iconNude.lg} /> : <CopyIcon className={ui.iconNude.lg} />}
 			<span>
 				<Renderer.Copy.InlineText
 					text={copied ? OverviewAICopy.ui.overlayCopyButtonLabelCopied : OverviewAICopy.ui.overlayCopyButtonLabel}
-					keyPrefix={`${overview_key_prefix}-analyst-md-copy-button`}
+					keyPrefix={`${overview_key_prefix}-dbt-file-copy-button`}
 				/>
 			</span>
 		</Button>
@@ -186,9 +184,9 @@ function AiStep({ panel }: { panel: OverviewAiPanel }) {
 export default function TabOverview() {
 	const { goToTab, suppressReveal } = usePbTabsNav()
 	const [reveal_locked, set_reveal_locked] = React.useState(false)
-	const [is_analyst_modal_open, set_is_analyst_modal_open] = React.useState(false)
-	const [enabled_module_ids, set_enabled_module_ids] = React.useState<readonly AnalystModuleId[]>(() =>
-		parse_ai_analyst_modules_preference(read_preference(PlaybookStorage.overview.aiAnalystModules))
+	const [is_dbt_modal_open, set_is_dbt_modal_open] = React.useState(false)
+	const [selected_dbt_file_id, set_selected_dbt_file_id] = React.useState<DbtFileId>(() =>
+		parse_ai_dbt_file_preference(read_preference(PlaybookStorage.overview.aiDbtFile))
 	)
 
 	React.useEffect(() => {
@@ -196,25 +194,27 @@ export default function TabOverview() {
 	}, [suppressReveal])
 
 	React.useEffect(() => {
-		write_preference(PlaybookStorage.overview.aiAnalystModules, JSON.stringify(enabled_module_ids))
-	}, [enabled_module_ids])
+		write_preference(PlaybookStorage.overview.aiDbtFile, selected_dbt_file_id)
+	}, [selected_dbt_file_id])
 
 	const reveal_cards = !suppressReveal && !reveal_locked
 	const tab = TabById["overview"]
-	const enabled_module_set = React.useMemo(() => new Set(enabled_module_ids), [enabled_module_ids])
-	const analyst_markdown = React.useMemo(() => build_analyst_markdown(enabled_module_ids), [enabled_module_ids])
-
-	const toggle_analyst_module = React.useCallback((module_id: AnalystModuleId) => {
-		set_enabled_module_ids((prev) => {
-			const next = new Set(prev)
-			if (next.has(module_id)) next.delete(module_id)
-			else next.add(module_id)
-			return overview_ai_all_module_ids.filter((id) => next.has(id))
-		})
-	}, [])
+	const active_dbt_file = React.useMemo(
+		() => DbtFileDefinitions.find((file) => file.id === selected_dbt_file_id) ?? DbtFileDefinitions[0],
+		[selected_dbt_file_id]
+	)
+	const active_dbt_content = React.useMemo(() => build_dbt_file_content(selected_dbt_file_id), [selected_dbt_file_id])
+	const dbt_dropdown_items = React.useMemo(
+		() =>
+			DbtFileDefinitions.map((file) => ({
+				value: file.id,
+				label: file.fileName,
+			})),
+		[]
+	)
 
 	const description = (
-		<span className={cn("relative inline-block", ui.typography.title.lg)}>
+		<div className="relative inline-flex flex-col items-start">
 			<span className="sr-only">
 				<Renderer.Copy.InlineText text={tab.description ?? ""} keyPrefix={`${overview_key_prefix}-intro-description`} />
 			</span>
@@ -224,13 +224,12 @@ export default function TabOverview() {
 					layout="inline"
 					includeSeparator
 					keyPrefix={`${overview_key_prefix}-intro`}
-					className={cn("whitespace-normal break-words")}
+					className="whitespace-normal break-words"
 					titleClassName={cn("text-foreground")}
-					separatorClassName={cn("text-foreground")}
-					subtitleClassName={cn("text-foreground")}
+					subtitleClassName={cn("text-muted-foreground")}
 				/>
 			</span>
-		</span>
+		</div>
 	)
 	const guide_sequence_text = (GuideCopy.panels[0]?.sequence ?? []).map((id) => `{${id}}`).join(" -> ")
 
@@ -299,12 +298,12 @@ export default function TabOverview() {
 							variant="blueOutline"
 							size="lg"
 							className="w-full"
-							aria-label={OverviewAICopy.ui.openAnalystButtonAria}
-							onClick={() => set_is_analyst_modal_open(true)}
+							aria-label={OverviewAICopy.ui.openDbtFilesButtonAria}
+							onClick={() => set_is_dbt_modal_open(true)}
 						>
 							<Renderer.Copy.InlineText
-								text={OverviewAICopy.ui.openAnalystButtonLabel}
-								keyPrefix={`${overview_key_prefix}-ai-open-analyst-md-button`}
+								text={OverviewAICopy.ui.openDbtFilesButtonLabel}
+								keyPrefix={`${overview_key_prefix}-ai-open-dbt-files-button`}
 							/>
 						</Button>
 
@@ -316,47 +315,55 @@ export default function TabOverview() {
 			</PbReveal>
 
 			<PbOverlay
-				open={is_analyst_modal_open}
-				onClose={() => set_is_analyst_modal_open(false)}
-				title={<Renderer.Copy.InlineText text={OverviewAICopy.ui.overlayTitle} keyPrefix={`${overview_key_prefix}-analyst-md-modal-title`} />}
+				open={is_dbt_modal_open}
+				onClose={() => set_is_dbt_modal_open(false)}
+				title={<Renderer.Copy.InlineText text={OverviewAICopy.ui.overlayTitle} keyPrefix={`${overview_key_prefix}-dbt-files-modal-title`} />}
 				ariaLabel={OverviewAICopy.ui.overlayTitle}
 				closeAriaLabel={OverviewAICopy.ui.overlayCloseAria}
-				headerActions={<AnalystCopyButton markdown={analyst_markdown} />}
+				headerActions={<DbtCopyButton content={active_dbt_content} />}
+				maxWidthClassName="max-w-6xl"
 			>
 				<div className={cn("flex h-full min-h-0 min-w-0 flex-col [@media(max-height:48rem)]:h-auto", ui.gap.sm)}>
 					<PbTabPanel size="sm" className={cn("shrink-0", ui.surface.structure.opaque)}>
 						<div className={cn("flex flex-wrap items-start", ui.gap.sm)}>
-							<div className="min-w-0">
+							<div className="min-w-0 flex-1">
 								<div className={cn("text-foreground", ui.typography.title.md)}>
-									<Renderer.Copy.InlineText text={OverviewAICopy.ui.overlayModulesLabel} keyPrefix={`${overview_key_prefix}-analyst-modules-title`} />
+									<Renderer.Copy.InlineText text={OverviewAICopy.ui.overlayFilesLabel} keyPrefix={`${overview_key_prefix}-dbt-files-title`} />
 								</div>
-								<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.caption)}>
-									{render_inline_text(OverviewAICopy.ui.overlayModulesHelp, `${overview_key_prefix}-analyst-modules-help`)}
-								</p>
+								{OverviewAICopy.ui.overlayFilesHelp ? (
+									<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.caption)}>
+										{render_inline_text(OverviewAICopy.ui.overlayFilesHelp, `${overview_key_prefix}-dbt-files-help`)}
+									</p>
+								) : null}
 							</div>
 						</div>
 
-						<div className={cn(ui.margin.topSm, "flex flex-wrap", ui.gap.sm)}>
-							{overview_ai_modules.map((module) => {
-								const active = enabled_module_set.has(module.id)
-								return (
-									<button
-										key={module.id}
-										type="button"
-										className={cn(ui.overlay.moduleChip.base, active ? ui.overlay.moduleChip.active : ui.overlay.moduleChip.inactive)}
-										title={module.description}
-										aria-pressed={active}
-										aria-label={OverviewAICopy.ui.overlayModuleToggleAria.replace("{title}", module.title)}
-										onClick={() => toggle_analyst_module(module.id)}
-									>
-										{module.title}
-									</button>
-								)
-							})}
+						<div className={cn(ui.margin.topSm, "w-full")}>
+							<div className="w-full">
+								<Dropdown
+									value={selected_dbt_file_id}
+									onChange={set_selected_dbt_file_id}
+									items={dbt_dropdown_items}
+									align="stretch"
+									widthClassName="w-full"
+									triggerClassName="h-auto min-h-12 py-2"
+									menuMaxHeightClassName="max-h-[176px]"
+									renderTriggerLabel={() => (
+										<div className="flex min-w-0 flex-col items-start gap-0.5">
+											<span className={cn("text-foreground leading-tight", ui.typography.title.md)}>{active_dbt_file.fileName}</span>
+											<span className={cn("min-w-0 whitespace-normal text-left text-muted-foreground", ui.typography.caption)}>
+												{active_dbt_file.description}
+											</span>
+										</div>
+									)}
+									triggerLabel={active_dbt_file.fileName}
+									ariaLabel={OverviewAICopy.ui.overlayFileDropdownAria}
+								/>
+							</div>
 						</div>
 					</PbTabPanel>
 
-							<PbTabPanel
+					<PbTabPanel
 						size="sm"
 						className={cn(
 							"min-h-0 min-w-0 flex-1 overflow-hidden p-0",
@@ -365,8 +372,8 @@ export default function TabOverview() {
 						)}
 					>
 						<CodeBlock
-							code={analyst_markdown}
-							language="markdown"
+							code={active_dbt_content}
+							language={active_dbt_file.language}
 							compactViewportOuterScroll
 							className={cn("min-h-0 h-full max-h-full text-foreground")}
 						/>
