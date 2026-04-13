@@ -189,8 +189,8 @@ export function Hierarchy<Row>({
 	const show_header = showTrail || detailHeader != null
 
 	const render_nodes = React.useCallback(
-		(items: readonly HierarchyNode<Row>[]) =>
-			items.map((node) => {
+		function render_nodes(items: readonly HierarchyNode<Row>[]) {
+			return items.map((node) => {
 				if (node.kind === "leaf") {
 					const leaf_props = getLeafProps?.(node.row)
 					const leaf_layout = getLeafLayout?.(node.row) ?? "compact"
@@ -249,8 +249,9 @@ export function Hierarchy<Row>({
 						</AnimatePresence>
 					</div>
 				)
-			}),
-		[getLeafLayout, getLeafProps, levels, open_groups, reduce_motion, renderDetail, toggle_group]
+			})
+		}
+		,[getLeafLayout, getLeafProps, levels, open_groups, reduce_motion, renderDetail, toggle_group]
 	)
 
 	return (
