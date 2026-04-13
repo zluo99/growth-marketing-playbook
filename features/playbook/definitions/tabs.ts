@@ -38,31 +38,31 @@ export const PlaybookTabs = [
 		id: "reports-sql",
 		alias: "Staging Models",
 		icon: Database,
-		description: "Build durable and consistent data models",
+		description: "Build governed staging models and semantic definitions",
 	},
 	{
 		id: "reports-workspace",
 		alias: "Automating Reports",
 		icon: FileSpreadsheet,
-		description: "Report on performance and financials to drive strategic decisions in marketing and sales",
+		description: "Turn governed data into reporting and decision-ready reviews",
 	},
 	{
 		id: "journeys",
 		alias: "Building Journeys",
 		icon: Route,
-		description: "Understand how prospects move from awareness to decision and identify levers to improve performance",
+		description: "Model how prospects move from touch to deal and where lift comes from",
 	},
 	{
 		id: "plays",
 		alias: "Running Plays",
 		icon: Zap,
-		description: "Execute data-driven strategies to increase demand, improve conversion/efficiency, and drive revenue",
+		description: "Diagnose channels, spend, and source performance to decide the next move",
 	},
 	{
 		id: "frameworks",
 		alias: "Frameworks",
 		icon: Layers,
-		description: "Mental models and checklists",
+		description: "Mental models for strategy, analytics, and execution",
 	},
 ] satisfies readonly TabMeta[]
 

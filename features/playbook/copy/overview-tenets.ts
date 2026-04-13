@@ -16,38 +16,32 @@ type TenetsCard = {
 	id: "tenets"
 	title: string
 	body: string
-	footer: string
 	panels: readonly TenetsPanel[]
 }
 
 export const TenetsCopy: TenetsCard = {
 	id: "tenets",
 	title: "Tenets",
-	body: "Marketing and Finance use one scoreboard. Govern `source`, `spend_type`, and core outcomes. Ensure everything is documented in the `ssot`.",
+	body: "Run Marketing and Finance on one scoreboard: governed `source`, `spend_type`, and core outcomes documented in the `ssot`.",
 
 	panels: [
 		{
 			id: "1",
 			title: "Shared governance",
-			body: "Every `source` and `spend_type` is tightly governed. Planning, reporting, and Finance all read from the same book.",
+			body: "Govern `source` and `spend_type` once so planning, reporting, and Finance read the same numbers.",
 			icon: "scale",
 		},
 		{
 			id: "2",
 			title: "Two spend types, one strategy",
-			body: "`brand` creates demand and `performance` captures it. Classify every play by `spend_type` so budget follows strategy.",
+			body: "Treat `brand` as demand creation and `performance` as demand capture. Tag every play by `spend_type` so budget matches strategy.",
 			icon: "flask",
 		},
 		{
 			id: "3",
 			title: "Optimize what pays back",
-			body:
-				"Lead with your `north_star_metric` (`arr`, `deals`), then pressure-test unit economics (`roas`, `cac`, `payback`, `ltv`). Watch bottlenecks. When attribution is fuzzy, require `incrementality`.",
+			body: "Lead with `north_star_metric` (`arr`, `deals`), then pressure-test `roas`, `cac`, `payback`, and `ltv`. If attribution is fuzzy, require `incrementality`.",
 			icon: "target",
 		},
-
 	] as const,
-
-	footer:
-		"Rule: if a number cannot reconcile to the `ssot`, treat it as directional. Decision-grade calls require reconciliation and, when needed, `incrementality` proof.",
 } as const

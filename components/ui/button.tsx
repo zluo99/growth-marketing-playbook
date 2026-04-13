@@ -49,6 +49,7 @@ export const buttonVariants = cva(button_base_class, {
 		size: {
 			default: ui.button.size.default,
 			icon: ui.button.size.icon,
+			iconXs: ui.button.size.iconXs,
 			iconSm: ui.button.size.iconSm,
 			lg: ui.button.size.lg,
 			sm: ui.button.size.sm,
@@ -60,6 +61,13 @@ export const buttonVariants = cva(button_base_class, {
 			ghost: cn(ui.control.ghost, ui.text.interactive.all, "bg-transparent active:text-foreground", hover_or_active_surface_bg, hover_or_active_shadow_md),
 			link: "text-primary underline-offset-4 hover:underline",
 			outline: cn(ui.control.base, ui.text.interactive.all, "bg-background active:text-foreground", hover_or_active_surface_bg, hover_or_active_surface_border, hover_or_active_shadow_md),
+			surfaceSolid: cn(
+				ui.control.base,
+				"bg-background text-foreground",
+				hover_or_active_surface_bg,
+				hover_or_active_surface_border,
+				hover_or_active_shadow_md
+			),
 			blueOutline: cn(
 				ui.control.base,
 				ui.text.interactive.all,
@@ -69,6 +77,7 @@ export const buttonVariants = cva(button_base_class, {
 				ui.search.focusRing,
 				hover_or_active_shadow_md
 			),
+			aiOutline: cn(ui.control.base, ui.ai.buttonOutline, hover_or_active_shadow_md),
 
 			secondary: cn("bg-secondary text-secondary-foreground", "hover:bg-secondary/80 active:bg-secondary/80", hover_or_active_shadow_md),
 			success: cn(ui.status.success.fill, ui.status.success.fillHover, "active:bg-[color:var(--accent-green-bg-hover)] active:border-[color:var(--accent-green-border-strong-hover)]", hover_or_active_shadow_md),

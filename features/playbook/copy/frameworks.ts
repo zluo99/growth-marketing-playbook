@@ -45,34 +45,34 @@ export const FrameworkDefinitions: readonly Framework[] = [
 		alias: "A/B Testing",
 		icon: "flask",
 		type: "Data",
-		description: "**Decision-grade experiments:** run clean tests, quantify lift, and ship learnings safely.",
+		description: "Design clean experiments, measure lift, and ship the learning.",
 		pillars: [
 			{
 				name: "Design",
 				items: [
-					"**Decision first:** define the action if B wins or loses. If you will not act, do not test.",
-					"**One primary metric + guardrails:** pick one outcome (`cvr`, `leads`, `deals`, `arr_from_leads`) plus harm metrics (unsubscribes, complaints, deliverability).",
-					"**Eligibility + randomization:** define who is in scope, assignment method, and how you prevent leakage.",
-					"**Freeze variants:** no mid test edits. Changes become a new test.",
-					"**Pre-register lite:** hypothesis, audience, duration, stop rules, plus a fast `qa` checklist.",
+					"**Decision first:** define the action if B wins or loses. If no decision changes, do not test.",
+					"**One primary metric + guardrails:** choose one outcome (`cvr`, `leads`, `deals`, `arr_from_leads`) plus harm metrics such as unsubscribes, complaints, and deliverability.",
+					"**Eligibility + randomization:** define who is in scope, how assignment works, and how you prevent leakage.",
+					"**Freeze variants:** no mid-test edits. Changes start a new test.",
+					"**Pre-register lite:** capture the hypothesis, audience, duration, stop rules, and a short `qa` checklist.",
 				],
 			},
 			{
 				name: "Evaluate",
 				items: [
-					"**Funnel order:** touch -> lead -> opportunity -> deal -> revenue. Do not crown early proxies when downstream metrics disagree.",
-					"**Lift over vibes:** report treatment vs control and the delta, not just percent change.",
+					"**Read in funnel order:** touch -> lead -> opportunity -> deal -> revenue. Do not crown an early proxy if downstream metrics disagree.",
+					"**Lift over noise:** report treatment, control, and delta, not percent change alone.",
 					"**Planned cuts only:** pre-spec segments (`source_l2`, `vertical`, stage) to avoid p-hacking.",
-					"**Data health checks:** sample ratio mismatch, tracking breaks, bot spikes, and uneven delivery.",
+					"**Data health checks:** look for sample ratio mismatch, tracking breaks, bot spikes, and uneven delivery.",
 				],
 			},
 			{
 				name: "Ship",
 				items: [
-					"**Stop when decision-ready:** minimum sample size plus stable direction across multiple days, not a one day spike.",
-					"**Time-box seasonality:** run full week cycles when weekday effects matter.",
-					"**Stop for harm fast:** if guardrails break, revert immediately.",
-					"**Document + iterate:** winner, loser, effect size, audience, learnings, and the next hypothesis. Store it in the `ssot`.",
+					"**Stop when decision-ready:** reach minimum sample size and stable direction across multiple days, not a one-day spike.",
+					"**Cover seasonality:** run full week cycles when weekday effects matter.",
+					"**Stop for harm:** if guardrails break, revert immediately.",
+					"**Document the learning:** record the winner, loser, effect size, audience, and next hypothesis in the `ssot`.",
 				],
 			},
 		],
@@ -82,12 +82,12 @@ export const FrameworkDefinitions: readonly Framework[] = [
 		alias: "Acquisition",
 		icon: "handshake",
 		type: "Consulting",
-		description: "**Deal thesis:** size the market, validate the target, and underwrite synergies.",
+		description: "Size the deal, validate the target, and underwrite synergies.",
 		pillars: [
 			{
 				name: "Market Context",
 				items: [
-					"**Market size & profit pools:** `tam_sam`, growth momentum, and profit pools by segment.",
+					"**Market size & profit pools:** `tam_sam`, growth, and profit pools by segment.",
 					"**Demand & `wtp`:** priority jobs, urgency, and willingness to pay by segment.",
 					"**Competitive position & `moat`:** share, positioning, switching costs, and barriers to win.",
 				],
@@ -97,13 +97,13 @@ export const FrameworkDefinitions: readonly Framework[] = [
 				items: [
 					"**Product & differentiation:** roadmap fit, proof points, lock-in, and customer evidence.",
 					"**Operating model & repeatability:** `gtm`, delivery, support, and supply that scale without breaking.",
-					"**Financial quality:** revenue mix, margin durability, `cash_conversion`, and `qoe` to normalize one-time items.",
+					"**Financial quality:** revenue mix, margin durability, `cash_conversion`, and `qoe` adjustments.",
 				],
 			},
 			{
 				name: "Synergy Thesis",
 				items: [
-					"**Revenue synergy:** cross-sell, upsell, geo or segment expansion, and bundling with clear assumptions.",
+					"**Revenue synergy:** cross-sell, upsell, geo or segment expansion, and bundling with explicit assumptions.",
 					"**Cost synergy:** `sga`, stack consolidation, and procurement with timing and one-time costs.",
 					"**Integration & risk:** sequencing, culture and retention risk, and execution readiness.",
 				],
@@ -113,7 +113,7 @@ export const FrameworkDefinitions: readonly Framework[] = [
 				items: [
 					"**Regulatory & concentration:** approvals path and reliance on key customers or suppliers.",
 					"**Retention & continuity:** customer stickiness and critical talent risk through integration.",
-					"**Exit path & returns:** hold vs sell triggers, timeline, and downside guardrails.",
+					"**Exit path & returns:** hold vs sell triggers, timing, and downside guardrails.",
 				],
 			},
 		],
@@ -123,13 +123,13 @@ export const FrameworkDefinitions: readonly Framework[] = [
 		alias: "Progressive Disclosure",
 		icon: "layers",
 		type: "Data",
-		description: "**Progressive disclosure:** keep context lean and load depth on demand.",
+		description: "Keep context lean by loading depth only when needed.",
 		pillars: [
 			{
 				name: "Principle",
 				items: [
 					"**Keep context lean:** carry only what you need to choose the next step. Load depth when triggered.",
-					"**Progressive disclosure:** stay lightweight by default while enabling depth on demand.",
+					"**Stay lightweight by default:** depth is available on demand, not preloaded.",
 				],
 			},
 			{
@@ -144,8 +144,8 @@ export const FrameworkDefinitions: readonly Framework[] = [
 				name: "Build & Iterate",
 				items: [
 					"**Close gaps:** start from observed failures and add skills that remove them.",
-					"**Name clearly:** use unambiguous names and descriptions so the right skill triggers.",
-					"**Deterministic when critical:** use code for parsing, transforms, and extraction.",
+					"**Name clearly:** make names and descriptions unambiguous so the right skill triggers.",
+					"**Be deterministic when it matters:** use code for parsing, transforms, and extraction.",
 				],
 			},
 		],
@@ -155,29 +155,29 @@ export const FrameworkDefinitions: readonly Framework[] = [
 		alias: "Brand Positioning",
 		icon: "sparkles",
 		type: "Marketing",
-		description: "**Brand positioning:** define emotional, experiential, functional, and purpose-led edges.",
+		description: "Define the promise, proof, and place you can own.",
 		pillars: [
-			{ name: "Emotional Territory", items: ["Traits and feelings you want the brand to evoke."] },
+			{ name: "Emotional Territory", items: ["Define the feelings and identity cues you want the brand to own."] },
 			{
 				name: "Experiential Proof",
-				items: ["Signals delivered through the experience such as consistency, convenience, expertise, and service."],
+				items: ["Show the promise in the experience through consistency, ease, expertise, and service."],
 			},
-			{ name: "Functional Proof", items: ["Credible, ownable advantages such as quality, design, reliability, and breadth."] },
-			{ name: "Purpose", items: ["Commitments beyond profit such as sustainability, inclusion, and cultural impact."] },
+			{ name: "Functional Proof", items: ["Anchor the position in advantages you can prove, such as quality, design, reliability, and breadth."] },
+			{ name: "Purpose", items: ["State the commitments beyond profit that the brand can credibly sustain."] },
 		],
 	},
 	{
 		id: "data-scrutinization",
-		alias: "Data Scrutinization",
+		alias: "Data Scrutiny",
 		icon: "search",
 		type: "Data",
-		description: "**Data scrutiny:** separate signal from noise when a number moves.",
+		description: "Separate real signal from noise when a number moves.",
 		pillars: [
 			{
 				name: "Counterfactual",
 				items: [
 					"**Counterfactual first:** define what would have happened anyway. Isolate lift before assigning credit.",
-					"**Experimental design:** use `holdout`, `geo_test`, or `matched_markets`. If you must use pre or post, keep controls.",
+					"**Experimental design:** use `holdout`, `geo_test`, or `matched_markets`. If you must use pre/post, keep controls.",
 				],
 			},
 			{
@@ -204,7 +204,7 @@ export const FrameworkDefinitions: readonly Framework[] = [
 			{
 				name: "Signal Quality",
 				items: [
-					"**Persistence:** confirm across days or weeks, not a one day blip.",
+					"**Persistence:** confirm across days or weeks, not a one-day blip.",
 					"**Confidence:** check sample size and uncertainty before calling a signal.",
 				],
 			},
@@ -215,13 +215,13 @@ export const FrameworkDefinitions: readonly Framework[] = [
 		alias: "Diagnose Plays",
 		icon: "stethoscope",
 		type: "Marketing",
-		description: "**Play diagnosis:** find what broke, what worked, and what to do next.",
+		description: "Find what changed, what mattered, and what to do next.",
 		pillars: [
 			{
 				name: "Target & Fit",
 				items: [
 					"**Audience value vs volume:** prioritize segments that support `ltv` and margin, not volume alone.",
-					"**`pmf` & message:** match the use case to creative and proof that the segment trusts.",
+					"**`pmf` & message:** match the use case to creative and proof the segment trusts.",
 					"**Routing & handoffs:** audit lead quality, follow-up speed, and operational blockers.",
 				],
 			},
@@ -237,7 +237,7 @@ export const FrameworkDefinitions: readonly Framework[] = [
 				name: "Brand & Incrementality",
 				items: [
 					"**Measured lift:** `incremental_lift`, `incremental_lift_deals`, and `incremental_lift_arr` from geo and holdout designs.",
-					"**Create vs capture:** confirm lift justifies incremental spend vs cannibalization.",
+					"**Create vs capture:** confirm lift justifies incremental spend over cannibalization.",
 					"**Halo effects:** quantify impact on brand, search, and adjacent channels.",
 				],
 			},
@@ -248,14 +248,14 @@ export const FrameworkDefinitions: readonly Framework[] = [
 		alias: "Media Planning & Buying",
 		icon: "megaphone",
 		type: "Marketing",
-		description: "**Plan & buy:** strategy, execution, and measurement without noise.",
+		description: "Turn channel strategy into disciplined execution and measurement.",
 		pillars: [
 			{
 				name: "Media Planning",
 				items: [
 					"**Objective & role:** awareness vs consideration vs conversion, with clear success metrics.",
 					"**Audience strategy:** segments, intent, exclusions, and frequency control.",
-					"**Budget & phasing:** always on vs bursts, seasonal weighting, and reach goals.",
+					"**Budget & phasing:** always-on vs bursts, seasonal weighting, and reach goals.",
 					"**Mix & overlap:** manage channel mix, overlap, and saturation guardrails.",
 					"**Measurement plan:** primary `kpis`, lift design such as `holdout` or `geo_test`, and attribution guardrails.",
 				],
@@ -273,10 +273,10 @@ export const FrameworkDefinitions: readonly Framework[] = [
 	},
 	{
 		id: "entry",
-		alias: "Entry",
+		alias: "Market Entry",
 		icon: "log-in",
 		type: "Consulting",
-		description: "**Market entry:** validate attractiveness, economics, and right to win before committing.",
+		description: "Test whether a market is attractive, economic, and winnable.",
 		pillars: [
 			{
 				name: "Market Attractiveness",
@@ -309,7 +309,7 @@ export const FrameworkDefinitions: readonly Framework[] = [
 		alias: "Growth",
 		icon: "trending-up",
 		type: "Consulting",
-		description: "**Growth strategy:** pick where to play and how to scale with confidence.",
+		description: "Choose where to play and how to scale with conviction.",
 		pillars: [
 			{
 				name: "Market",
@@ -332,7 +332,7 @@ export const FrameworkDefinitions: readonly Framework[] = [
 				items: [
 					"**Deepen core:** penetration, retention, and usage, plus `arpa` with existing customers.",
 					"**New customers and markets:** segments, geos, and channels prioritized by reach and efficiency.",
-					"**New offerings:** products and bundles, pricing and mix moves, and test and learn.",
+					"**New offerings:** products, bundles, pricing moves, and test-and-learn.",
 					"**Value capture:** pricing and packaging that protect margin.",
 				],
 			},
@@ -340,10 +340,10 @@ export const FrameworkDefinitions: readonly Framework[] = [
 	},
 	{
 		id: "incrementality-attribution-illusion",
-		alias: "Incrementality & Attribution Illusion",
+		alias: "Incrementality vs Attribution",
 		icon: "eye-off",
 		type: "Marketing",
-		description: "**Incrementality proof:** avoid attribution traps and prove true lift.",
+		description: "Prove causal lift and avoid crediting channels for demand they only harvest.",
 		pillars: [
 			{
 				name: "Observed Reality",
@@ -356,7 +356,7 @@ export const FrameworkDefinitions: readonly Framework[] = [
 			{
 				name: "Attribution Traps",
 				items: [
-					"**Branded search bias:** high intent demand inflates `roas`.",
+					"**Branded search bias:** high-intent demand inflates `roas`.",
 					"**Capture vs create:** dashboards reward capture over creation.",
 					"**Last-touch bias:** over-credits lower funnel channels, especially without a counterfactual.",
 				],
@@ -364,7 +364,7 @@ export const FrameworkDefinitions: readonly Framework[] = [
 			{
 				name: "How to Prove",
 				items: [
-					"**Experiments:** `geo_test` and `holdout` to establish a counterfactual.",
+					"**Experiments:** use `geo_test` and `holdout` to establish a counterfactual.",
 					"**Lift over platform credit:** judge channels on `incremental_lift`, not platform attribution.",
 					"**Split roles:** separate demand creation from demand capture.",
 				],
@@ -384,13 +384,13 @@ export const FrameworkDefinitions: readonly Framework[] = [
 		alias: "Performance Analysis",
 		icon: "bar-chart-3",
 		type: "Marketing",
-		description: "**Performance analysis:** isolate the drivers of channel and campaign results.",
+		description: "Break channel performance into delivery, conversion, and unit economics.",
 		pillars: [
 			{
 				name: "Cost & Delivery",
 				items: [
 					"**Spend lens:** `total_spend` by `spend_type`, `vendor`, and source (`source_l1`, `source_l2`, `source_l3`).",
-					"**Delivery & engagement:** `impressions`, `reach`, `clicks`, `ctr`, `landing_pageviews`, `pageviews`, `session_duration`.",
+					"**Delivery & engagement:** `impressions`, `reach`, `clicks`, `ctr`, `landing_pageviews`, `pageviews`, and `session_duration`.",
 				],
 			},
 			{
@@ -416,7 +416,7 @@ export const FrameworkDefinitions: readonly Framework[] = [
 		alias: "Profitability",
 		icon: "coins",
 		type: "Consulting",
-		description: "**Profit engine:** dissect revenue, costs, and position to protect and expand margin.",
+		description: "Protect margin by understanding revenue quality, cost structure, and market power.",
 		pillars: [
 			{
 				name: "Revenue Drivers",
@@ -464,7 +464,6 @@ type InfoMap = Record<string, string>
 export type FrameworkFilterValue = "all" | FrameworkType
 
 type FrameworksUiCopy = {
-	fallbackDescription: string
 	filtersGroupLabel: string
 	filterBarLabel: string
 	columnsBarLabel: string
@@ -486,9 +485,8 @@ export const FrameworkFilterOptions = [{ v: "all", label: "All" }, ...framework_
 }>
 
 export const FrameworksUiCopy: FrameworksUiCopy = {
-	fallbackDescription: "Pillars and prompts.",
 	filtersGroupLabel: "Frameworks filters",
-	filterBarLabel: "Framework filter",
+	filterBarLabel: "Framework filters",
 	columnsBarLabel: "Columns",
 	pillarDetailsLabel: "{pillar} details",
 }
@@ -499,58 +497,53 @@ export const FrameworksUiCopy: FrameworksUiCopy = {
 
 export const FrameworkInfoCopy: InfoMap = {
 	"framework:ab-testing:pillar:Design":
-		"Design for a decision: define the action, pick one primary metric plus guardrails, confirm eligibility and randomization, then freeze variants.",
+		"Set the decision, outcome, audience, and test rules before launch.",
 	"framework:ab-testing:pillar:Evaluate":
-		"Evaluate lift in funnel order and validate data health before calling a winner. Segment only when pre-planned.",
-	"framework:ab-testing:pillar:Ship":
-		"Stop when decision-ready or for harm, then document the result and roll the learning into the next hypothesis.",
+		"Read results in funnel order and clear data health checks before calling a winner.",
+	"framework:ab-testing:pillar:Ship": "Stop when decision-ready or for harm, then document the learning.",
 
-	"framework:acquisition:pillar:Market Context": "**Market context:** size and growth, demand, and competitive intensity.",
-	"framework:acquisition:pillar:Risks and Exit": "**Risks & exit:** downside scenarios, timing, and the exit path.",
-	"framework:acquisition:pillar:Synergy Thesis": "**Synergy thesis:** value creation via revenue upside and cost leverage.",
-	"framework:acquisition:pillar:Target Fundamentals": "**Target fundamentals:** product strength, scalability, and financial quality.",
+	"framework:acquisition:pillar:Market Context": "Size demand, growth, and competitive intensity before underwriting the deal.",
+	"framework:acquisition:pillar:Risks and Exit": "Pressure-test downside, integration risk, and the likely exit path.",
+	"framework:acquisition:pillar:Synergy Thesis": "Spell out where value creation comes from and what it will take to realize it.",
+	"framework:acquisition:pillar:Target Fundamentals": "Assess product strength, scalability, and financial quality.",
 
-	"framework:agent-skills-progressive-disclosure:pillar:Build & Iterate": "Improve from failures and make triggers unambiguous.",
-	"framework:agent-skills-progressive-disclosure:pillar:Principle": "Load only what you need now and pull depth when useful.",
-	"framework:agent-skills-progressive-disclosure:pillar:Three Levels": "Metadata first, full skill next, linked assets last.",
+	"framework:agent-skills-progressive-disclosure:pillar:Build & Iterate": "Refine from observed failures and make triggers unmistakable.",
+	"framework:agent-skills-progressive-disclosure:pillar:Principle": "Keep active context small and pull depth only when it helps.",
+	"framework:agent-skills-progressive-disclosure:pillar:Three Levels": "Move from metadata to full instructions to linked assets.",
 
-	"framework:brand-positioning:pillar:Emotional Territory": "How you want people to feel about the brand.",
-	"framework:brand-positioning:pillar:Experiential Proof": "Proof delivered through the product and service experience.",
-	"framework:brand-positioning:pillar:Functional Proof": "Benefits you can credibly own and defend.",
-	"framework:brand-positioning:pillar:Purpose": "Values and commitments beyond profit.",
+	"framework:brand-positioning:pillar:Emotional Territory": "Define the emotional territory the brand should own.",
+	"framework:brand-positioning:pillar:Experiential Proof": "Show the promise in the experience, not just in messaging.",
+	"framework:brand-positioning:pillar:Functional Proof": "Ground the position in advantages you can prove.",
+	"framework:brand-positioning:pillar:Purpose": "State the commitments the brand can credibly stand behind.",
 
-	"framework:data-scrutinization:pillar:Baseline & Volatility": "Use comparable windows and account for normal variability.",
+	"framework:data-scrutinization:pillar:Baseline & Volatility": "Use comparable windows and separate real movement from normal variance.",
 	"framework:data-scrutinization:pillar:Benchmarks": "Add context from market, peers, plan, and history.",
-	"framework:data-scrutinization:pillar:Composition": "Break down the data to isolate what is actually moving.",
+	"framework:data-scrutinization:pillar:Composition": "Cut the data until you can see what is truly driving the move.",
 	"framework:data-scrutinization:pillar:Counterfactual": "Define what would have happened anyway before assigning credit.",
-	"framework:data-scrutinization:pillar:Signal Quality": "Confirm persistence and validate confidence.",
+	"framework:data-scrutinization:pillar:Signal Quality": "Check persistence, sample size, and confidence before acting.",
 
 	"framework:diagnose-plays:pillar:Brand & Incrementality":
-		"Validate `incremental_lift` and whether the play creates or captures demand.",
-	"framework:diagnose-plays:pillar:Economics & Performance": "Unit economics and conversion performance by stage.",
-	"framework:diagnose-plays:pillar:Target & Fit": "Audience value, `pmf`, and targeting and messaging fit.",
+		"Validate `incremental_lift` and whether the play creates demand or only captures it.",
+	"framework:diagnose-plays:pillar:Economics & Performance": "Read unit economics and conversion performance by stage.",
+	"framework:diagnose-plays:pillar:Target & Fit": "Check audience value, `pmf`, and targeting and message fit.",
 
-	"framework:entry:pillar:Entry Economics": "**Economics:** revenue ramp, pricing, costs, and breakeven timing.",
-	"framework:entry:pillar:Fit & Advantage": "**Right to win:** brand and product fit, `gtm` access, and defensibility.",
-	"framework:entry:pillar:Market Attractiveness": "**Attractiveness:** demand, size and growth, and competitive intensity.",
+	"framework:entry:pillar:Entry Economics": "Model the revenue ramp, cost base, and breakeven path.",
+	"framework:entry:pillar:Fit & Advantage": "Test whether you have a credible right to win.",
+	"framework:entry:pillar:Market Attractiveness": "Assess demand, growth, and competitive intensity before entering.",
 
-	"framework:growth:pillar:Client Foundations": "**Foundations:** product strength plus the capacity to scale.",
-	"framework:growth:pillar:Growth Paths": "**Growth paths:** deepen core, win new customers and markets, and expand offerings.",
-	"framework:growth:pillar:Market": "**Market:** customer needs, competition, and category tailwinds and headwinds.",
+	"framework:growth:pillar:Client Foundations": "Check product strength and the operating capacity to scale it.",
+	"framework:growth:pillar:Growth Paths": "Choose the growth paths with the clearest upside and proof.",
+	"framework:growth:pillar:Market": "Map customer needs, competition, and category tailwinds and headwinds.",
 
 	"framework:incrementality-attribution-illusion:pillar:Attribution Traps":
-		"Why attribution systems structurally over-credit certain channels.",
-	"framework:incrementality-attribution-illusion:pillar:How to Prove":
-		"Prove causality with `geo_test` or `holdout` against a counterfactual.",
-	"framework:incrementality-attribution-illusion:pillar:Observed Reality":
-		"What happened when spend changed: revenue, customers, and profit.",
+		"See how attribution systems over-credit channels that harvest existing demand.",
+	"framework:incrementality-attribution-illusion:pillar:How to Prove": "Use experiments to establish causality against a counterfactual.",
+	"framework:incrementality-attribution-illusion:pillar:Observed Reality": "Start with what changed in revenue, customers, and profit.",
 	"framework:incrementality-attribution-illusion:pillar:Strategic Implications":
-		"How budgets and channel roles should shift once `incrementality` is understood.",
+		"Reassign channel roles and budgets once `incrementality` is clear.",
 
-	"framework:media-planning-buying:pillar:Media Buying":
-		"Execute in-platform with bidding, optimization, `qa`, and reconciliation.",
-	"framework:media-planning-buying:pillar:Media Planning":
-		"Set objective, audience, budget, mix, and `kpis` before spend.",
+	"framework:media-planning-buying:pillar:Media Buying": "Run the in-platform loop: bidding, optimization, `qa`, and reconciliation.",
+	"framework:media-planning-buying:pillar:Media Planning": "Set objective, audience, budget, mix, and `kpis` before spend.",
 
 	"framework:performance-analysis:pillar:Action":
 		"Reallocate, pause, or scale using `roas`, `payback`, and `incremental_lift_arr`.",
@@ -558,8 +551,8 @@ export const FrameworkInfoCopy: InfoMap = {
 	"framework:performance-analysis:pillar:Revenue & Funnel":
 		"Track `leads` -> `opportunities` -> `deals` and resulting `arr`.",
 
-	"framework:profitability:pillar:Cost Structure": "**Cost structure:** fixed vs variable costs and unit economics.",
-	"framework:profitability:pillar:Market Position": "**Position:** competitive dynamics, differentiation, and concentration risk.",
-	"framework:profitability:pillar:Revenue Drivers": "**Revenue drivers:** how price, mix, and volume create revenue.",
+	"framework:profitability:pillar:Cost Structure": "Map the fixed and variable cost base plus unit economics.",
+	"framework:profitability:pillar:Market Position": "Read competitive dynamics, differentiation, and concentration risk.",
+	"framework:profitability:pillar:Revenue Drivers": "Understand how price, mix, and volume create revenue.",
 }
 

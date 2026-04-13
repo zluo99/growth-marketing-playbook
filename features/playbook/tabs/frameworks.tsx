@@ -18,7 +18,7 @@ import { cn, runWithViewportAnchor, scrollIntoHorizontalView, stableKeyFromText 
 import { useMediaQuery } from "@/lib/hooks/use-media-query"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
-import { PbBulletList, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell, PbText } from "@/features/playbook/components/ui/ui"
+import { PbBulletList, PbCardContent, PbCardHeader, PbCardLayer, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell, PbText } from "@/features/playbook/components/ui/ui"
 import {
 	FrameworkDefinitions,
 	FrameworkFilterOptions,
@@ -45,10 +45,10 @@ type ColumnCount = 1 | 2 | 3
 /* Constants                                                                  */
 /* -------------------------------------------------------------------------- */
 
-const framework_glow: Record<FrameworkThemeKey, string> = {
-	consulting: ui.glow.orange,
-	data: ui.glow.green,
-	marketing: ui.glow.indigo,
+const framework_glow: Record<FrameworkThemeKey, React.ComponentProps<typeof PbTabCard>["glow"]> = {
+	consulting: "orange",
+	data: "green",
+	marketing: "indigo",
 }
 
 const framework_icon_map: Record<FrameworkIcon, React.ComponentType<{ className?: string }>> = {
@@ -441,9 +441,7 @@ function FrameworkCard({
 	const icon_frame_class = cn(ui.iconCard.frame, "shrink-0")
 
 	return (
-		<PbTabCard hover shadow className={ui.frameworks[theme_key].tint}>
-			<PbCardGlow className={framework_glow[theme_key]} />
-
+		<PbTabCard hover shadow glow={framework_glow[theme_key]} className={ui.frameworks[theme_key].tint}>
 			<PbCardLayer>
 				<PbCardHeader
 					className="pb-3"
@@ -462,7 +460,7 @@ function FrameworkCard({
 							<Renderer.Copy.InlineText text={fw.type} keyPrefix={`${frameworks_key_prefix}-badge-${fw.id}`} />
 						</Badge>
 					}
-					description={<PbSubtleText size="caption">{Renderer.Copy.renderInlineMarkdown(fw.description || FrameworksUiCopy.fallbackDescription, `${frameworks_key_prefix}-framework-${fw.id}-desc`)}</PbSubtleText>}
+					description={<PbSubtleText size="caption">{Renderer.Copy.renderInlineMarkdown(fw.description, `${frameworks_key_prefix}-framework-${fw.id}-desc`)}</PbSubtleText>}
 				/>
 
 				<PbCardContent>

@@ -112,6 +112,15 @@
 	--accent-blue-soft-ring: #3fb2ff;
 	--accent-blue-soft-bg: #f8fbff;
 	--accent-blue-soft-row-hover: #f8fbff;
+	--accent-ai: color-mix(in oklch, var(--accent-indigo) 62%, var(--accent-blue) 38%);
+	--accent-ai-bg: color-mix(in oklch, var(--accent-ai) 16%, var(--accent-bg-base) 84%);
+	--accent-ai-bg-hover: color-mix(in oklch, var(--accent-ai) 24%, var(--accent-bg-base) 76%);
+	--accent-ai-border: color-mix(in oklch, var(--accent-ai) 38%, var(--accent-bg-base) 62%);
+	--accent-ai-border-hover: color-mix(in oklch, var(--accent-ai) 64%, var(--accent-bg-base) 36%);
+	--accent-ai-border-strong: color-mix(in oklch, var(--accent-ai) 52%, var(--accent-bg-base) 48%);
+	--accent-ai-border-strong-hover: color-mix(in oklch, var(--accent-ai) 72%, var(--accent-bg-base) 28%);
+	--accent-ai-fg: color-mix(in oklch, var(--accent-ai) 58%, var(--accent-fg-base) 42%);
+	--accent-ai-ring: color-mix(in oklch, var(--accent-indigo) 56%, var(--accent-blue) 44%);
 
 
 	--accent-indigo-bg: color-mix(in oklch, var(--accent-indigo) var(--accent-mix-bg), var(--accent-bg-base) calc(100% - var(--accent-mix-bg)));
@@ -158,6 +167,10 @@
 	--glow-rainbow-purple: color-mix(in oklch, var(--accent-purple) 12%, transparent);
 	--glow-rainbow-magenta: color-mix(in oklch, color-mix(in oklch, var(--accent-purple) 56%, var(--accent-red) 44%) 11%, transparent);
 	--glow-rainbow-lift: color-mix(in oklch, white 10%, transparent);
+	--glow-ai-cyan: color-mix(in oklch, color-mix(in oklch, var(--accent-blue) 58%, var(--accent-green) 42%) 11%, transparent);
+	--glow-ai-indigo: color-mix(in oklch, var(--accent-indigo) 14%, transparent);
+	--glow-ai-gold: color-mix(in oklch, color-mix(in oklch, var(--accent-yellow) 58%, var(--accent-orange) 42%) 10%, transparent);
+	--glow-ai-lift: color-mix(in oklch, white 14%, transparent);
 
 	color-scheme: light;
 }
@@ -222,6 +235,15 @@
 	--accent-blue-soft-ring: #7ac8ff;
 	--accent-blue-soft-bg: rgba(26, 36, 52, 0.95);
 	--accent-blue-soft-row-hover: rgba(20, 38, 64, 0.78);
+	--accent-ai: color-mix(in oklch, var(--accent-indigo) 58%, var(--accent-blue) 42%);
+	--accent-ai-bg: color-mix(in oklch, var(--accent-ai) 24%, var(--accent-bg-base) 76%);
+	--accent-ai-bg-hover: color-mix(in oklch, var(--accent-ai) 34%, var(--accent-bg-base) 66%);
+	--accent-ai-border: color-mix(in oklch, var(--accent-ai) 42%, var(--accent-bg-base) 58%);
+	--accent-ai-border-hover: color-mix(in oklch, var(--accent-ai) 72%, var(--accent-bg-base) 28%);
+	--accent-ai-border-strong: color-mix(in oklch, var(--accent-ai) 56%, var(--accent-bg-base) 44%);
+	--accent-ai-border-strong-hover: color-mix(in oklch, var(--accent-ai) 82%, var(--accent-bg-base) 18%);
+	--accent-ai-fg: color-mix(in oklch, var(--accent-ai) 66%, var(--accent-fg-base) 34%);
+	--accent-ai-ring: color-mix(in oklch, var(--accent-indigo) 52%, var(--accent-blue) 48%);
 	--accent-yellow-highlight-bg: rgba(255, 254, 210, 0.22);
 	--accent-yellow-highlight-fg: #fff8d8;
 	--glow-rainbow-red: color-mix(in oklch, var(--accent-red) 16%, transparent);
@@ -234,6 +256,10 @@
 	--glow-rainbow-purple: color-mix(in oklch, var(--accent-purple) 16%, transparent);
 	--glow-rainbow-magenta: color-mix(in oklch, color-mix(in oklch, var(--accent-purple) 56%, var(--accent-red) 44%) 14%, transparent);
 	--glow-rainbow-lift: color-mix(in oklch, white 15%, transparent);
+	--glow-ai-cyan: color-mix(in oklch, color-mix(in oklch, var(--accent-blue) 58%, var(--accent-green) 42%) 15%, transparent);
+	--glow-ai-indigo: color-mix(in oklch, var(--accent-indigo) 18%, transparent);
+	--glow-ai-gold: color-mix(in oklch, color-mix(in oklch, var(--accent-yellow) 56%, var(--accent-orange) 44%) 13%, transparent);
+	--glow-ai-lift: color-mix(in oklch, white 18%, transparent);
 
 
 	color-scheme: dark;

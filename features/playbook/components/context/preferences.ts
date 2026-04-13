@@ -10,6 +10,7 @@ export const PlaybookStorage = {
 		segment: "plays:segment",
 		field: "plays:field",
 		spendView: "plays:spend_view",
+		sourcesHierarchyOpen: "plays:sources_hierarchy_open",
 	},
 	reportsSql: {
 		paneHeight: "reports_sql:pane_height",

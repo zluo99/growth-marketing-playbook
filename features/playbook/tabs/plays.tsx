@@ -11,15 +11,15 @@ import { Download } from "lucide-react"
 
 import { ui } from "@/components/tokens/design"
 import { uiMotion, useReducedMotionBool } from "@/components/tokens/motion"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
+import { Hierarchy } from "@/components/ui/hierarchy"
 import { Dropdown, type DropdownItem } from "@/components/nav/dropdown"
 import { Bar, BarRail, BarScroller, BarScrollButton } from "@/components/nav/bar"
 import { MotionPillIndicator, PillList, PillRoot, PillTrigger, useMotionPillRail } from "@/components/nav/pill"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { cn, scrollIntoHorizontalView, stableKeyFromText } from "@/lib/utils"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
-import { PbBulletList, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell } from "@/features/playbook/components/ui/ui"
+import { PbBulletList, PbCardContent, PbCardHeader, PbCardLayer, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell } from "@/features/playbook/components/ui/ui"
 import { SourcesCopy } from "@/features/playbook/copy/plays-sources"
 import { SpendCopy, type SpendBullet, type SpendPanel, type SpendPillar } from "@/features/playbook/copy/plays-spend"
 import { MetricDefinitions } from "@/features/playbook/definitions/metrics"
@@ -41,19 +41,9 @@ type Segment = "b2b" | "b2c"
 type SegmentSelectableFieldId = "description" | "vendor" | "utm" | "spend_ids" | "roas" | "lead_to_deal_cvr"
 type SegmentVariantFieldId = Extract<SegmentSelectableFieldId, "roas" | "lead_to_deal_cvr">
 type FieldDropdownValue = SegmentSelectableFieldId | `${SegmentVariantFieldId}__${Segment}`
-type SourceRow = {
-	source_l1: Source["source_l1"]
-	source_l2: Source["source_l2"]
-	source_l3: Source["source_l3"]
-	divider: "strong" | "medium" | "dotted"
-	repeatMuted: Record<number, boolean>
-	raw: Source
-}
 
 const selectable_field_ids = ["description", "vendor", "utm", "spend_ids", "roas", "lead_to_deal_cvr"] as const satisfies readonly SegmentSelectableFieldId[]
 const static_export_headers = ["source_l1", "source_l2", "source_l3"] as const
-const table_cell_class = "align-top whitespace-normal break-words"
-const table_text_class = "block min-w-0 break-words"
 const plays_key_prefix = "plays"
 const NaText = ({ className }: { className?: string }) => (
 	<span className={cn(ui.copy.na, ui.typography.caption, className)}>
@@ -105,9 +95,6 @@ const dropdown_items: readonly DropdownItem<SegmentSelectableFieldId>[] = select
 /* -------------------------------------------------------------------------- */
 /* Custom: Local styling overrides                                           */
 /* -------------------------------------------------------------------------- */
-
-// SSOT for "equal inset between outer container and inner pill/content"
-const cell_inset = ui.nav.pad
 
 const help_underline_class = ui.copy.helpUnderline
 const help_underline_hover_class = cn(help_underline_class, "hover:decoration-foreground/60")
@@ -325,6 +312,24 @@ function MetricHeaderInline({ metric_id }: { metric_id: "source_l1" | "source_l2
 	return <Renderer.Help.Text label={label} description={info} className={help_underline_hover_class} />
 }
 
+function HierarchyLevelActionButton({ label, symbol, onClick }: { label: string; symbol: "+" | "-"; onClick: () => void }) {
+	return (
+		<Button
+			variant="ghost"
+			size="iconXs"
+			type="button"
+			onClick={onClick}
+			aria-label={label}
+			title={label}
+			className={ui.hierarchy.sectionActionButton}
+		>
+			<span className={ui.hierarchy.symbol} aria-hidden="true">
+				{symbol}
+			</span>
+		</Button>
+	)
+}
+
 function SpendChip({ id }: { id: SpendId }) {
 	return <Renderer.Spend.Pill id={id} />
 }
@@ -338,7 +343,7 @@ function UTMCell({ v }: { v: UtmValues | null }) {
 		if (!tip) return node
 		const render_tip = () =>
 			tip.includes("\n") ? (
-				<div className="space-y-0.5">
+				<div className={ui.hierarchy.detailStack}>
 					{tip.split("\n").map((line, idx) => (
 						<div key={idx}>{line}</div>
 					))}
@@ -350,9 +355,9 @@ function UTMCell({ v }: { v: UtmValues | null }) {
 	}
 
 	return (
-		<div className="space-y-0.5">
+		<div className={ui.hierarchy.detailStack}>
 			{parts.map((p) => (
-				<div key={`${p.key}-${p.values.map((v) => v.text).join(",")}`} className="flex flex-wrap items-center gap-1">
+				<div key={`${p.key}-${p.values.map((v) => v.text).join(",")}`} className={ui.hierarchy.detailInlineList}>
 					{render_with_tooltip(<span>{p.label}</span>, p.labelTooltip)}
 					<span aria-hidden="true">=</span>
 					{p.values.map((val, idx) => (
@@ -370,39 +375,38 @@ function UTMCell({ v }: { v: UtmValues | null }) {
 function RangeBar({ value, scale, className }: { value: Range; scale: { min: number; max: number } | null; className?: string }) {
 	const pos = scale ? normalize_range(value, scale) : { left: 0, width: 0 }
 	return (
-		<div className={cn("relative w-full min-w-0", className)}>
-			<div className={cn("relative h-[8px] w-full", ui.radius.control, ui.rangeBar.indigo.track)}>
-				<div className={cn("absolute inset-y-0", ui.radius.control, ui.rangeBar.indigo.fill)} style={{ left: `${(pos.left * 100).toFixed(3)}%`, width: `${(pos.width * 100).toFixed(3)}%` }} />
+		<div className={cn(ui.hierarchy.rangeWrap, className)}>
+			<div className={ui.hierarchy.rangeTrack}>
+				<div className={ui.hierarchy.rangeFill} style={{ left: `${(pos.left * 100).toFixed(3)}%`, width: `${(pos.width * 100).toFixed(3)}%` }} />
 			</div>
 		</div>
 	)
 }
 
 function RangeCell({ label, value, scale, tooltip }: { label: string; value: Range | null; scale: { min: number; max: number } | null; tooltip?: string | null }) {
-	const label_w = 92
 	if (!value)
 		return (
-			<div className="flex items-center gap-3">
-				<div style={{ width: label_w }} className="shrink-0">
+			<div className={ui.hierarchy.rangeCell}>
+				<div style={{ width: ui.hierarchy.rangeLabelWidth }} className={ui.hierarchy.rangeLabel}>
 					<NaText />
 				</div>
-				<div className="-ml-1 min-w-0 flex-1">
-					<div className={cn("h-[8px] w-full opacity-35", ui.radius.control, ui.rangeBar.indigo.track)} />
+				<div className={ui.hierarchy.rangeRailWrap}>
+					<div className={ui.hierarchy.rangeEmptyTrack} />
 				</div>
 			</div>
 		)
 
 	const tip = tooltip?.trim()
 	return (
-		<div className="flex items-center gap-3">
-			<div style={{ width: label_w }} className="shrink-0">
+		<div className={ui.hierarchy.rangeCell}>
+			<div style={{ width: ui.hierarchy.rangeLabelWidth }} className={ui.hierarchy.rangeLabel}>
 				{tip ? (
 					<Renderer.Help.Text label={label} description={tip} className={help_underline_hover_class} />
 				) : (
 					<span className="break-words">{label}</span>
 				)}
 			</div>
-			<div className="-ml-1 min-w-0 flex-1">
+			<div className={ui.hierarchy.rangeRailWrap}>
 				<RangeBar value={value} scale={scale} />
 			</div>
 		</div>
@@ -414,7 +418,7 @@ function FourthCell({ segment, row, id, scale }: { segment: Segment; row: Source
 
 	if (resolved === "spend_ids")
 		return row.spend_ids.length ? (
-			<div className="flex flex-wrap items-center gap-2">
+			<div className={ui.hierarchy.detailInlineListComfortable}>
 				{row.spend_ids.map((sid) => (
 					<SpendChip key={sid} id={sid} />
 				))}
@@ -431,7 +435,7 @@ function FourthCell({ segment, row, id, scale }: { segment: Segment; row: Source
 	if (resolved === "utm") return <UTMCell v={row.utm} />
 	if (resolved === "vendor")
 		return row.vendor.length ? (
-			<div className="flex flex-wrap items-center gap-1">
+			<div className={ui.hierarchy.detailInlineList}>
 				{row.vendor.map((name, idx) => {
 					const desc = VendorDescriptionByName[name]?.trim()
 					const text = <Renderer.Copy.InlineText text={name} keyPrefix={`${plays_key_prefix}-vendor-${row.source_l3}-${name}`} />
@@ -558,6 +562,25 @@ function FieldDropdown({
 
 function uniq_sorted(xs: readonly string[]) {
 	return Array.from(new Set(xs)).sort((a, b) => a.localeCompare(b))
+}
+
+function parse_open_group_keys(value: string | null) {
+	if (!value) return null
+	try {
+		const parsed = JSON.parse(value)
+		return Array.isArray(parsed) && parsed.every((item) => typeof item === "string") ? parsed : null
+	} catch {
+		return null
+	}
+}
+
+function set_group_key_state(current_keys: readonly string[], level_keys: readonly string[], should_open: boolean) {
+	const next = new Set(current_keys)
+	for (const key of level_keys) {
+		if (should_open) next.add(key)
+		else next.delete(key)
+	}
+	return Array.from(next)
 }
 
 function render_spend_text(txt?: string, key_prefix = `${plays_key_prefix}-spend-desc`) {
@@ -748,23 +771,98 @@ export default function TabPlays() {
 	}, [])
 
 	const scale = React.useMemo(() => compute_scale(sources, segment, field_id), [field_id, segment, sources])
-
-	const display_rows = React.useMemo<readonly SourceRow[]>(() => {
-		return sources.map((raw, idx) => {
-			const prev = idx > 0 ? sources[idx - 1] : null
-			const isNewL1 = !prev || raw.source_l1 !== prev.source_l1
-			const isNewL2 = isNewL1 || !prev || raw.source_l2 !== prev.source_l2
-			const isNewL3 = isNewL2 || !prev || raw.source_l3 !== prev.source_l3
-
-			const divider = isNewL1 ? "strong" : isNewL2 ? "medium" : "dotted"
-			const repeatMuted: Record<number, boolean> = {}
-			if (!isNewL1) repeatMuted[0] = true
-			if (!isNewL2) repeatMuted[1] = true
-			if (!isNewL3) repeatMuted[2] = true
-
-			return { source_l1: raw.source_l1, source_l2: raw.source_l2, source_l3: raw.source_l3, divider, repeatMuted, raw }
+	const source_level_definitions = React.useMemo(
+		() =>
+			[
+				{
+					id: "source_l1",
+					header: <MetricHeaderInline metric_id="source_l1" />,
+					getValue: (row: Source) => row.source_l1,
+					getLabel: (row: Source) => <Renderer.Copy.InlineText text={row.source_l1} keyPrefix={`${plays_key_prefix}-source-l1-${stableKeyFromText(row.source_l1, "source-l1")}`} />,
+					defaultExpanded: true,
+				},
+				{
+					id: "source_l2",
+					header: <MetricHeaderInline metric_id="source_l2" />,
+					getValue: (row: Source) => row.source_l2,
+					getLabel: (row: Source) => <Renderer.Copy.InlineText text={row.source_l2} keyPrefix={`${plays_key_prefix}-source-l2-${stableKeyFromText(`${row.source_l1}-${row.source_l2}`, "source-l2")}`} />,
+					defaultExpanded: false,
+				},
+				{
+					id: "source_l3",
+					header: <MetricHeaderInline metric_id="source_l3" />,
+					getValue: (row: Source) => row.source_l3,
+					getLabel: (row: Source) => <Renderer.Copy.InlineText text={row.source_l3} keyPrefix={`${plays_key_prefix}-source-l3-${stableKeyFromText(`${row.source_l2}-${row.source_l3}`, "source-l3")}`} />,
+				},
+			] as const,
+		[]
+	)
+	const default_hierarchy_open_keys = React.useMemo(
+		() =>
+			source_level_definitions.flatMap((level, depth) => {
+				if (!("defaultExpanded" in level) || !level.defaultExpanded) return []
+				const ancestor_levels = source_level_definitions.slice(0, depth + 1)
+				const keys = new Set<string>()
+				for (const row of sources) {
+					const key = ancestor_levels.map((ancestor) => `${ancestor.id}:${ancestor.getValue(row)}`).join("__")
+					keys.add(key)
+				}
+				return Array.from(keys)
+			}),
+		[source_level_definitions, sources]
+	)
+	const hierarchy_group_keys_by_depth = React.useMemo(() => {
+		return source_level_definitions.map((_, depth) => {
+			const levels_to_depth = source_level_definitions.slice(0, depth + 1)
+			const keys = new Set<string>()
+			for (const row of sources) keys.add(levels_to_depth.map((level) => `${level.id}:${level.getValue(row)}`).join("__"))
+			return Array.from(keys)
 		})
-	}, [sources])
+	}, [source_level_definitions, sources])
+	const [open_group_keys, set_open_group_keys] = React.useState<readonly string[]>(default_hierarchy_open_keys)
+
+	React.useEffect(() => {
+		const stored = parse_open_group_keys(read_preference(PlaybookStorage.plays.sourcesHierarchyOpen))
+		if (stored) {
+			set_open_group_keys(stored)
+			return
+		}
+		set_open_group_keys(default_hierarchy_open_keys)
+	}, [default_hierarchy_open_keys])
+
+	const on_open_group_keys_change = React.useCallback((next: readonly string[]) => {
+		set_open_group_keys(next)
+		write_preference(PlaybookStorage.plays.sourcesHierarchyOpen, JSON.stringify(next))
+	}, [])
+
+	const source_l1_group_keys = hierarchy_group_keys_by_depth[0] ?? []
+	const source_l2_group_keys = hierarchy_group_keys_by_depth[1] ?? []
+	const l1_all_open = source_l1_group_keys.every((key) => open_group_keys.includes(key))
+	const l2_all_open = source_l2_group_keys.every((key) => open_group_keys.includes(key))
+
+	const on_source_l1_action = React.useCallback(() => {
+		on_open_group_keys_change(set_group_key_state(open_group_keys, source_l1_group_keys, !l1_all_open))
+	}, [l1_all_open, on_open_group_keys_change, open_group_keys, source_l1_group_keys])
+
+	const on_source_l2_action = React.useCallback(() => {
+		on_open_group_keys_change(set_group_key_state(open_group_keys, source_l2_group_keys, !l2_all_open))
+	}, [l2_all_open, on_open_group_keys_change, open_group_keys, source_l2_group_keys])
+
+	const source_levels = React.useMemo(
+		() =>
+			[
+				{
+					...source_level_definitions[0],
+					sectionAction: <HierarchyLevelActionButton label={l1_all_open ? SourcesCopy.collapseL1Label : SourcesCopy.expandL1Label} symbol={l1_all_open ? "-" : "+"} onClick={on_source_l1_action} />,
+				},
+				{
+					...source_level_definitions[1],
+					sectionAction: <HierarchyLevelActionButton label={l2_all_open ? SourcesCopy.collapseL2Label : SourcesCopy.expandL2Label} symbol={l2_all_open ? "-" : "+"} onClick={on_source_l2_action} />,
+				},
+				source_level_definitions[2],
+			] as const,
+		[l1_all_open, l2_all_open, on_source_l1_action, on_source_l2_action, source_level_definitions]
+	)
 
 	const header_field_id = resolve_field_id(segment, field_id)
 	const export_headers = React.useMemo(() => [...static_export_headers, header_field_id], [header_field_id])
@@ -909,8 +1007,7 @@ export default function TabPlays() {
 									<motion.div key={spend_view} initial={!reduce_motion ? { opacity: 0, y: 8 } : false} animate={{ opacity: 1, y: 0 }} transition={enter_transition}>
 										<div className={cn("grid grid-cols-2 items-stretch", ui.gap.sm)}>
 											{brand_pillar ? (
-												<PbTabPanel className="relative flex h-full flex-col overflow-hidden">
-													<PbCardGlow className={ui.glow.red} />
+												<PbTabPanel glow="red" className="flex h-full flex-col">
 													<PbCardLayer>
 														<div className={cn("flex items-start", ui.gap.sm)}>
 															<Renderer.Spend.Pill id="brand" className={cn("px-4 py-2", ui.typography.title.md)} />
@@ -928,8 +1025,7 @@ export default function TabPlays() {
 											) : null}
 
 											{perf_pillar ? (
-												<PbTabPanel className="relative flex h-full flex-col overflow-hidden">
-													<PbCardGlow className={ui.glow.purple} />
+												<PbTabPanel glow="purple" className="flex h-full flex-col">
 													<PbCardLayer>
 														<div className={cn("flex items-start", ui.gap.sm)}>
 															<Renderer.Spend.Pill id="performance" className={cn("px-4 py-2", ui.typography.title.md)} />
@@ -948,7 +1044,6 @@ export default function TabPlays() {
 										</div>
 									</motion.div>
 
-									<p className={cn("text-muted-foreground", ui.typography.caption)}>{render_spend_text(SpendCopy.footer, `${plays_key_prefix}-spend-footer`)}</p>
 								</div>
 							</PbCardContent>
 						</PbCardLayer>
@@ -956,11 +1051,10 @@ export default function TabPlays() {
 				</PbReveal>
 
 				<PbReveal className="w-full" data-search-target={SearchTargets.plays.sourcesCard}>
-					<PbTabCard hover>
-						<PbCardGlow className={ui.glow.blue} />
+					<PbTabCard hover glow="blue">
 						<PbCardLayer>
 							<PbCardHeader
-								className="flex-col items-stretch sm:flex-row sm:items-start"
+								className="flex-col items-stretch sm:flex-row sm:items-center"
 								title={
 									<span className={ui.typography.title.lg}>
 										<Renderer.Copy.InlineText text={SourcesCopy.title} keyPrefix={`${plays_key_prefix}-sources-title`} />
@@ -973,7 +1067,7 @@ export default function TabPlays() {
 								}
 								action={
 									<div className={cn("flex flex-wrap items-center justify-start", ui.gap.sm)}>
-										<Button className={cn(buttonVariants({ variant: "success", size: "sm" }), ui.surface.state.hover.shadowMd)} onClick={on_export} type="button">
+										<Button variant="success" size="sm" onClick={on_export} type="button">
 											<Download className={ui.iconNude.lg} />
 											<span>
 												<Renderer.Copy.InlineText text={SourcesCopy.downloadLabel} keyPrefix={`${plays_key_prefix}-sources-download`} />
@@ -984,71 +1078,34 @@ export default function TabPlays() {
 							/>
 
 							<PbCardContent>
-								<div className={cn(ui.radius.base, ui.surface.structure.border, ui.surface.structure.shadowNone, "bg-background overflow-hidden")}>
-									<Table headerTone="indigo" stickyHeader groupedDividers containerClassName="max-h-[520px] overflow-auto" className="w-full table-fixed">
-										<colgroup>
-											<col className="w-[15%]" />
-											<col className="w-[15%]" />
-											<col className="w-[15%]" />
-											<col className="w-[55%]" />
-										</colgroup>
+								<div className={cn("flex flex-col", ui.gap.sm)}>
+									<div className={ui.hierarchy.fieldRow}>
+										<FieldDropdown
+											value={field_id}
+											pendingVariantFor={pending_variant_for}
+											onSelectField={on_field_change}
+											onStartVariantSelection={on_variant_selection_start}
+											onSelectVariant={on_variant_select}
+											onMenuOpenChange={on_field_dropdown_open_change}
+											segment={segment}
+										/>
+									</div>
 
-										<TableHeader>
-											<TableRow>
-												<TableHead className="whitespace-normal break-words">
-													<MetricHeaderInline metric_id="source_l1" />
-												</TableHead>
-												<TableHead className="whitespace-normal break-words">
-													<MetricHeaderInline metric_id="source_l2" />
-												</TableHead>
-												<TableHead className="whitespace-normal break-words">
-													<MetricHeaderInline metric_id="source_l3" />
-												</TableHead>
-
-												<TableHead className={cn("whitespace-normal break-words", cell_inset)}>
-													<FieldDropdown
-														value={field_id}
-														pendingVariantFor={pending_variant_for}
-														onSelectField={on_field_change}
-														onStartVariantSelection={on_variant_selection_start}
-														onSelectVariant={on_variant_select}
-														onMenuOpenChange={on_field_dropdown_open_change}
-														segment={segment}
-													/>
-												</TableHead>
-											</TableRow>
-										</TableHeader>
-
-										<TableBody>
-											{display_rows.map((r) => (
-												<TableRow
-													key={`${r.raw.source_l1}__${r.raw.source_l2}__${r.raw.source_l3}`}
-													divider={r.divider}
-													data-search-target={search_target_for_source(r.raw.source_l3)}
-												>
-													<TableCell className={table_cell_class} muted={r.repeatMuted?.[0]}>
-														<span className={table_text_class}>{r.source_l1}</span>
-													</TableCell>
-													<TableCell className={table_cell_class} muted={r.repeatMuted?.[1]}>
-														<span className={table_text_class}>{r.source_l2}</span>
-													</TableCell>
-													<TableCell className={table_cell_class} muted={r.repeatMuted?.[2]}>
-														<span className={table_text_class}>{r.source_l3}</span>
-													</TableCell>
-													<TableCell className={cn(table_cell_class, "pr-3")}>
-														<div className={table_text_class}>
-															<FourthCell segment={segment} row={r.raw} id={field_id} scale={scale} />
-														</div>
-													</TableCell>
-												</TableRow>
-											))}
-										</TableBody>
-									</Table>
+									<Hierarchy
+										rows={sources}
+										levels={source_levels}
+										getRowKey={(row) => `${row.source_l1}__${row.source_l2}__${row.source_l3}`}
+										getLeafLayout={() => (field_id === "description" ? "text" : "compact")}
+										openGroupKeys={open_group_keys}
+										onOpenGroupKeysChange={on_open_group_keys_change}
+										getLeafProps={(row) => ({
+											"data-search-target": search_target_for_source(row.source_l3),
+										})}
+										renderDetail={(row) => <FourthCell segment={segment} row={row} id={field_id} scale={scale} />}
+										showTrail={false}
+										className="w-full"
+									/>
 								</div>
-
-								<p className={cn(ui.margin.topMd, "text-muted-foreground", ui.typography.caption)}>
-									<Renderer.Copy.InlineText text={SourcesCopy.footer} keyPrefix={`${plays_key_prefix}-sources-footer`} />
-								</p>
 							</PbCardContent>
 						</PbCardLayer>
 					</PbTabCard>

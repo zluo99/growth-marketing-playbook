@@ -168,6 +168,7 @@ const accent_label = (tone: AccentTone) => accent[tone].fg
 
 const size = {
 	controls: {
+		xs: { h: "h-5", px: "px-2", box: "h-5 w-5" },
 		sm: { h: "h-9", px: "px-3", box: "h-9 w-9" },
 		md: { h: "h-10", px: "px-4", box: "h-10 w-10" },
 		lg: { h: "h-11", px: "px-5", box: "h-11 w-11" },
@@ -503,6 +504,7 @@ const button = {
 	size: {
 		default: join_classes(size.controls.md.h, size.controls.md.px, "text-sm"),
 		icon: join_classes(size.controls.md.box, "p-0"),
+		iconXs: join_classes(size.controls.xs.box, "p-0"),
 		iconSm: join_classes(size.controls.sm.box, "p-0"),
 		lg: join_classes(size.controls.lg.h, size.controls.lg.px, "text-sm"),
 		sm: join_classes(size.controls.sm.h, size.controls.sm.px, "text-sm"),
@@ -542,6 +544,7 @@ const nav_shell_chrome = join_classes("relative", radius.base, surface.structure
 
 const nav_chrome = {
 	md: join_classes(nav_shell_chrome, nav_heights.md, nav_pad),
+	opaqueMd: join_classes(nav_shell_chrome, nav_heights.md, nav_pad, surface.structure.opaque),
 } as const
 
 const nav_inner = join_classes("flex items-stretch", nav_pad)
@@ -697,7 +700,27 @@ const glow = {
 	purple: accent.purple.glow,
 	neutral: accent.neutral.glow,
 	rainbow:
-		"mix-blend-normal dark:mix-blend-screen bg-[radial-gradient(128%_42%_at_50%_5%,var(--glow-rainbow-lift)_0%,transparent_58%),radial-gradient(96%_36%_at_16%_8%,var(--glow-rainbow-blue)_0%,transparent_66%),radial-gradient(96%_36%_at_50%_8%,var(--glow-rainbow-green)_0%,transparent_66%),radial-gradient(92%_34%_at_86%_8%,var(--glow-rainbow-orange)_0%,transparent_64%)]",
+		"mix-blend-normal dark:mix-blend-screen bg-[radial-gradient(136%_56%_at_50%_4%,var(--glow-ai-lift)_0%,transparent_58%),radial-gradient(90%_36%_at_14%_10%,var(--glow-ai-cyan)_0%,transparent_68%),radial-gradient(94%_40%_at_50%_6%,var(--glow-ai-indigo)_0%,transparent_66%),radial-gradient(86%_34%_at_86%_10%,var(--glow-ai-gold)_0%,transparent_70%)]",
+} as const
+
+const ai = {
+	glow: glow.rainbow,
+	stepBadge: join_classes(
+		"bg-[color:var(--accent-ai-bg)]",
+		"border-[color:var(--accent-ai-border-strong)]",
+		"text-[color:var(--accent-ai-fg)]"
+	),
+	buttonOutline: join_classes(
+		"bg-background",
+		"text-[color:var(--accent-ai-fg)]",
+		"border-[color:var(--accent-ai-border)]",
+		"hover:bg-[color:var(--accent-ai-bg-hover)]",
+		"active:bg-[color:var(--accent-ai-bg-hover)]",
+		"hover:border-[color:var(--accent-ai-border-hover)]",
+		"focus-visible:border-[color:var(--accent-ai-border-hover)]",
+		"active:border-[color:var(--accent-ai-border-hover)]",
+		"focus-visible:ring-[color:var(--accent-ai-ring)]"
+	),
 } as const
 
 const metrics = {
@@ -746,6 +769,71 @@ const table = {
 	neutral: join_classes(accent.neutral.bg, accent.neutral.fg, "[background-clip:padding-box]"),
 } as const
 
+const hierarchy = {
+	shell: join_classes("relative w-full min-h-0", radius.base, surface.structure.border, surface.structure.shadowNone, "bg-background overflow-hidden"),
+	scroller: "relative min-h-0 w-full",
+	nodeStack: "space-y-0",
+	motionBody: "overflow-hidden",
+	header:
+		"sticky top-0 z-10 grid items-center gap-3 border-b border-border/70 px-3 py-2.5 md:grid-cols-[minmax(0,1fr)_minmax(260px,0.9fr)] shadow-[inset_0_-1px_0_0_color-mix(in_oklch,var(--border)_70%,transparent)]",
+	trail: join_classes("flex min-w-0 flex-wrap items-center gap-1.5", typography.caption),
+	body: "space-y-0.5 p-1 sm:p-1.5",
+	fieldRow: "w-full",
+	groupRow: join_classes(
+		"group flex w-full items-center gap-3 text-left",
+		radius.control,
+		component.outline.base,
+		component.outline.hover,
+		motion.duration,
+		surface.state.focus.ring,
+		search.rowBg,
+		surface.state.hover.bg,
+		surface.state.hover.shadowSm,
+		"min-h-9 px-2 py-1"
+	),
+	groupRowOpen: join_classes(component.outline.activeStatic, "bg-[color:color-mix(in_oklch,var(--surface-bg-hover)_20%,var(--surface-bg))]"),
+	symbol: join_classes("font-mono text-sm leading-none", text_state.default.fg),
+	groupToggle: join_classes("inline-flex h-5 w-5 shrink-0 items-center justify-center", icon_interactive_all),
+	valueWrap: "min-h-4 min-w-0 flex items-center",
+	groupValueWrap: "min-w-0 flex-1",
+	value: join_classes(typography.body, "min-w-0 break-words font-medium leading-6 text-foreground"),
+	count: join_classes("flex h-5 w-9 shrink-0 items-center justify-end tabular-nums text-muted-foreground", typography.caption),
+	children: "ml-1.5 border-l border-dashed border-border/55 pl-2",
+	sectionHeader: "pb-0 pt-[1px] pl-2 pr-1.5",
+	sectionHeaderDeep: "pb-0 pt-[1px] pl-3.5 pr-1.5",
+	sectionLabel: join_classes(typography.caption, "inline-flex min-w-0 items-center gap-1.5 leading-none text-muted-foreground/80"),
+	sectionActionButton: "shrink-0 rounded-full",
+	leafRowCompact: join_classes(
+		radius.control,
+		surface.structure.border,
+		surface.structure.shadowNone,
+		"grid items-center gap-2 py-1.5 pr-2 pl-6 md:grid-cols-[minmax(240px,0.95fr)_minmax(0,1fr)] md:pl-8.5",
+		search.rowBg
+	),
+	leafRowText: join_classes(
+		radius.control,
+		surface.structure.border,
+		surface.structure.shadowNone,
+		"grid gap-2 py-2 pr-3 pl-6 md:grid-cols-[minmax(200px,0.72fr)_minmax(0,1.28fr)] md:pl-8.5",
+		search.rowBg
+	),
+	leafValueWrapCompact: "min-h-4 min-w-0 flex items-center",
+	leafValueWrapText: "min-w-0 flex items-start pt-0.5",
+	leafDetailCompact: join_classes(typography.caption, "min-h-4 min-w-0 w-full whitespace-normal break-words text-foreground"),
+	leafDetailText: join_classes(typography.body, "min-h-4 min-w-0 max-w-[72ch] whitespace-normal break-words leading-7 text-foreground"),
+	detailStack: "space-y-0.5",
+	detailInlineList: "flex flex-wrap items-center gap-1",
+	detailInlineListComfortable: "flex flex-wrap items-center gap-2",
+	rangeLabelWidth: "5.75rem",
+	rangeCell: "flex w-full items-center gap-3",
+	rangeLabel: "shrink-0 break-words",
+	rangeRailWrap: "-ml-1 min-w-0 flex-1",
+	rangeWrap: "relative w-full min-w-0",
+	rangeTrack: join_classes("relative h-[8px] w-full", radius.control, range_bar.indigo.track),
+	rangeEmptyTrack: join_classes("h-[8px] w-full opacity-35", radius.control, range_bar.indigo.track),
+	rangeFill: join_classes("absolute inset-y-0", radius.control, range_bar.indigo.fill),
+} as const
+
 /* -------------------------------------------------------------------------- */
 /* Constants: intro                                                           */
 /* -------------------------------------------------------------------------- */
@@ -753,7 +841,11 @@ const table = {
 const intro = {
 	overlayPadX: "px-6 sm:px-10 lg:px-16",
 	overlayMaxWidth: "max-w-4xl",
-	overlayTitleColor: "text-[color:color-mix(in_oklch,var(--accent-indigo-fg)_82%,var(--surface-bg)_18%)]",
+	overviewTitleHero: "text-5xl font-semibold leading-[1.02] tracking-[-0.035em] sm:text-6xl lg:text-[4.75rem]",
+	overviewTitleDocked: "text-2xl font-semibold leading-[1.08] tracking-[-0.03em] sm:text-3xl",
+	overviewSubtitleHero: "text-lg font-medium leading-8 sm:text-xl",
+	overviewSubtitleDocked: "text-2xl font-medium leading-[1.08] tracking-[-0.03em] sm:text-3xl",
+	overviewTitleColor: "text-[color:color-mix(in_oklch,var(--accent-indigo-fg)_88%,var(--surface-bg)_12%)]",
 } as const
 
 /* -------------------------------------------------------------------------- */
@@ -793,10 +885,12 @@ export const ui = {
 
 	frameworks,
 	glow,
+	ai,
 	metrics,
 	rangeBar: range_bar,
 	spend,
 	table,
+	hierarchy,
 	intro,
 } as const
 

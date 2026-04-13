@@ -17,8 +17,8 @@ type ExampleCopy = {
 }
 
 export const ExampleCopy: ExampleCopy = {
-	title: "Example Report: Direct Mail",
-	body: "Connect `mail_sends` to cohort outcomes, then validate lift with `incremental_lift_arr`. Example layout for a decision-ready report:",
+	title: "Example report: Direct Mail",
+	body: "Connect `mail_sends` to cohort outcomes, then validate lift with `incremental_lift_arr`. Use this layout for a decision-ready report:",
 	ui: {
 		exampleItemLabel: "Workspace example item {n}",
 	},
@@ -35,7 +35,7 @@ export const ExampleCopy: ExampleCopy = {
 		{
 			id: "2",
 			title: "Financial impact",
-			subtitle: "Drill down for context.",
+			subtitle: "Add the financial readout.",
 			bullets: [
 				"Efficiency: `total_spend`, `roas`, `cost_per_deal`, `cac`, `payback`.",
 				"Pipeline health: `opportunities`, `sales_cycle_time`.",
@@ -44,7 +44,7 @@ export const ExampleCopy: ExampleCopy = {
 		{
 			id: "3",
 			title: "Lift analysis",
-			subtitle: "Counterfactual matters.",
+			subtitle: "Show the counterfactual.",
 			bullets: [
 				"Use a `control_group`.",
 				"Report `incrementality`, not attribution credit.",

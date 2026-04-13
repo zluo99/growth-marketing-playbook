@@ -7,7 +7,6 @@ type FunnelPanel = {
 	title: string
 	body: string
 	common_metrics?: readonly MetricId[]
-	note?: { title: string; items: readonly string[] }
 }
 
 type FunnelCard = {
@@ -54,7 +53,7 @@ export const FunnelCopy: FunnelCard = {
 		{
 			id: "3",
 			title: "Opportunity",
-			body: "Qualified pipeline anchored to an `object_id`, usually `lead_id`.\n\nTypical stages: qualify, discovery, evaluation, negotiation, closed won, closed lost.",
+			body: "Qualified pipeline anchored to an `object_id`, usually `lead_id`.\n\nTypical stages: qualify, discovery, evaluation, negotiation, closed won, and closed lost.",
 			common_metrics: ["opportunities", "opportunities_from_leads", "lead_to_opp_cvr", "cost_per_opportunity"] as const,
 		},
 		{

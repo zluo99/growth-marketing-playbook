@@ -83,6 +83,11 @@ export const uiMotion = {
 			reduced: transitions.collapseReduced,
 			tween: transitions.collapse,
 		},
+		hierarchy: {
+			expand: { type: "tween", duration: durations.base, ease: easing.standard } satisfies Transition,
+			reduced: transitions.enterReduced,
+			offsetY: 4,
+		},
 		dropdownInline: {
 			shrink: { type: "tween", duration: durations.medium, ease: easing.standard } satisfies Transition,
 			reveal: { type: "tween", duration: durations.base, ease: easing.standard } satisfies Transition,
