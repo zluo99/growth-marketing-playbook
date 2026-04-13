@@ -288,7 +288,9 @@ export function PbOverlay({
 							className={cn("flex h-full min-h-0 w-full max-h-full flex-col md:h-auto", panelClassName)}
 						>
 							<PbCardLayer className="flex h-full min-h-0 flex-1 flex-col">
-								<PbCardHeader title={title} action={action} />
+								<div className="relative shrink-0 bg-[linear-gradient(180deg,color-mix(in_oklch,var(--surface-bg)_90%,var(--foreground)_10%)_0%,var(--surface-bg)_100%)] after:pointer-events-none after:absolute after:inset-x-5 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-[color:var(--border-hover)] after:to-transparent">
+									<PbCardHeader title={title} action={action} />
+								</div>
 								<PbCardContent
 									className={cn(
 										"min-h-0 overflow-hidden overscroll-contain [-webkit-overflow-scrolling:touch]",

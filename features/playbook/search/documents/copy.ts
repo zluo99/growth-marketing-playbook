@@ -15,7 +15,7 @@ import { FunnelCopy } from "@/features/playbook/copy/reports-sql-funnel"
 import { PgCopy, PgPresets } from "@/features/playbook/copy/reports-sql-pg"
 import { ExampleCopy } from "@/features/playbook/copy/reports-workspace-example"
 import { SheetsCopy, SlidesCopy } from "@/features/playbook/copy/reports-workspace-google"
-import { AnalystDefaultModuleIds, build_analyst_markdown } from "@/features/playbook/copy/overview-ai-md"
+import { DbtFileDefinitions, build_dbt_file_content } from "@/features/playbook/copy/overview-ai-md"
 import { TabById } from "@/features/playbook/definitions/tabs"
 import type { CopyEntryInput, SearchEntryInput } from "@/features/playbook/search/schema"
 import { SearchTargets, search_target_for_framework } from "@/features/playbook/search/targets"
@@ -61,7 +61,10 @@ export const FrameworkSearchDocuments = Object.freeze(FrameworkDefinitions.map(b
 /* -------------------------------------------------------------------------- */
 
 const copy_documents: CopyEntryInput[] = []
-const default_analyst_markdown = build_analyst_markdown(AnalystDefaultModuleIds)
+const dbt_file_samples = DbtFileDefinitions.map((file) => ({
+	...file,
+	content: build_dbt_file_content(file.id),
+}))
 
 const push = (entry: CopyEntryInput) => {
 	copy_documents.push(entry)
@@ -130,7 +133,7 @@ push({
 	meta: "AI setup",
 	scrollTarget: SearchTargets.overview.aiAnalystCard,
 	extra: [OverviewAICopy.footer],
-	keywords: ["overview", "ai", "analyst", "analyst.md", "csv", "semantic layer"],
+	keywords: ["overview", "ai", "analyst", "dbt", "skill.md", "metrics.yml", "models.yml", "semantic layer"],
 	priority: 20,
 })
 
@@ -148,30 +151,19 @@ OverviewAICopy.panels.forEach((panel) =>
 	})
 )
 
-OverviewAICopy.analystModules.forEach((module) =>
+dbt_file_samples.forEach((file) =>
 	push({
-		id: `ai-analyst-module-${module.id}`,
-		title: module.title,
-		description: module.description,
+		id: `ai-dbt-file-${file.id}`,
+		title: file.fileName,
+		description: file.description,
 		tabId: "overview",
-		badge: "AI Module",
+		badge: "dbt file",
 		meta: OverviewAICopy.title,
 		scrollTarget: SearchTargets.overview.aiAnalystCard,
+		extra: [file.content],
 		breadcrumbs: [OverviewAICopy.title],
 	})
 )
-
-push({
-	id: "ai-analyst-sample",
-	title: "analyst.md (generated)",
-	description: `${default_analyst_markdown.slice(0, 200)}...`,
-	displayDescription: default_analyst_markdown,
-	tabId: "overview",
-	badge: "Sample",
-	meta: OverviewAICopy.title,
-	scrollTarget: SearchTargets.overview.aiAnalystCard,
-	breadcrumbs: [OverviewAICopy.title],
-})
 
 push({
 	id: "problem-card",

@@ -211,9 +211,6 @@ function TooltipProviderAutoClose({ children, ...props }: React.ComponentProps<t
 		const close = () => {
 			const ae = document.activeElement
 			if (ae && ae instanceof HTMLElement) ae.blur()
-
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", code: "Escape", bubbles: true, cancelable: true }))
-			document.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true, pointerType: "mouse" }))
 		}
 
 		const on_visibility = () => {
