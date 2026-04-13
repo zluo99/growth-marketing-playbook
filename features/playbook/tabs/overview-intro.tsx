@@ -6,6 +6,7 @@
 
 import * as React from "react"
 
+import { ui } from "@/components/tokens/design"
 import { cn } from "@/lib/utils"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
@@ -173,6 +174,18 @@ export function OverviewOverlayLetters({
 	letterClassName,
 	renderLetter,
 }: OverviewOverlayLettersProps) {
+	const resolved_title_class_name = cn(
+		role === "overlay" ? ui.intro.overviewTitleHero : ui.intro.overviewTitleDocked,
+		ui.intro.overviewTitleColor,
+		titleClassName
+	)
+	const resolved_subtitle_class_name = cn(
+		role === "overlay" ? ui.intro.overviewSubtitleHero : ui.intro.overviewSubtitleDocked,
+		ui.text.muted.fg,
+		subtitleClassName
+	)
+	const resolved_separator_class_name = cn(resolved_subtitle_class_name, separatorClassName)
+
 	const { title_line, separator_line, subtitle_line } = React.useMemo(() => {
 		let index = 0
 		const title = render_inline_copy_letters({
@@ -218,11 +231,11 @@ export function OverviewOverlayLetters({
 		return (
 			<span className={cn("relative inline-block whitespace-normal break-words", className)} data-overview-overlay={role}>
 				<span className="relative z-10">
-					<span className={cn("whitespace-pre-wrap", titleClassName)}>{title_line}</span>
+					<span className={cn("whitespace-pre-wrap", resolved_title_class_name)}>{title_line}</span>
 					{separator_line ? (
-						<span className={cn("whitespace-pre-wrap", separatorClassName ?? titleClassName ?? subtitleClassName)}>{separator_line}</span>
+						<span className={cn("whitespace-pre-wrap", resolved_separator_class_name)}>{separator_line}</span>
 					) : null}
-					<span className={cn("whitespace-pre-wrap", subtitleClassName)}>{subtitle_line}</span>
+					<span className={cn("whitespace-pre-wrap", resolved_subtitle_class_name)}>{subtitle_line}</span>
 				</span>
 			</span>
 		)
@@ -232,11 +245,11 @@ export function OverviewOverlayLetters({
 		<div className={cn("relative flex flex-col whitespace-normal break-words", className)} data-overview-overlay={role}>
 			<span className="relative z-10">
 				<span
-					className={cn("block whitespace-pre-wrap", titleClassName)}
+					className={cn("block whitespace-pre-wrap", resolved_title_class_name)}
 				>
 					{title_line}
 				</span>
-				<span className={cn("block whitespace-pre-wrap", subtitleClassName)}>{subtitle_line}</span>
+				<span className={cn("block whitespace-pre-wrap", resolved_subtitle_class_name)}>{subtitle_line}</span>
 			</span>
 		</div>
 	)

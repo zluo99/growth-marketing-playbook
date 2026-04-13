@@ -59,7 +59,7 @@ export type DropdownProps<V extends string> = {
 /* Constants                                                                  */
 /* -------------------------------------------------------------------------- */
 
-const trigger_chrome = cn(ui.nav.chrome.md, ui.nav.heights.md, "w-full", "inline-flex items-stretch")
+const trigger_chrome = cn(ui.nav.chrome.opaqueMd, ui.nav.heights.md, "w-full", "inline-flex items-stretch")
 const trigger_inner = cn("flex h-full w-full min-w-0 items-center justify-between", "pl-4 pr-2")
 const chevron_chrome = cn(ui.iconNude.lg, "shrink-0", ui.icon.interactive.all, ui.motion.durationFast, "transition-transform")
 

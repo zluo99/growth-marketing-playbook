@@ -2,7 +2,6 @@
 /* Imports                                                                    */
 /* -------------------------------------------------------------------------- */
 
-import { TenetsCopy } from "@/features/playbook/copy/overview-tenets"
 import { DefinitionsCopy } from "@/features/playbook/copy/reports-sql-definitions"
 import { FunnelCopy } from "@/features/playbook/copy/reports-sql-funnel"
 import { PgPresets } from "@/features/playbook/copy/reports-sql-pg"
@@ -430,7 +429,6 @@ function build_skill_markdown() {
 		"# skill.md",
 		"## Objective",
 		`- ${DefinitionsCopy.body}`,
-		`- ${TenetsCopy.footer}`,
 		"",
 		"## Bundle order",
 		"- Read this file first.",

@@ -6,7 +6,6 @@ type DefinitionsPanel = {
 	id: DefinitionsPanelId
 	title: string
 	body: string
-	bullets?: readonly string[]
 	columns?: { table: string; description: string; columns: string }
 }
 
@@ -57,14 +56,14 @@ export const DefinitionsCopy: DefinitionsCard = {
 	tables: [
 		{
 			name: "funnel_cohorted",
-			description: "Cohorted outcomes anchored to lead creation (Lead -> Opportunity -> Deal) plus `arr` from the same lead cohorts.",
+			description: "Cohorted outcomes anchored to lead creation (Lead -> Opportunity -> Deal), with `arr` from the same lead cohorts.",
 			columns: "lead_id, lead_created_date, source_l1, source_l2, source_l3, vendor, vertical, opportunities_from_leads, deals_from_leads, arr_from_leads, ltv_from_leads",
 			grain: "One row per lead cohort entity anchored at `lead_created_date`.",
 			signatureColumns: ["lead_id", "lead_created_date", "opportunities_from_leads", "deals_from_leads", "arr_from_leads"] as const,
 		},
 		{
 			name: "funnel_uncohorted",
-			description: "Object-level funnel events (Lead -> Opportunity -> Deal). Keep `arr` on Deal records.",
+			description: "Object-level funnel events (Lead -> Opportunity -> Deal). Keep `arr` on deal records.",
 			columns: "object_id, object_type, object_created_date, source_l1, source_l2, source_l3, vendor, vertical, arr",
 			grain: "One row per CRM object event (`object_id`, `object_type`) by creation date.",
 			signatureColumns: ["object_id", "object_type", "object_created_date", "source_l1", "source_l2"] as const,

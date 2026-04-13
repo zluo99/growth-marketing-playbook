@@ -29,7 +29,6 @@ type SpendCard = {
 	title: string
 	pillars: readonly SpendPillar[]
 	panels: readonly SpendPanel[]
-	footer: string
 	ui: {
 		spendBarLabel: string
 	}
@@ -39,12 +38,12 @@ const spend_overview_body =
 	"`brand` creates demand. `performance` captures demand. Run both on one `arr` scoreboard."
 
 export const SpendCopy: SpendCard = {
-	title: "Spend Framework",
+	title: "Spend framework",
 	pillars: [
 		{
 			id: "brand",
 			title: "Demand creation",
-			body: "Invest to shape demand and improve unit economics over time. Prove it with `incrementality`, not attribution credit.",
+			body: "Invest to create demand and improve unit economics over time. Prove it with `incrementality`, not attribution credit.",
 			bullets: [
 				{ text: "Primary signals: `reach`, branded search, `cvr` trend" },
 				{ text: "Proof: `geo_test`, `holdout`, `matchback`, `matched_markets`" },
@@ -80,7 +79,7 @@ export const SpendCopy: SpendCard = {
 					bullets: [
 						{ text: "Buy learning early: efficient signal (`cpm`, `cpc`) while testing concepts" },
 						{ text: "Build memory: consistent positioning and proof across touchpoints" },
-						{ text: "Make it decision-grade: ship `incremental_lift` in the readout" },
+						{ text: "Make it decision-grade: include `incremental_lift` in the readout" },
 					],
 				},
 				{
@@ -89,8 +88,8 @@ export const SpendCopy: SpendCard = {
 					body: "Scale capture without degrading conversion or Finance outcomes.",
 					bullets: [
 						{ text: "Keep `cac` and `payback` within Finance bounds. `roas` must clear threshold" },
-						{ text: "`arr` and stage rates hold as spend scales (`lead_to_opp_cvr`, `opp_to_deal_cvr`)" },
-						{ text: "Capacity keeps pace: routing, speed to lead, sales coverage" },
+						{ text: "Keep `arr` and stage rates stable as spend scales (`lead_to_opp_cvr`, `opp_to_deal_cvr`)" },
+						{ text: "Make sure capacity keeps pace: routing, speed to lead, and sales coverage" },
 					],
 				},
 			],
@@ -98,7 +97,7 @@ export const SpendCopy: SpendCard = {
 		{
 			id: "3",
 			title: "Measurement",
-			body: "`brand` proves lift. `performance` runs on guardrails and needs time to stabilize.",
+			body: "`brand` proves lift. `performance` runs on guardrails and needs stable cohorts.",
 			sections: [
 				{
 					id: "brand",
@@ -124,10 +123,9 @@ export const SpendCopy: SpendCard = {
 		{
 			id: "4",
 			title: "Sources",
-			body: "Use the `source` taxonomy to sanity check channel roles and map them to `spend_type`. If a cut cannot reconcile to the `semantic_model`, treat it as directional.",
+			body: "Use the `source` taxonomy to check channel roles and map them to `spend_type`. If a cut cannot reconcile to the `semantic_model`, treat it as directional.",
 		},
 	],
-	footer: "Rule: plan with `brand` and `performance`, prove with `incrementality`, and reconcile every decision to Finance on one `semantic_model` with shared `source` and `spend_type`.",
 	ui: {
 		spendBarLabel: "Choose spend section",
 	},

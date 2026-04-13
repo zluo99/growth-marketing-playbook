@@ -26,6 +26,7 @@ type WithShadow = { shadow?: boolean }
 type HeadingTag = "div" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
 type SurfaceTone = "card" | "panel" | "popover"
 type Tone = "default" | "muted"
+export type PbGlowTone = keyof typeof ui.glow | "ai"
 
 type StackGap = "sm" | "md" | "lg"
 type PanelSurfaceSize = "sm" | "md"
@@ -90,6 +91,11 @@ const scroll_event_options: AddEventListenerOptions = { passive: true }
 
 function render_inline_copy(node: React.ReactNode, key_prefix = "pb-inline") {
 	return typeof node === "string" ? Renderer.Copy.renderInlineText(node, { keyPrefix: key_prefix }) : node
+}
+
+function glow_class(tone?: PbGlowTone | null) {
+	if (!tone) return null
+	return tone === "ai" ? ui.ai.glow : ui.glow[tone]
 }
 
 export const createUnknownMetricLogger = (label: string) => (token: string) => {
@@ -666,11 +672,16 @@ export const PbCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
 })
 PbCard.displayName = "PbCard"
 
-export const PbTabCard = React.forwardRef<HTMLDivElement, React.ComponentProps<typeof PbCard>>(function PbTabCard(
-	{ className, shadow = false, ...props },
+export const PbTabCard = React.forwardRef<HTMLDivElement, React.ComponentProps<typeof PbCard> & { glow?: PbGlowTone | null }>(function PbTabCard(
+	{ className, shadow = false, glow, children, ...props },
 	ref
 ) {
-	return <PbCard ref={ref} shadow={shadow} className={cn("relative overflow-hidden", className)} {...props} />
+	return (
+		<PbCard ref={ref} shadow={shadow} className={cn("relative overflow-hidden", className)} {...props}>
+			{glow ? <PbCardGlow tone={glow} /> : null}
+			{children}
+		</PbCard>
+	)
 })
 PbTabCard.displayName = "PbTabCard"
 
@@ -742,15 +753,25 @@ export const PbCardContent = React.forwardRef<HTMLDivElement, React.HTMLAttribut
 })
 PbCardContent.displayName = "PbCardContent"
 
-export function PbCardGlow(props: React.HTMLAttributes<HTMLDivElement>) {
-	return <div {...props} className={cn("pointer-events-none absolute inset-0 z-0", props.className)} />
+export function PbCardGlow({ tone, className, ...props }: React.HTMLAttributes<HTMLDivElement> & { tone?: PbGlowTone | null }) {
+	return <div {...props} className={cn("pointer-events-none absolute inset-0 z-0", glow_class(tone), className)} />
 }
 
 export function PbCardLayer({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
 	return <div {...props} className={cn("relative z-10", className)} />
 }
 
-export function PbNumberBadge({ className, number, ariaLabel }: { className?: string; number: React.ReactNode; ariaLabel?: string }) {
+export function PbNumberBadge({
+	className,
+	number,
+	ariaLabel,
+	tone = "default",
+}: {
+	className?: string
+	number: React.ReactNode
+	ariaLabel?: string
+	tone?: "default" | "ai"
+}) {
 	return (
 		<span
 			aria-label={ariaLabel}
@@ -762,7 +783,7 @@ export function PbNumberBadge({ className, number, ariaLabel }: { className?: st
 				"border",
 				ui.typography.caption,
 				ui.radius.control,
-				ui.metrics.pillSecondary,
+				tone === "ai" ? ui.ai.stepBadge : ui.metrics.pillSecondary,
 				className
 			)}
 		>
@@ -994,10 +1015,11 @@ export type PbTabPanelProps = React.ComponentProps<typeof PbPanel> & {
 	variant?: PbTabPanelVariant
 	interactive?: boolean
 	size?: PanelSurfaceSize
+	glow?: PbGlowTone | null
 }
 
 export const PbTabPanel = React.forwardRef<HTMLDivElement, PbTabPanelProps>(function PbTabPanel(
-	{ className, interactive = true, variant = "default", size = "md", ...props },
+	{ className, interactive = true, variant = "default", size = "md", glow, children, ...props },
 	ref
 ) {
 	const padding = size === "sm" ? ui.spacing.panelSm : ui.spacing.panelMd
@@ -1006,6 +1028,7 @@ export const PbTabPanel = React.forwardRef<HTMLDivElement, PbTabPanelProps>(func
 			ref={ref}
 			{...props}
 			className={cn(
+				glow ? "relative overflow-hidden" : null,
 				ui.surface.structure.shadowNone,
 				ui.motion.duration,
 				padding,
@@ -1013,7 +1036,10 @@ export const PbTabPanel = React.forwardRef<HTMLDivElement, PbTabPanelProps>(func
 				interactive ? ui.component.outline.hover : null,
 				className
 			)}
-		/>
+		>
+			{glow ? <PbCardGlow tone={glow} /> : null}
+			{children}
+		</PbPanel>
 	)
 })
 PbTabPanel.displayName = "PbTabPanel"

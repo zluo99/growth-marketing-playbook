@@ -31,17 +31,17 @@ type PgCopy = {
 
 export const PgCopy: PgCopy = {
 	title: "SQL playground",
-	body: "Run SQL on the available tables. Data is spoofed from 2020-01-01 to 2022-12-31. Metrics use the shared `semantic_model` (`source`, `spend_type`, `arr`, `roas`).",
+	body: "Run SQL on the available tables. Data is spoofed from 2020-01-01 to 2022-12-31. Metrics follow the shared `semantic_model` (`source`, `spend_type`, `arr`, `roas`).",
 	icon: "code",
 	labels: {
 		run_btn_running: "Running...",
 		run_btn_ready: "Run query",
-		run_btn_not_ready: "Load preset to run",
+		run_btn_not_ready: "Load a preset to run",
 		download_btn: "Download CSV",
 		editor_title: "SQL editor",
 		editor_help: "Start from a preset or write your own query.",
 		viewer_title: "Results",
-		viewer_help: "Run a query to see results. Empty sets still mean success.",
+		viewer_help: "Run a query to see results. An empty set can still be a valid result.",
 		run_error_generic: "SQL error",
 		download_default_name: "query",
 	},
@@ -60,7 +60,7 @@ export const PgCopy: PgCopy = {
 export const PgPresets = [
 	{
 		id: "funnel_monthly",
-		description: "Monthly funnel by source and vertical with lead, opportunity, and deal counts plus deal ARR.",
+		description: "Monthly funnel by source and vertical, with lead, opportunity, and deal counts plus deal ARR.",
 		code: `
 -- file: funnel_monthly.sql
 SELECT
@@ -80,7 +80,7 @@ ORDER BY 1, 2, 3, 4, 5
 	},
 	{
 		id: "funnel_monthly_roi",
-		description: "Monthly spend and lead-cohort outcomes by source and vendor with conversion rates, ARR, and LTV.",
+		description: "Monthly spend and lead-cohort outcomes by source and vendor, with conversion rates, ARR, and LTV.",
 		code: `
 -- file: funnel_monthly_roi.sql
 SELECT
@@ -127,7 +127,7 @@ ORDER BY 1, 2, 3, 4, 5, 6, 7
 	},
 	{
 		id: "funnel_weekly",
-		description: "Weekly funnel by source and vertical for 2020 with Sunday week starts.",
+		description: "Weekly funnel by source and vertical for 2020, with Sunday week starts.",
 		code: `
 -- file: funnel_weekly.sql
 -- Week starts Sunday. Filter source data to full-year 2020.

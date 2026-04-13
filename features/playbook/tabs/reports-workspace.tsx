@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils"
 
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { LoaderCardSkeleton } from "@/features/playbook/components/ui/loader"
-import { PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbMetricList, PbNumberBadge, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell, createUnknownMetricLogger, useLazyGate } from "@/features/playbook/components/ui/ui"
+import { PbCardContent, PbCardHeader, PbCardLayer, PbMetricList, PbNumberBadge, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell, createUnknownMetricLogger, useLazyGate } from "@/features/playbook/components/ui/ui"
 import { usePbTabsNav } from "@/features/playbook/components/context/tab-nav"
 import { SheetsCopy, SlidesCopy, WorkspaceUiCopy } from "@/features/playbook/copy/reports-workspace-google"
 import { ExampleCopy as WorkspaceExample } from "@/features/playbook/copy/reports-workspace-example"
@@ -31,6 +31,11 @@ const reports_workspace_key_prefix = "reports-workspace"
 const workspace_icon_map: Record<WorkspaceEmbedId, React.ComponentType<{ className?: string }>> = {
 	sheets: Mail,
 	slides: Presentation,
+} as const
+
+const workspace_glow_map: Record<WorkspaceEmbedId, React.ComponentProps<typeof PbTabCard>["glow"]> = {
+	sheets: "green",
+	slides: "yellow",
 } as const
 
 function OpenButton({ href, label, keyPrefix }: { href: string; label: string; keyPrefix: string }) {
@@ -60,52 +65,54 @@ function EmbedCard({
 	onTabClick?: (tabId: TabId) => void
 }) {
 	const Icon = workspace_icon_map[id]
+	const glow = workspace_glow_map[id]
 	return (
 		<PbReveal className="w-full" data-search-target={`workspace-${id}`}>
-			<PbTabCard hover>
-				<PbCardHeader
-					title={
-						<span className={cn("inline-flex items-center", ui.gap.sm)}>
-							<span className={cn(ui.iconCard.frame, "text-muted-foreground")} aria-hidden="true">
-								<Icon className={ui.iconCard.size} />
+			<PbTabCard hover glow={glow}>
+				<PbCardLayer>
+					<PbCardHeader
+						title={
+							<span className={cn("inline-flex items-center", ui.gap.sm)}>
+								<span className={cn(ui.iconCard.frame, "text-muted-foreground")} aria-hidden="true">
+									<Icon className={ui.iconCard.size} />
+								</span>
+								<span className={ui.typography.title.lg}>
+									<Renderer.Copy.InlineText
+										text={copy.title}
+										keyPrefix={`${reports_workspace_key_prefix}-${id}-title`}
+										onUnknownToken={warn_unknown_metric}
+									/>
+								</span>
 							</span>
-							<span className={ui.typography.title.lg}>
-								<Renderer.Copy.InlineText
-									text={copy.title}
-									keyPrefix={`${reports_workspace_key_prefix}-${id}-title`}
+						}
+						description={
+							<PbSubtleText size="body">
+								<Renderer.Tabs.InlineText
+									text={copy.body}
+									keyPrefix={`${reports_workspace_key_prefix}-${id}-desc`}
 									onUnknownToken={warn_unknown_metric}
+									onTabClick={onTabClick}
 								/>
-							</span>
-						</span>
-					}
-					description={
-						<PbSubtleText size="body">
-							<Renderer.Tabs.InlineText
-								text={copy.body}
-								keyPrefix={`${reports_workspace_key_prefix}-${id}-desc`}
-								onUnknownToken={warn_unknown_metric}
-								onTabClick={onTabClick}
+							</PbSubtleText>
+						}
+						action={<OpenButton href={copy.openUrl} label={copy.openLabel} keyPrefix={`${reports_workspace_key_prefix}-${id}-open`} />}
+					/>
+					<PbCardContent className={cn("flex flex-col", ui.gap.md)}>
+						<div className={cn("overflow-hidden bg-background", ui.surface.structure.borderHover, ui.surface.structure.shadowNone, ui.motion.duration, ui.radius.base)} style={{ height }}>
+							<iframe
+								title={copy.title}
+								src={copy.embedUrl}
+								className="block h-full w-full"
+								style={{ border: 0, background: "transparent" }}
+								loading="eager"
+								referrerPolicy="no-referrer"
+								allowFullScreen
+								scrolling="yes"
+								sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
 							/>
-						</PbSubtleText>
-					}
-					action={<OpenButton href={copy.openUrl} label={copy.openLabel} keyPrefix={`${reports_workspace_key_prefix}-${id}-open`} />}
-				/>
-				<PbCardContent className={cn("flex flex-col", ui.gap.md)}>
-					<div className={cn("overflow-hidden bg-background", ui.surface.structure.borderHover, ui.surface.structure.shadowNone, ui.motion.duration, ui.radius.base)} style={{ height }}>
-						<iframe
-							title={copy.title}
-							src={copy.embedUrl}
-							className="block h-full w-full"
-							style={{ border: 0, background: "transparent" }}
-							loading="eager"
-							referrerPolicy="no-referrer"
-							allowFullScreen
-							scrolling="yes"
-							sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-						/>
-					</div>
-
-				</PbCardContent>
+						</div>
+					</PbCardContent>
+				</PbCardLayer>
 			</PbTabCard>
 		</PbReveal>
 	)
@@ -220,7 +227,6 @@ export default function TabReportsWorkspace() {
 			<EmbedCard id="slides" copy={SlidesCopy} height={ui.size.layout.md} onTabClick={goToTab} />
 			<PbReveal className="w-full" data-search-target={SearchTargets.reportsWorkspace.exampleCard}>
 				<PbTabCard hover>
-					<PbCardGlow className={ui.glow.yellow} />
 					<PbCardLayer>
 						<PbCardHeader
 							title={

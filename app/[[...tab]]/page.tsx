@@ -443,8 +443,7 @@ function OverviewIntroOverlay({ active, onComplete }: { active: boolean; onCompl
 							reserveSeparator
 							keyPrefix="overview-intro"
 							className={cn("flex flex-col", ui.gap.md)}
-							titleClassName={cn(ui.typography.title.xxl, "intro-overlay-title")}
-							subtitleClassName={cn(ui.typography.title.md, "intro-overlay-subtitle", ui.margin.topMd)}
+							subtitleClassName={ui.margin.topMd}
 							renderLetter={({ char, index, props }) => {
 								const delta = deltas[index]
 								const base = base_positions[index]
@@ -558,26 +557,6 @@ export default function Page() {
 					}
 					[data-overview-overlay='target'] [data-overview-separator='true'] {
 						opacity: var(--overview-intro-progress-opacity, 0);
-					}
-					:root {
-						--intro-title-start: color-mix(in oklch, var(--accent-indigo-fg) 82%, var(--surface-bg) 18%);
-						--intro-title-end: var(--surface-fg);
-						--intro-subtitle-start: var(--color-muted-foreground);
-						--intro-subtitle-end: var(--surface-fg);
-					}
-					.intro-overlay-title {
-						color: color-mix(
-							in oklch,
-							var(--intro-title-start) calc(100% - var(--overview-intro-progress, 0%)),
-							var(--intro-title-end) var(--overview-intro-progress, 0%)
-						);
-					}
-					.intro-overlay-subtitle {
-						color: color-mix(
-							in oklch,
-							var(--intro-subtitle-start) calc(100% - var(--overview-intro-progress, 0%)),
-							var(--intro-subtitle-end) var(--overview-intro-progress, 0%)
-						);
 					}
 					@keyframes intro-cursor-blink {
 						0%,

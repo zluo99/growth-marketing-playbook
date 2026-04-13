@@ -18,7 +18,6 @@ import { useCopyToClipboard } from "@/features/playbook/components/ui/clipboard"
 import {
 	PbBulletList,
 	PbCardContent,
-	PbCardGlow,
 	PbCardHeader,
 	PbCardLayer,
 	PbMetricList,
@@ -88,12 +87,8 @@ function SectionCard({
 	keyPrefix: string
 	onUnknownToken: (token: string) => React.ReactNode
 }) {
-	const glow = glowKey === "red" ? ui.glow.red : glowKey === "green" ? ui.glow.green : null
-
 	return (
-		<PbTabPanel className="relative flex h-full flex-col overflow-hidden bg-transparent">
-			{glow ? <PbCardGlow className={glow} /> : null}
-
+		<PbTabPanel glow={glowKey} className="flex h-full flex-col bg-transparent">
 			<PbCardLayer className="flex h-full flex-col">
 				<div className={cn("flex items-center", ui.gap.sm)}>
 					{icon ? (
@@ -463,12 +458,6 @@ export default function TabJourneys() {
 
 						{analysis_panel ? (
 							<AnalysisStepThreeBlock panel={analysis_panel} onUnknownToken={warn_unknown_metric} onOpenSnippet={() => set_is_r_modal_open(true)} />
-						) : null}
-
-						{AnalysisCopy.footer ? (
-							<p className={cn("text-muted-foreground", ui.typography.caption)}>
-								<Renderer.Copy.InlineText text={AnalysisCopy.footer} keyPrefix={`${journeys_key_prefix}-analysis-footer`} onUnknownToken={warn_unknown_metric} />
-							</p>
 						) : null}
 					</PbCardContent>
 				</PbTabCard>

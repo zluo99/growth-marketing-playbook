@@ -17,7 +17,7 @@ import { clamp_value, cn, stableKeyFromParts, stableKeyFromText } from "@/lib/ut
 import { Renderer } from "@/features/playbook/components/ui/renderer"
 import { CodeTextarea } from "@/features/playbook/components/ui/code"
 import { PlaybookStorage, read_preference, write_preference } from "@/features/playbook/components/context/preferences"
-import { PbBulletList, PbCardContent, PbCardGlow, PbCardHeader, PbCardLayer, PbNumberBadge, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell, useLazyGate } from "@/features/playbook/components/ui/ui"
+import { PbBulletList, PbCardContent, PbCardHeader, PbCardLayer, PbNumberBadge, PbReveal, PbSubtleText, PbTabCard, PbTabPanel, PbTabShell, useLazyGate } from "@/features/playbook/components/ui/ui"
 import { LoaderCardSkeleton } from "@/features/playbook/components/ui/loader"
 import { DefinitionsCopy } from "@/features/playbook/copy/reports-sql-definitions"
 import { FunnelCopy } from "@/features/playbook/copy/reports-sql-funnel"
@@ -441,19 +441,7 @@ function FunnelMetricPills({ metrics }: { metrics?: readonly unknown[] }) {
 	return <>{ids.map(render_metric_pill)}</>
 }
 
-function FunnelNotePills({ alias, items }: { alias: string; items: readonly unknown[] }) {
-	const ids = React.useMemo(() => as_metric_ids(items), [items])
-	if (!ids.length) return null
-
-	return (
-		<div className={cn(ui.surface.structure.border, ui.spacing.panelSm, ui.radius.base, "bg-muted/10")}>
-			<div className={cn("text-foreground/85 font-medium", ui.typography.caption)}>{alias}</div>
-			<div className={cn(ui.margin.topSm, "flex min-w-0 flex-wrap", ui.gap.sm)}>{ids.map(render_metric_pill)}</div>
-		</div>
-	)
-}
-
-function FunnelStagePanel({ title, body, metrics, extra, stage_n }: { title: string; body: React.ReactNode; metrics?: React.ReactNode; extra?: React.ReactNode; stage_n: 1 | 2 | 3 | 4 | 5 }) {
+function FunnelStagePanel({ title, body, metrics, stage_n }: { title: string; body: React.ReactNode; metrics?: React.ReactNode; stage_n: 1 | 2 | 3 | 4 | 5 }) {
 	return (
 		<PbTabPanel size="sm" className={cn("flex h-full min-w-0 flex-col overflow-hidden", ui.surface.structure.border, "hover:border-[color:var(--border-hover)]")}>
 			<div className={cn("flex items-center", ui.gap.sm)}>
@@ -472,7 +460,6 @@ function FunnelStagePanel({ title, body, metrics, extra, stage_n }: { title: str
 				</div>
 			) : null}
 
-			{extra ? <div className={ui.margin.topSm}>{extra}</div> : null}
 			<div className={cn(ui.margin.topSm, "min-h-0 flex-1 leading-snug text-muted-foreground", ui.typography.caption)}>{body}</div>
 		</PbTabPanel>
 	)
@@ -489,7 +476,6 @@ function TypicalFunnel() {
 						stage_n={(idx + 1) as 1 | 2 | 3 | 4 | 5}
 						body={<StageBody body={s.body} />}
 						metrics={<FunnelMetricPills metrics={s.common_metrics as readonly unknown[] | undefined} />}
-						extra={s.note ? <FunnelNotePills alias={s.note.title} items={s.note.items as readonly unknown[]} /> : null}
 					/>
 				))}
 			</div>
@@ -786,7 +772,6 @@ export default function TabReportsSql() {
 		<PbTabShell tabId="reports-sql" alias={tab.alias} description={tab.description} keyPrefix={`${reports_sql_key_prefix}-intro`}>
 				<PbReveal enabled={reveal_cards} className="w-full" data-search-target={SearchTargets.reportsSql.funnelCard}>
 					<PbTabCard hover>
-						<PbCardGlow className={ui.glow.yellow} />
 						<PbCardLayer>
 							<PbCardHeader
 								title={<PbTitleWithIcon icon={icon_for(FunnelCopy.icon)} text={<Renderer.Copy.InlineText text={FunnelCopy.title} keyPrefix={`${reports_sql_key_prefix}-funnel-title`} />} />}
@@ -863,7 +848,8 @@ export default function TabReportsSql() {
 
 				<div ref={playground_root_ref} data-slot="sql-playground">
 					<PbReveal enabled={reveal_cards} className="w-full" data-search-target={SearchTargets.reportsSql.pgCard}>
-						<PbTabCard hover>
+						<PbTabCard hover glow="green">
+							<PbCardLayer>
 							<PbCardHeader
 								className="flex flex-col md:flex-row md:items-start md:justify-between"
 								title={<PbTitleWithIcon icon={icon_for(PgCopy.icon)} text={<Renderer.Copy.InlineText text={PgCopy.title} keyPrefix={`${reports_sql_key_prefix}-pg-title`} />} />}
@@ -1118,6 +1104,7 @@ export default function TabReportsSql() {
 									))}
 								</div>
 							</PbCardContent>
+							</PbCardLayer>
 						</PbTabCard>
 					</PbReveal>
 				</div>

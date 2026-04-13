@@ -19,7 +19,7 @@ type GuideCard = {
 
 export const GuideCopy: GuideCard = {
 	title: "Execution flow",
-	body: "Move in order so each step inherits governed inputs.",
+	body: "Move in order so each layer inherits governed inputs.",
 
 	panels: [
 		{
@@ -36,7 +36,7 @@ export const GuideCopy: GuideCard = {
 		{
 			id: "2",
 			title: "Decision cadence",
-			body: "Reporting explains definitions, trends, and reconciliation. Decisions name the move, magnitude, and owner. If you cannot state the move in one sentence with `arr`, `roas`, and `cac`, it is not decision-ready.",
+			body: "Reporting explains definitions, trends, and reconciliation. Decisions name the move, size, and owner. If you cannot say the move in one sentence with `arr`, `roas`, and `cac`, it is not decision-ready.",
 		},
 	],
 

@@ -25,7 +25,6 @@ type AnalysisCard = {
 	panels: readonly AnalysisPanel[]
 	diagram: AnalysisDiagram
 	rSnippet: string
-	footer: string
 	ui: {
 		analysisItemLabel: string
 		snippetTitle: string
@@ -41,7 +40,7 @@ type AnalysisCard = {
 
 export const AnalysisCopy: AnalysisCard = {
 	title: "Journey analysis",
-	body: "Build `mta` in sequence: stabilize `object_model`, stabilize `touch_model`, then analyze one `object_touch_model` base.",
+	body: "Build `mta` in order: stabilize `object_model`, stabilize `touch_model`, then analyze one governed `object_touch_model` base.",
 
 	panels: [
 		{
@@ -49,7 +48,7 @@ export const AnalysisCopy: AnalysisCard = {
 			title: "Unify objects",
 			body: "Set the identity layer first.",
 			bullets: [
-				"Anchor the `identity_graph` on `prospect_id`, then map one-to-many `object_id` records (lead, opportunity, deal).",
+				"Anchor the `identity_graph` on `prospect_id`, then map one-to-many `object_id` records such as lead, opportunity, and deal.",
 				"Standardize `source` and `utms` once in `object_model` so downstream cuts stay consistent.",
 			],
 		},
@@ -223,8 +222,6 @@ touch_cvr
 source_l2_cvr
 removal_effect
 `.trim(),
-
-	footer: "If `object_model` or `touch_model` is unstable, pause. Stable inputs are required before comparing `mta` models.",
 	ui: {
 		analysisItemLabel: "Step {n}",
 		snippetTitle: "R snippet",

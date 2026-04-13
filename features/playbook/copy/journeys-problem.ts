@@ -18,8 +18,8 @@ type ProblemCard = {
 }
 
 export const ProblemCopy: ProblemCard = {
-	title: "Problem statement",
-	body: "Teams need a reliable way to connect spend to `arr` and `deals`, not debate attribution noise.",
+	title: "Problem",
+	body: "Teams need a reliable way to connect spend to `arr` and `deals`, not argue over attribution noise.",
 
 	sections: [
 		{
@@ -39,7 +39,7 @@ export const ProblemCopy: ProblemCard = {
 			icon: "rocket",
 			glow: "green",
 			bullets: [
-				"Build unified `mta` in order: `object_model`, then `touch_model`, then `object_touch_model`.",
+				"Build `mta` in order: `object_model`, then `touch_model`, then `object_touch_model`.",
 				"Standardize `source` and `utms` once so first-touch, last-touch, decay, and `markov_model` run on identical inputs.",
 				"Use one journey base to rank leverage with `removal_effect` and reallocate toward `arr` and `deals`.",
 			],

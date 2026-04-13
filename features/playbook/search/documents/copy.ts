@@ -78,7 +78,6 @@ push({
 	badge: "Tenets",
 	meta: TabById.overview.alias,
 	scrollTarget: SearchTargets.overview.tenetsCard,
-	extra: [TenetsCopy.footer],
 	keywords: ["overview", "tenets", "governance"],
 	priority: 20,
 })
@@ -132,7 +131,6 @@ push({
 	badge: "AI Analyst",
 	meta: "AI setup",
 	scrollTarget: SearchTargets.overview.aiAnalystCard,
-	extra: [OverviewAICopy.footer],
 	keywords: ["overview", "ai", "analyst", "dbt", "skill.md", "metrics.yml", "models.yml", "semantic layer"],
 	priority: 20,
 })
@@ -196,7 +194,6 @@ push({
 	badge: "Analysis",
 	meta: "Journey analysis",
 	scrollTarget: SearchTargets.journeys.analysisCard,
-	extra: [AnalysisCopy.footer],
 	searchExtras: AnalysisCopy.panels.map((panel) => panel.title),
 	keywords: ["journeys", "analysis", "mta"],
 })
@@ -256,7 +253,7 @@ push({
 	description: SourcesCopy.body,
 	tabId: "plays",
 	badge: "Sources",
-	meta: SourcesCopy.footer,
+	meta: TabById.plays.alias,
 	scrollTarget: SearchTargets.plays.sourcesCard,
 	extra: [SourcesCopy.downloadLabel],
 	keywords: ["plays", "sources", "taxonomy", "utm"],
@@ -320,7 +317,6 @@ FunnelCopy.panels.forEach((panel) =>
 		tabId: "reports-sql",
 		badge: "Funnel stage",
 		scrollTarget: SearchTargets.reportsSql.funnelCard,
-		extra: panel.note ? panel.note.items : [],
 		breadcrumbs: [FunnelCopy.title],
 	})
 )

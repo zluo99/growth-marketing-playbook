@@ -19,7 +19,6 @@ import { useCopyToClipboard } from "@/features/playbook/components/ui/clipboard"
 import {
 	PbBulletList,
 	PbCardContent,
-	PbCardGlow,
 	PbCardHeader,
 	PbCardLayer,
 	PbNumberBadge,
@@ -66,21 +65,20 @@ function OverviewCard({
 	title,
 	description,
 	children,
-	glowClassName,
+	glow,
 }: {
 	id: string
 	title: string
 	description: React.ReactNode
 	children: React.ReactNode
-	glowClassName?: string
+	glow?: React.ComponentProps<typeof PbTabCard>["glow"]
 }) {
 	const rendered_title = <Renderer.Copy.InlineText text={title} keyPrefix={`${overview_key_prefix}-card-${id}-title`} />
 	const rendered_description =
 		typeof description === "string" ? <Renderer.Copy.InlineText text={description} keyPrefix={`${overview_key_prefix}-card-${id}-desc`} /> : description
 
 	return (
-		<PbTabCard hover shadow className="w-full">
-			{glowClassName ? <PbCardGlow className={glowClassName} /> : null}
+		<PbTabCard hover shadow className="w-full" glow={glow}>
 			<PbCardLayer>
 				<PbCardHeader
 					title={<span className={ui.typography.title.lg}>{rendered_title}</span>}
@@ -159,6 +157,7 @@ function AiStep({ panel }: { panel: OverviewAiPanel }) {
 				<PbNumberBadge
 					number={`Step ${panel.id}`}
 					className="min-w-[72px] px-2.5"
+					tone="ai"
 					ariaLabel={OverviewAICopy.ui.stepLabel.replace("{n}", panel.id)}
 				/>
 			</div>
@@ -225,8 +224,6 @@ export default function TabOverview() {
 					includeSeparator
 					keyPrefix={`${overview_key_prefix}-intro`}
 					className="whitespace-normal break-words"
-					titleClassName={cn("text-foreground")}
-					subtitleClassName={cn("text-muted-foreground")}
 				/>
 			</span>
 		</div>
@@ -236,23 +233,19 @@ export default function TabOverview() {
 	return (
 		<PbTabShell tabId="overview" alias={tab.alias} description={description} keyPrefix={`${overview_key_prefix}-intro`}>
 			<PbReveal enabled={reveal_cards} className="w-full" data-search-target={SearchTargets.overview.tenetsCard}>
-				<OverviewCard id={TenetsCopy.id} title={TenetsCopy.title} description={TenetsCopy.body} glowClassName={ui.glow.orange}>
+				<OverviewCard id={TenetsCopy.id} title={TenetsCopy.title} description={TenetsCopy.body} glow="indigo">
 					<div className={cn("flex flex-col", ui.gap.sm)}>
 						<div className={cn("grid items-stretch md:grid-cols-3", ui.gap.sm)}>
 							{TenetsCopy.panels.map((t) => (
 								<Kicker key={t.id} id={t.id} icon={tenet_icon(t.icon)} title={t.title} description={t.body} spendIds={t.spend_ids} />
 							))}
 						</div>
-
-						<p className={cn("text-muted-foreground", ui.typography.caption)}>
-							{render_inline_text(TenetsCopy.footer, `${overview_key_prefix}-tenets-footer`)}
-						</p>
 					</div>
 				</OverviewCard>
 			</PbReveal>
 
 			<PbReveal enabled={reveal_cards} className="w-full" data-search-target={SearchTargets.overview.guideCard}>
-				<OverviewCard id="guide" title={GuideCopy.title} description={GuideCopy.body}>
+				<OverviewCard id="guide" title={GuideCopy.title} description={GuideCopy.body} glow="orange">
 					<div className={cn("flex flex-col", ui.gap.sm)}>
 						<div className={cn("grid items-stretch md:grid-cols-2", ui.gap.sm)}>
 							<PbTabPanel>
@@ -285,7 +278,7 @@ export default function TabOverview() {
 			</PbReveal>
 
 			<PbReveal enabled={reveal_cards} className="w-full" data-search-target={SearchTargets.overview.aiAnalystCard}>
-				<OverviewCard id={OverviewAICopy.id} title={OverviewAICopy.title} description={OverviewAICopy.body} glowClassName={ui.glow.rainbow}>
+				<OverviewCard id={OverviewAICopy.id} title={OverviewAICopy.title} description={OverviewAICopy.body} glow="ai">
 					<div className={cn("flex flex-col", ui.gap.sm)}>
 						<div className={cn("grid items-stretch md:grid-cols-3", ui.gap.sm)}>
 							{OverviewAICopy.panels.map((panel) => (
@@ -295,7 +288,7 @@ export default function TabOverview() {
 
 						<Button
 							type="button"
-							variant="blueOutline"
+							variant="aiOutline"
 							size="lg"
 							className="w-full"
 							aria-label={OverviewAICopy.ui.openDbtFilesButtonAria}
@@ -306,10 +299,6 @@ export default function TabOverview() {
 								keyPrefix={`${overview_key_prefix}-ai-open-dbt-files-button`}
 							/>
 						</Button>
-
-						<p className={cn("text-muted-foreground", ui.typography.caption)}>
-							{render_inline_text(OverviewAICopy.footer, `${overview_key_prefix}-ai-footer`)}
-						</p>
 					</div>
 				</OverviewCard>
 			</PbReveal>
@@ -330,11 +319,6 @@ export default function TabOverview() {
 								<div className={cn("text-foreground", ui.typography.title.md)}>
 									<Renderer.Copy.InlineText text={OverviewAICopy.ui.overlayFilesLabel} keyPrefix={`${overview_key_prefix}-dbt-files-title`} />
 								</div>
-								{OverviewAICopy.ui.overlayFilesHelp ? (
-									<p className={cn(ui.margin.topXs, "text-muted-foreground", ui.typography.caption)}>
-										{render_inline_text(OverviewAICopy.ui.overlayFilesHelp, `${overview_key_prefix}-dbt-files-help`)}
-									</p>
-								) : null}
 							</div>
 						</div>
 
