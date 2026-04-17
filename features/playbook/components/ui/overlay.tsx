@@ -145,6 +145,13 @@ export function PbOverlay({
 }: PbOverlayProps) {
 	const reduce_motion = useReducedMotionBool()
 	const compact_viewport_scroll_fallback_class = "[@media(max-height:48rem)]:overflow-y-auto"
+	const mobile_safe_area_padding_class = cn(
+		"items-start overflow-y-auto overflow-x-hidden overscroll-contain px-3 sm:px-6 md:items-center",
+		"pt-[max(0.75rem,env(safe-area-inset-top))] sm:pt-[max(1.5rem,env(safe-area-inset-top))]",
+		"pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-[max(1.5rem,env(safe-area-inset-bottom))]",
+		"pl-[max(0.75rem,env(safe-area-inset-left))] sm:pl-[max(1.5rem,env(safe-area-inset-left))]",
+		"pr-[max(0.75rem,env(safe-area-inset-right))] sm:pr-[max(1.5rem,env(safe-area-inset-right))]"
+	)
 	const overlay_root_ref = React.useRef<HTMLDivElement | null>(null)
 	const dialog_ref = React.useRef<HTMLDivElement | null>(null)
 	const close_button_ref = React.useRef<HTMLButtonElement | null>(null)
@@ -251,7 +258,7 @@ export function PbOverlay({
 				<motion.div
 					key="pb-overlay-root"
 					ref={overlay_root_ref}
-					className={ui.overlay.container}
+					className={cn(ui.overlay.container, mobile_safe_area_padding_class)}
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
@@ -271,7 +278,7 @@ export function PbOverlay({
 					<motion.div
 						ref={dialog_ref}
 						className={cn(
-							"relative z-10 flex h-full min-h-0 w-full max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-3rem)] md:h-auto md:max-h-[88dvh]",
+							"relative z-10 flex h-full min-h-0 w-full max-h-full md:h-auto md:max-h-[88dvh]",
 							maxWidthClassName ?? ui.overlay.maxWidth
 						)}
 						tabIndex={-1}

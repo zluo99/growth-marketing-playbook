@@ -425,7 +425,7 @@ const control = {
 } as const
 
 const overlay = {
-	container: "fixed inset-0 z-[2147483646] flex items-stretch justify-center overflow-hidden p-3 sm:p-6 md:items-center",
+	container: "fixed inset-0 z-[2147483646] flex justify-center",
 	maxWidth: "max-w-[var(--app-max-w)]",
 	backdrop: "bg-background/55 backdrop-blur-sm",
 	panel: join_classes(
@@ -777,44 +777,67 @@ const hierarchy = {
 	header:
 		"sticky top-0 z-10 grid items-center gap-3 border-b border-border/70 px-3 py-2.5 md:grid-cols-[minmax(0,1fr)_minmax(260px,0.9fr)] shadow-[inset_0_-1px_0_0_color-mix(in_oklch,var(--border)_70%,transparent)]",
 	trail: join_classes("flex min-w-0 flex-wrap items-center gap-1.5", typography.caption),
-	body: "space-y-0.5 p-1 sm:p-1.5",
+	body: "space-y-px p-1",
 	fieldRow: "w-full",
 	groupRow: join_classes(
-		"group flex w-full items-center gap-3 text-left",
+		"group flex w-full items-center gap-2.5 text-left",
 		radius.control,
+		surface.structure.border,
 		component.outline.base,
 		component.outline.hover,
 		motion.duration,
 		surface.state.focus.ring,
 		search.rowBg,
 		surface.state.hover.bg,
+		surface.state.hover.border,
 		surface.state.hover.shadowSm,
 		"min-h-9 px-2 py-1"
 	),
-	groupRowOpen: join_classes(component.outline.activeStatic, "bg-[color:color-mix(in_oklch,var(--surface-bg-hover)_20%,var(--surface-bg))]"),
-	symbol: join_classes("font-mono text-sm leading-none", text_state.default.fg),
-	groupToggle: join_classes("inline-flex h-5 w-5 shrink-0 items-center justify-center", icon_interactive_all),
+	groupRowOpen: join_classes(
+		component.outline.activeStatic,
+		"bg-[color:color-mix(in_oklch,var(--surface-bg-hover)_24%,var(--surface-bg))]",
+		"[box-shadow:var(--shadow-sm)]"
+	),
+	disclosureActionButton: join_classes(
+		"group inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full p-0",
+		surface.state.focus.ring
+	),
+	disclosureButton: join_classes(
+		"inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[color:var(--border)] bg-background text-muted-foreground",
+		"transition-[border-color,background-color,color,box-shadow,opacity]",
+		"group-hover:border-[color:var(--border-hover)] group-hover:bg-background group-hover:text-foreground",
+		"group-focus-visible:border-[color:var(--border-hover)] group-focus-visible:bg-background group-focus-visible:text-foreground"
+	),
+	disclosureButtonOpen: "border-[color:var(--border-hover)] bg-background text-foreground",
+	disclosureGlyph: "relative block h-2.5 w-2.5",
+	disclosureBar: "absolute left-1/2 top-1/2 h-px w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current",
+	disclosureBarVertical: "absolute left-1/2 top-1/2 h-2.5 w-px -translate-x-1/2 -translate-y-1/2 rounded-full bg-current",
 	valueWrap: "min-h-4 min-w-0 flex items-center",
 	groupValueWrap: "min-w-0 flex-1",
-	value: join_classes(typography.body, "min-w-0 break-words font-medium leading-6 text-foreground"),
-	count: join_classes("flex h-5 w-9 shrink-0 items-center justify-end tabular-nums text-muted-foreground", typography.caption),
-	children: "ml-1.5 border-l border-dashed border-border/55 pl-2",
-	sectionHeader: "pb-0 pt-[1px] pl-2 pr-1.5",
-	sectionHeaderDeep: "pb-0 pt-[1px] pl-3.5 pr-1.5",
-	sectionLabel: join_classes(typography.caption, "inline-flex min-w-0 items-center gap-1.5 leading-none text-muted-foreground/80"),
-	sectionActionButton: "shrink-0 rounded-full",
+	value: join_classes(typography.body, "min-w-0 break-words font-medium leading-5 text-foreground"),
+	count: join_classes(
+		"inline-flex h-5 min-w-7 shrink-0 items-center justify-end tabular-nums text-muted-foreground",
+		motion.duration,
+		"group-hover:text-foreground",
+		"group-focus-visible:text-foreground",
+		typography.caption
+	),
+	children: "ml-1 border-l border-dashed border-border/45 pl-1.5",
+	sectionHeader: "py-0.5 pl-2 pr-1",
+	sectionHeaderDeep: "py-0.5 pl-2 pr-1",
+	sectionLabel: join_classes(typography.caption, "inline-flex min-w-0 items-center gap-1.5 font-medium leading-none text-muted-foreground/80"),
 	leafRowCompact: join_classes(
 		radius.control,
 		surface.structure.border,
 		surface.structure.shadowNone,
-		"grid items-center gap-2 py-1.5 pr-2 pl-6 md:grid-cols-[minmax(240px,0.95fr)_minmax(0,1fr)] md:pl-8.5",
+		"grid items-center gap-2 py-1 pr-2 pl-5 md:grid-cols-[minmax(240px,0.95fr)_minmax(0,1fr)] md:pl-7",
 		search.rowBg
 	),
 	leafRowText: join_classes(
 		radius.control,
 		surface.structure.border,
 		surface.structure.shadowNone,
-		"grid gap-2 py-2 pr-3 pl-6 md:grid-cols-[minmax(200px,0.72fr)_minmax(0,1.28fr)] md:pl-8.5",
+		"grid gap-2 py-1.5 pr-2.5 pl-5 md:grid-cols-[minmax(200px,0.72fr)_minmax(0,1.28fr)] md:pl-7",
 		search.rowBg
 	),
 	leafValueWrapCompact: "min-h-4 min-w-0 flex items-center",
@@ -841,10 +864,13 @@ const hierarchy = {
 const intro = {
 	overlayPadX: "px-6 sm:px-10 lg:px-16",
 	overlayMaxWidth: "max-w-4xl",
-	overviewTitleHero: "text-5xl font-semibold leading-[1.02] tracking-[-0.035em] sm:text-6xl lg:text-[4.75rem]",
-	overviewTitleDocked: "text-2xl font-semibold leading-[1.08] tracking-[-0.03em] sm:text-3xl",
-	overviewSubtitleHero: "text-lg font-medium leading-8 sm:text-xl",
-	overviewSubtitleDocked: "text-2xl font-medium leading-[1.08] tracking-[-0.03em] sm:text-3xl",
+	overviewTitleHero: "text-[clamp(2.75rem,9vw,4.5rem)] font-semibold leading-[0.98] tracking-[-0.04em]",
+	overviewTitleDocked: "text-xl font-semibold leading-[1.05] tracking-[-0.03em] sm:text-3xl",
+	overviewSubtitleHero: "text-[0.98rem] font-medium leading-6 tracking-[-0.012em] sm:text-[1.2rem] sm:leading-7",
+	overviewSubtitleDocked: "text-[1rem] font-medium leading-6 tracking-[-0.012em] sm:text-[1.3rem] sm:leading-7",
+	overviewInlineSupportingCopy: "text-xl font-medium leading-[1.05] tracking-[-0.03em] sm:text-3xl sm:leading-[1.05]",
+	overviewScrollHint: "text-sm font-medium leading-5 tracking-[0.01em] sm:text-base sm:leading-6",
+	overviewTypingCursor: "absolute left-full top-0 ml-[0.08em] inline-block select-none",
 	overviewTitleColor: "text-[color:color-mix(in_oklch,var(--accent-indigo-fg)_88%,var(--surface-bg)_12%)]",
 } as const
 

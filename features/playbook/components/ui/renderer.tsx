@@ -15,14 +15,12 @@ import { cn } from "@/lib/utils"
 import { MetricDefinitions, type MetricDefinition, type MetricFormula, type MetricId, type MetricTypeL1, type MetricTypeL2 } from "@/features/playbook/definitions/metrics"
 import { SpendById, SpendIds, type SpendId } from "@/features/playbook/definitions/spend"
 import { TabById, type TabId } from "@/features/playbook/definitions/tabs"
-import { TermDefinitions, TermTokens, getTermByToken } from "@/features/playbook/definitions/terms"
+import { getTermByToken } from "@/features/playbook/definitions/terms"
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
 /* -------------------------------------------------------------------------- */
 
-type TermDefinition = (typeof TermDefinitions)[number]
-type TermId = TermDefinition["id"]
 type MetricDef = MetricDefinition<MetricId>
 
 type InlineMetricTextProps = {
@@ -70,7 +68,7 @@ const tooltip_body_narrow = cn("max-w-[320px]", tooltip_body)
 const tooltip_body_wide = cn("max-w-[340px]", tooltip_body)
 const help_text_class = cn(ui.copy.helpUnderline, ui.surface.state.focus.ring)
 
-const metric_ops = new Set(["(", ")", "×", "/", "+", "-", "-"])
+const metric_ops = new Set(["(", ")", "×", "/", "+", "-"])
 
 const metric_alias_to_id = Object.entries(MetricDefinitions).reduce<Record<string, MetricId>>((acc, [id, d]) => {
 	acc[d.alias.trim().toLowerCase()] = id as MetricId
@@ -197,11 +195,6 @@ const spend_style: Record<SpendId, { pill: string }> = {
 /* Helpers                                                                    */
 /* -------------------------------------------------------------------------- */
 
-const term_by_id = Object.fromEntries(TermDefinitions.map((t) => [t.id, t])) as Record<TermId, TermDefinition>
-const escape_regex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-const term_regex = TermTokens.length ? new RegExp(`(${TermTokens.map(escape_regex).join("|")})`, "gi") : null
-const is_term_boundary = (ch?: string) => !ch || /[^A-Za-z0-9]/.test(ch)
-
 /* -------------------------------------------------------------------------- */
 /* Components                                                                 */
 /* -------------------------------------------------------------------------- */
@@ -258,86 +251,11 @@ function HelpText({
 	)
 }
 
-/* -------------------------------------------------------------------------- */
-/* Custom: Terms                                                              */
-/* -------------------------------------------------------------------------- */
-
 function TermInline({ label, children }: { label: string; children?: React.ReactNode }) {
 	const def = getTermByToken(label)
 	const content = children ?? (def ? def.alias : label)
 	return def ? <HelpText label={content} description={def.description} /> : <>{content}</>
 }
-
-function render_inline_terms(text: string, key_prefix = "term") {
-	if (!term_regex || !text) return text
-
-	const parts: React.ReactNode[] = []
-	let cursor = 0
-	term_regex.lastIndex = 0
-
-	let match: RegExpExecArray | null
-	while ((match = term_regex.exec(text))) {
-		const start = match.index
-		const end = term_regex.lastIndex
-		const raw = match[0]
-
-		if (start > cursor) parts.push(text.slice(cursor, start))
-
-		const prev = text[start - 1]
-		const next = text[end]
-		const def = is_term_boundary(prev) && is_term_boundary(next) ? getTermByToken(raw) : null
-
-		parts.push(def ? <TermInline key={`${key_prefix}-${start}-${raw}`} label={raw} /> : raw)
-		cursor = end
-	}
-
-	if (cursor < text.length) parts.push(text.slice(cursor))
-	return parts
-}
-
-function InlineTermText({ text, keyPrefix }: { text: string; keyPrefix?: string }) {
-	return <>{render_inline_terms(text, keyPrefix)}</>
-}
-
-function TermPill({ id, className, fadeMs }: { id: TermId; className?: string; fadeMs?: number }) {
-	const def = term_by_id[id]
-	if (!def) return null
-
-	return (
-		<Tooltip>
-			<TooltipTrigger asChild>
-				<span
-					tabIndex={0}
-					className={cn(
-						"cursor-help inline-flex items-center whitespace-nowrap select-text",
-						ui.control.base,
-						"bg-muted/40 text-muted-foreground",
-						ui.motion.duration,
-						ui.surface.state.focus.ring,
-						className
-					)}
-				>
-					{def.alias}
-				</span>
-			</TooltipTrigger>
-			<TooltipContent side="top" align="start" fadeMs={fadeMs} className={tooltip_body_narrow}>
-				{def.description}
-			</TooltipContent>
-		</Tooltip>
-	)
-}
-
-function TermStrip({ ids, title, className }: { ids: readonly TermId[]; title?: string; className?: string }) {
-	if (!ids.length) return null
-	return (
-		<div className={cn("flex flex-wrap items-center justify-between", ui.surface.structure.border, "bg-muted/20", ui.spacing.controlX, ui.spacing.pillY, ui.radius.base, className)}>
-			{title ? <span className={cn(ui.typography.caption, "text-muted-foreground")}>{title}</span> : null}
-			<div className={cn("flex flex-wrap items-center", ui.gap.sm)}>{ids.map((id) => <TermPill key={id} id={id} />)}</div>
-		</div>
-	)
-}
-
-const Terms = { Pill: TermPill, Strip: TermStrip, InlineText: InlineTermText, renderInlineText: render_inline_terms } as const
 
 /* -------------------------------------------------------------------------- */
 /* Custom: Tabs                                                               */
@@ -478,21 +396,6 @@ function MetricFormulaView({ formula }: { formula?: MetricFormula }) {
 	return null
 }
 
-const MetricTooltipBody = React.memo(function MetricTooltipBody({ id, description, suffix }: { id: MetricId; description?: string | null; suffix?: string }) {
-	const d = MetricDefinitions[id] as MetricDefinition<MetricId>
-	const text = (description ?? d.description).trim()
-	const extra = suffix?.trim()
-	return (
-		<div>
-			<div>
-				{text}
-				{extra ? ` ${extra}` : ""}
-			</div>
-			<MetricFormulaView formula={d.formula} />
-		</div>
-	)
-})
-
 /* -------------------------------------------------------------------------- */
 /* Components                                                                 */
 /* -------------------------------------------------------------------------- */
@@ -564,9 +467,6 @@ function MetricPillBase({
 	)
 }
 
-const MetricPill = React.memo(function MetricPill(p: MetricPillProps) {
-	return <MetricPillBase {...p} />
-})
 const MetricAttributePill = React.memo(function MetricAttributePill(p: MetricPillProps) {
 	return <MetricPillBase {...p} guard={(d) => d.type_l1 === "attribute"} />
 })
@@ -666,8 +566,6 @@ function render_inline_metric_text({ text, keyPrefix = "metric", onUnknownToken,
 		.map((part, i) => render_part(part, `${keyPrefix}-${i}-${part}`))
 }
 
-const InlineMetricText = (props: InlineMetricTextProps) => <>{render_inline_metric_text(props)}</>
-
 function render_inline_copy(text: string, opts: InlineRenderOptions = {}) {
 	const { keyPrefix = "copy", onUnknownToken, renderText } = opts
 	return render_inline_metric_text({
@@ -744,17 +642,12 @@ function InlineMarkdown({ text, keyPrefix, onUnknownToken }: { text: string; key
 const Formula = { View: MetricFormulaView }
 
 const Metrics = {
-	Pill: MetricPill,
 	AttributePill: MetricAttributePill,
 	MeasurePill: MetricMeasurePill,
-	InlineText: InlineMetricText,
-	renderInlineText: (text: string, opts?: Omit<InlineMetricTextProps, "text">) => render_inline_metric_text({ text, ...opts }),
 	Legend: MetricLegend,
-	TooltipBody: MetricTooltipBody,
-	defs: { metrics: MetricDefinitions },
 } as const
 
-const Spend = { Pill: SpendPill, defs: SpendById } as const
+const Spend = { Pill: SpendPill } as const
 const Copy = {
 	InlineText: InlineCopy,
 	InlineMarkdown,
@@ -762,14 +655,9 @@ const Copy = {
 	renderInlineMarkdown: render_inline_markdown,
 } as const
 const Tabs = {
-	Chip: TabChip,
 	InlineText: InlineTabText,
-	renderInlineText: (text: string, opts?: Omit<InlineTabTextProps, "text">) => render_inline_tab_text({ text, ...opts }),
-	resolveToken: resolve_tab_token,
-	defs: { tabs: TabById },
 } as const
 const Help = { Text: HelpText } as const
 
-export const Renderer = { Provider: TooltipProviderAutoClose, Terms, Copy, Tabs, Metrics, Spend, Help, Formula } as const
-export { Terms, MetricFormulaView }
+export const Renderer = { Provider: TooltipProviderAutoClose, Copy, Tabs, Metrics, Spend, Help, Formula } as const
 

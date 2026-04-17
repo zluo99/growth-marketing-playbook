@@ -193,13 +193,13 @@ function pick_spend_row(rng: () => number): { source_l1: SourceL1; source_l2: So
 
 function init_tables(db: SqlJsDatabase, opts: { dropExisting: boolean }) {
 	if (opts.dropExisting) {
-		db.run(`DROP TABLE IF EXISTS funnel_uncohorted;`)
-		db.run(`DROP TABLE IF EXISTS funnel_cohorted;`)
-		db.run(`DROP TABLE IF EXISTS funnel_spend;`)
+		db.run(`DROP TABLE IF EXISTS fct_funnel_events;`)
+		db.run(`DROP TABLE IF EXISTS int_lead_cohort;`)
+		db.run(`DROP TABLE IF EXISTS fct_marketing_spend;`)
 	}
 
 	db.run(`
-		CREATE TABLE IF NOT EXISTS funnel_uncohorted (
+		CREATE TABLE IF NOT EXISTS fct_funnel_events (
 			object_created_date TEXT
 			, object_id TEXT
 			, object_type TEXT
@@ -213,7 +213,7 @@ function init_tables(db: SqlJsDatabase, opts: { dropExisting: boolean }) {
 	`)
 
 	db.run(`
-		CREATE TABLE IF NOT EXISTS funnel_cohorted (
+		CREATE TABLE IF NOT EXISTS int_lead_cohort (
 			lead_created_date TEXT
 			, lead_id TEXT
 			, source_l1 TEXT
@@ -228,7 +228,7 @@ function init_tables(db: SqlJsDatabase, opts: { dropExisting: boolean }) {
 	`)
 
 	db.run(`
-		CREATE TABLE IF NOT EXISTS funnel_spend (
+		CREATE TABLE IF NOT EXISTS fct_marketing_spend (
 			spend_date TEXT
 			, spend_type TEXT
 			, source_l1 TEXT
@@ -257,7 +257,7 @@ function with_tx(db: SqlJsDatabase, fn: () => void) {
 
 const sql_statements = Object.freeze({
 	insert_uncohorted: `
-		INSERT INTO funnel_uncohorted (
+		INSERT INTO fct_funnel_events (
 			object_created_date
 			, object_id
 			, object_type
@@ -270,7 +270,7 @@ const sql_statements = Object.freeze({
 		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 	`
 	, insert_cohorted: `
-		INSERT INTO funnel_cohorted (
+		INSERT INTO int_lead_cohort (
 			lead_created_date
 			, lead_id
 			, source_l1
@@ -284,7 +284,7 @@ const sql_statements = Object.freeze({
 		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 	`
 	, insert_spend: `
-		INSERT INTO funnel_spend (
+		INSERT INTO fct_marketing_spend (
 			spend_date
 			, spend_type
 			, source_l1
@@ -295,11 +295,11 @@ const sql_statements = Object.freeze({
 		) VALUES (?, ?, ?, ?, ?, ?, ?);
 	`
 	, indexes: Object.freeze([
-		`CREATE INDEX IF NOT EXISTS idx_fu_created ON funnel_uncohorted(object_created_date);`
-		, `CREATE INDEX IF NOT EXISTS idx_fu_sources ON funnel_uncohorted(source_l1, source_l2, source_l3);`
-		, `CREATE INDEX IF NOT EXISTS idx_fc_created ON funnel_cohorted(lead_created_date);`
-		, `CREATE INDEX IF NOT EXISTS idx_fs_spend ON funnel_spend(spend_date);`
-		, `CREATE INDEX IF NOT EXISTS idx_fs_sources ON funnel_spend(source_l1, source_l2, source_l3);`
+		`CREATE INDEX IF NOT EXISTS idx_fct_funnel_events_created ON fct_funnel_events(object_created_date);`
+		, `CREATE INDEX IF NOT EXISTS idx_fct_funnel_events_sources ON fct_funnel_events(source_l1, source_l2, source_l3);`
+		, `CREATE INDEX IF NOT EXISTS idx_int_lead_cohort_created ON int_lead_cohort(lead_created_date);`
+		, `CREATE INDEX IF NOT EXISTS idx_fct_marketing_spend_spend ON fct_marketing_spend(spend_date);`
+		, `CREATE INDEX IF NOT EXISTS idx_fct_marketing_spend_sources ON fct_marketing_spend(source_l1, source_l2, source_l3);`
 	] as const)
 })
 
@@ -322,7 +322,7 @@ export function seedSpoofData(db: SqlJsDatabase, opts: SeedOptions = {}) {
 	const rng = mulberry_32(seed)
 
 	with_tx(db, () => {
-		/* funnel_uncohorted */
+		/* fct_funnel_events */
 
 		let id_counter = 1
 
@@ -366,7 +366,7 @@ export function seedSpoofData(db: SqlJsDatabase, opts: SeedOptions = {}) {
 			}
 		}
 
-		/* funnel_cohorted */
+		/* int_lead_cohort */
 
 		let cohort_lead_counter = 1
 
@@ -411,7 +411,7 @@ export function seedSpoofData(db: SqlJsDatabase, opts: SeedOptions = {}) {
 			}
 		}
 
-		/* funnel_spend */
+		/* fct_marketing_spend */
 
 		const insert_spend_row = (spend_date: string) => {
 			const { source_l1, source_l2, source_l3, spend_type } = pick_spend_row(rng)

@@ -139,9 +139,9 @@ export const TermDefinitions = [
     description: "Attribution model that estimates channel contribution from path transitions and removal effects",
   },
   {
-    id: "metrics.yml",
-    alias: "metrics.yml",
-    description: "dbt metric contract file used to publish governed KPI definitions",
+    id: "docs.md",
+    alias: "docs.md",
+    description: "dbt docs file used to store reusable long-form descriptions for models, metrics, and fields",
   },
   {
     id: "month",
@@ -161,7 +161,7 @@ export const TermDefinitions = [
   {
     id: "models.yml",
     alias: "models.yml",
-    description: "dbt model contract file used to document schema, tests, grain, and anchors",
+    description: "dbt schema contract file used to publish model and metric definitions, tests, grain, and anchors",
   },
   {
     id: "north_star_metric",

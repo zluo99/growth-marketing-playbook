@@ -5,6 +5,7 @@
 /* -------------------------------------------------------------------------- */
 
 import * as React from "react"
+import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
 import { motion, useMotionValue, useSpring } from "framer-motion"
@@ -20,7 +21,6 @@ import { useTapFeedback } from "@/lib/hooks/use-tap-feedback"
 import { TabById, TabOrder, type TabId, type TabMeta, PlaybookTabs } from "../../definitions/tabs"
 import { Renderer } from "../ui/renderer"
 import { PageCopy } from "../../copy/page"
-import { Search } from "@/components/nav/search"
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
@@ -45,6 +45,15 @@ const desktop_media_query = "(min-width: 768px)"
 
 const hide_extra_px = 26
 const hide_lock_margin_px = 8
+const search_shell_class = cn("relative self-stretch flex-none min-w-[48px]")
+const search_placeholder_class = cn(ui.nav.iconButton.chrome, "h-full w-12")
+const Search = dynamic(() => import("@/components/nav/search").then((module) => module.Search), {
+	loading: () => (
+		<div className={search_shell_class} aria-hidden="true">
+			<div className={search_placeholder_class} />
+		</div>
+	),
+})
 
 /* -------------------------------------------------------------------------- */
 /* Helpers                                                                    */
@@ -326,6 +335,9 @@ const TabsBarRail = React.memo(function TabsBarRail({ activeTab, onGoToTab, redu
 	const prefetch_tab = React.useCallback((id: TabId) => {
 		if (prefetched_ref.current[id]) return
 		prefetched_ref.current[id] = true
+		if (id === "journeys") void import("../../tabs/journeys")
+		if (id === "plays") void import("../../tabs/plays")
+		if (id === "frameworks") void import("../../tabs/frameworks")
 		if (id === "reports-sql") void import("../../tabs/reports-sql")
 		if (id === "reports-workspace") void import("../../tabs/reports-workspace")
 	}, [])

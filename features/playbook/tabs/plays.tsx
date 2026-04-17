@@ -12,7 +12,7 @@ import { Download } from "lucide-react"
 import { ui } from "@/components/tokens/design"
 import { uiMotion, useReducedMotionBool } from "@/components/tokens/motion"
 import { Button } from "@/components/ui/button"
-import { Hierarchy } from "@/components/ui/hierarchy"
+import { Hierarchy, HierarchyDisclosure } from "@/components/ui/hierarchy"
 import { Dropdown, type DropdownItem } from "@/components/nav/dropdown"
 import { Bar, BarRail, BarScroller, BarScrollButton } from "@/components/nav/bar"
 import { MotionPillIndicator, PillList, PillRoot, PillTrigger, useMotionPillRail } from "@/components/nav/pill"
@@ -313,20 +313,17 @@ function MetricHeaderInline({ metric_id }: { metric_id: "source_l1" | "source_l2
 }
 
 function HierarchyLevelActionButton({ label, symbol, onClick }: { label: string; symbol: "+" | "-"; onClick: () => void }) {
+	const is_open = symbol === "-"
 	return (
-		<Button
-			variant="ghost"
-			size="iconXs"
+		<button
 			type="button"
 			onClick={onClick}
 			aria-label={label}
 			title={label}
-			className={ui.hierarchy.sectionActionButton}
+			className={ui.hierarchy.disclosureActionButton}
 		>
-			<span className={ui.hierarchy.symbol} aria-hidden="true">
-				{symbol}
-			</span>
-		</Button>
+			<HierarchyDisclosure open={is_open} />
+		</button>
 	)
 }
 
@@ -553,7 +550,7 @@ function FieldDropdown({
 			triggerLabel={trigger_label}
 			widthClassName="w-full"
 			menuOffsetPx={0}
-			triggerClassName={ui.nav.control.height}
+			triggerClassName={cn(ui.nav.control.height, ui.surface.structure.opaque)}
 			itemLabelClassName={ui.typography.body}
 			suspendTooltipsWhenOpen={false}
 		/>

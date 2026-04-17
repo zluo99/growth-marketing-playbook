@@ -18,10 +18,7 @@ import { PillContent, PillRoot } from "@/components/nav/pill"
 
 import { PageCopy } from "../../copy/page"
 import { TabById, TabOrder, type TabId } from "../../definitions/tabs"
-import TabFrameworks from "../../tabs/frameworks"
-import TabJourneys from "../../tabs/journeys"
 import TabOverview from "../../tabs/overview"
-import TabPlays from "../../tabs/plays"
 import { Renderer } from "../ui/renderer"
 import { LoaderCardSkeleton } from "../ui/loader"
 import { PbHeader } from "./header"
@@ -31,6 +28,10 @@ import { PbBodyTabContext, type PbBodyTabContextValue, usePbTabsNav } from "../c
 /* Constants                                                                  */
 /* -------------------------------------------------------------------------- */
 
+const render_tab_loader = () => <LoaderCardSkeleton />
+const TabJourneys = dynamic(() => import("../../tabs/journeys"), { loading: render_tab_loader })
+const TabPlays = dynamic(() => import("../../tabs/plays"), { loading: render_tab_loader })
+const TabFrameworks = dynamic(() => import("../../tabs/frameworks"), { loading: render_tab_loader })
 const TabReportsSql = dynamic(() => import("../../tabs/reports-sql"), { ssr: false, loading: () => <LoaderCardSkeleton /> })
 const TabReportsWorkspace = dynamic(() => import("../../tabs/reports-workspace"), { ssr: false, loading: () => <LoaderCardSkeleton /> })
 

@@ -213,7 +213,7 @@ export default function TabOverview() {
 	)
 
 	const description = (
-		<div className="relative inline-flex flex-col items-start">
+		<div className="relative flex w-full min-w-0 max-w-full flex-col items-start">
 			<span className="sr-only">
 				<Renderer.Copy.InlineText text={tab.description ?? ""} keyPrefix={`${overview_key_prefix}-intro-description`} />
 			</span>
@@ -223,7 +223,9 @@ export default function TabOverview() {
 					layout="inline"
 					includeSeparator
 					keyPrefix={`${overview_key_prefix}-intro`}
-					className="whitespace-normal break-words"
+					className="w-full min-w-0 max-w-full whitespace-normal break-words"
+					subtitleClassName={ui.intro.overviewInlineSupportingCopy}
+					separatorClassName={ui.intro.overviewInlineSupportingCopy}
 				/>
 			</span>
 		</div>

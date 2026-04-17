@@ -14,7 +14,6 @@ import { TermById, type TermId } from "@/features/playbook/definitions/terms"
 /* Types                                                                      */
 /* -------------------------------------------------------------------------- */
 
-type MetricFormulaLike = NonNullable<(typeof MetricDefinitions)[MetricId]["formula"]>
 type DbtLanguage = "markdown" | "text"
 
 type DbtFileDefinition = {
@@ -44,31 +43,28 @@ type MetricSpec = {
 	model: string
 	anchor: string
 	timeDimension: string
-	calculationMethod: "count_distinct" | "sum" | "derived"
+	calculationMethod: "sum" | "derived"
 	expression: string
 	dimensions: readonly string[]
-	filters?: readonly string[]
 	dependsOn?: readonly string[]
 	guardrail?: string
 }
 
-export type DbtFileId = "skill_md" | "metrics_yml" | "models_yml"
+export type DbtFileId = "skill_md" | "docs_md" | "models_yml"
 
 /* -------------------------------------------------------------------------- */
 /* Constants                                                                  */
 /* -------------------------------------------------------------------------- */
 
 const skill_glossary_term_ids = ["semantic_model", "ssot", "cohort", "incrementality"] as const satisfies readonly TermId[]
-const decision_metric_ids = ["leads", "opportunities", "deals", "arr", "cost_per_lead", "cost_per_opportunity", "cost_per_deal", "roas"] as const satisfies readonly MetricId[]
-const directional_metric_ids = ["cac", "payback", "incremental_lift", "incremental_lift_arr", "incremental_lift_deals"] as const satisfies readonly MetricId[]
 const source_l1_values = Object.freeze(Array.from(new Set(Sources.map((source) => source.source_l1))).sort())
 const metric_owner = "RevOps + Data"
 const roi_dimensions = ["source_l1", "source_l2", "source_l3", "vendor"] as const
 const roi_spend_dimensions = ["spend_type", ...roi_dimensions] as const
 const source_anchor_by_table = Object.freeze({
-	funnel_cohorted: "`lead_created_date`",
-	funnel_uncohorted: "`object_created_date`",
-	funnel_spend: "`spend_date`",
+	int_lead_cohort: "`lead_created_date`",
+	fct_funnel_events: "`object_created_date`",
+	fct_marketing_spend: "`spend_date`",
 } as const)
 
 export const DbtFileDefinitions = Object.freeze([
@@ -79,10 +75,10 @@ export const DbtFileDefinitions = Object.freeze([
 		language: "markdown",
 	},
 	{
-		id: "metrics_yml",
-		fileName: "metrics.yml",
-		description: TermById["metrics.yml"].description,
-		language: "text",
+		id: "docs_md",
+		fileName: "docs.md",
+		description: TermById["docs.md"].description,
+		language: "markdown",
 	},
 	{
 		id: "models_yml",
@@ -126,13 +122,13 @@ function canonical_metric_spec(
 
 const derived_model_specs = [
 	{
-		name: "funnel_monthly",
-		description: "Monthly event-time funnel mart by source and vertical from `funnel_uncohorted`.",
+		name: "agg_funnel_monthly",
+		description: "Monthly event-time funnel mart by source and vertical from `fct_funnel_events`.",
 		grain: "One row per month x source hierarchy x vertical.",
 		anchor: "`object_created_date` rolled to month.",
 		role: "mart",
 		columns: ["month", "source_l1", "source_l2", "source_l3", "vertical", "leads", "opportunities", "deals", "arr"] as const,
-		dependsOn: ["funnel_uncohorted"] as const,
+		dependsOn: ["fct_funnel_events"] as const,
 		testsByColumn: {
 			month: [{ kind: "not_null" }],
 			source_l1: [{ kind: "not_null" }, { kind: "accepted_values", values: source_l1_values }],
@@ -141,8 +137,8 @@ const derived_model_specs = [
 		},
 	},
 	{
-		name: "funnel_monthly_roi",
-		description: "Monthly aligned spend and cohort-outcome mart by source and vendor from `funnel_spend` and `funnel_cohorted`.",
+		name: "agg_funnel_monthly_roi",
+		description: "Monthly aligned spend and cohort-outcome mart by source and vendor from `fct_marketing_spend` and `int_lead_cohort`.",
 		grain: "One row per month x data slice x source hierarchy x vendor.",
 		anchor: "`spend_date` or `lead_created_date` rolled to month, then unioned into one aligned reporting surface.",
 		role: "mart",
@@ -163,9 +159,9 @@ const derived_model_specs = [
 			"arr_from_leads",
 			"ltv_from_leads",
 		] as const,
-		dependsOn: ["funnel_spend", "funnel_cohorted"] as const,
+		dependsOn: ["fct_marketing_spend", "int_lead_cohort"] as const,
 		testsByColumn: {
-			data: [{ kind: "not_null" }, { kind: "accepted_values", values: ["funnel_spend", "funnel_cohorted"] }],
+			data: [{ kind: "not_null" }, { kind: "accepted_values", values: ["fct_marketing_spend", "int_lead_cohort"] }],
 			month: [{ kind: "not_null" }],
 			source_l1: [{ kind: "not_null" }, { kind: "accepted_values", values: source_l1_values }],
 			source_l2: [{ kind: "not_null" }],
@@ -176,14 +172,14 @@ const derived_model_specs = [
 
 const metric_specs = [
 	canonical_metric_spec("arr_from_leads", {
-		model: "funnel_monthly_roi",
+		model: "agg_funnel_monthly_roi",
 		anchor: "cohort_time",
 		timeDimension: "month",
 		calculationMethod: "sum",
 		expression: "arr_from_leads",
 	}),
 	canonical_metric_spec("cost_per_deal", {
-		model: "funnel_monthly_roi",
+		model: "agg_funnel_monthly_roi",
 		anchor: "aligned_month",
 		timeDimension: "month",
 		calculationMethod: "derived",
@@ -192,7 +188,7 @@ const metric_specs = [
 		dependsOn: ["total_spend", "deals_from_leads"],
 	}),
 	canonical_metric_spec("cost_per_lead", {
-		model: "funnel_monthly_roi",
+		model: "agg_funnel_monthly_roi",
 		anchor: "aligned_month",
 		timeDimension: "month",
 		calculationMethod: "derived",
@@ -201,7 +197,7 @@ const metric_specs = [
 		dependsOn: ["total_spend", "leads"],
 	}),
 	canonical_metric_spec("cost_per_opportunity", {
-		model: "funnel_monthly_roi",
+		model: "agg_funnel_monthly_roi",
 		anchor: "aligned_month",
 		timeDimension: "month",
 		calculationMethod: "derived",
@@ -210,14 +206,14 @@ const metric_specs = [
 		dependsOn: ["total_spend", "opportunities_from_leads"],
 	}),
 	canonical_metric_spec("deals_from_leads", {
-		model: "funnel_monthly_roi",
+		model: "agg_funnel_monthly_roi",
 		anchor: "cohort_time",
 		timeDimension: "month",
 		calculationMethod: "sum",
 		expression: "deals_from_leads",
 	}),
 	canonical_metric_spec("lead_to_opp_cvr", {
-		model: "funnel_monthly_roi",
+		model: "agg_funnel_monthly_roi",
 		anchor: "cohort_time",
 		timeDimension: "month",
 		calculationMethod: "sum",
@@ -225,22 +221,22 @@ const metric_specs = [
 		guardrail: "Use as published on the aligned cohort mart; do not recompute from partial exports with missing lead counts.",
 	}),
 	canonical_metric_spec("leads", {
-		description: metric_surface_description("leads", "Cohort-time monthly view from `funnel_monthly_roi`."),
-		model: "funnel_monthly_roi",
+		description: metric_surface_description("leads", "Cohort-time monthly view from `agg_funnel_monthly_roi`."),
+		model: "agg_funnel_monthly_roi",
 		anchor: "cohort_time",
 		timeDimension: "month",
 		calculationMethod: "sum",
 		expression: "leads",
 	}),
 	canonical_metric_spec("opportunities_from_leads", {
-		model: "funnel_monthly_roi",
+		model: "agg_funnel_monthly_roi",
 		anchor: "cohort_time",
 		timeDimension: "month",
 		calculationMethod: "sum",
 		expression: "opportunities_from_leads",
 	}),
 	canonical_metric_spec("opp_to_deal_cvr", {
-		model: "funnel_monthly_roi",
+		model: "agg_funnel_monthly_roi",
 		anchor: "cohort_time",
 		timeDimension: "month",
 		calculationMethod: "sum",
@@ -248,19 +244,19 @@ const metric_specs = [
 		guardrail: "Use as published on the aligned cohort mart; do not compare directly to event-time conversion reads.",
 	}),
 	canonical_metric_spec("roas", {
-		description: metric_surface_description("roas", "Aligned monthly view from `funnel_monthly_roi`."),
-		model: "funnel_monthly_roi",
+		description: metric_surface_description("roas", "Aligned monthly view from `agg_funnel_monthly_roi`."),
+		model: "agg_funnel_monthly_roi",
 		anchor: "aligned_month",
 		timeDimension: "month",
 		calculationMethod: "derived",
 		expression: "arr_from_leads / nullif(total_spend, 0)",
 		includeSpendType: true,
 		dependsOn: ["arr_from_leads", "total_spend"],
-		guardrail: "Never compute from raw `funnel_uncohorted` plus raw `funnel_spend` without an explicit shared month logic.",
+		guardrail: "Never compute from raw `fct_funnel_events` plus raw `fct_marketing_spend` without an explicit shared month logic.",
 	}),
 	canonical_metric_spec("total_spend", {
-		description: metric_surface_description("total_spend", "Aligned monthly view from `funnel_monthly_roi`."),
-		model: "funnel_monthly_roi",
+		description: metric_surface_description("total_spend", "Aligned monthly view from `agg_funnel_monthly_roi`."),
+		model: "agg_funnel_monthly_roi",
 		anchor: "aligned_month",
 		timeDimension: "month",
 		calculationMethod: "sum",
@@ -284,14 +280,6 @@ function resolve_metric_id(value: string): MetricId | null {
 	return Object.prototype.hasOwnProperty.call(MetricDefinitions, value) ? (value as MetricId) : null
 }
 
-function metric_formula_to_text(formula?: MetricFormulaLike) {
-	if (!formula) return null
-	if (formula.kind === "fraction") return `${formula.numerator} / ${formula.denominator}`
-	if (formula.kind === "scaled_fraction") return `${formula.factor} * (${formula.numerator} / ${formula.denominator})`
-	if (formula.kind === "product") return `${formula.left} x ${formula.right}`
-	return `${formula.left} - ${formula.right}`
-}
-
 function yaml_string(value: string) {
 	return `'${value.replace(/'/g, "''")}'`
 }
@@ -304,14 +292,20 @@ function join_lines(lines: readonly string[]) {
 	return lines.join("\n")
 }
 
-function build_metric_definition_line(metric_id: MetricId) {
-	const metric = MetricDefinitions[metric_id]
-	const formula = metric_formula_to_text(metric.formula ?? undefined)
-	return `- \`${metric_id}\` (${metric.alias}): ${metric.description}${formula ? ` Formula: \`${formula}\`.` : ""}`
+function interleave_blocks(blocks: readonly string[]) {
+	return blocks.flatMap((block, index) => (index === 0 ? [block] : ["", block]))
+}
+
+function trim_terminal_period(value: string) {
+	return value.replace(/[.]+$/u, "")
+}
+
+function build_metric_policy_line(metric: MetricSpec) {
+	return `- \`${metric.name}\` (${metric.label}): ${metric.description} Expression: \`${metric.expression}\`.`
 }
 
 function build_base_model_tests(table_name: (typeof DefinitionsCopy.tables)[number]["name"]) {
-	if (table_name === "funnel_cohorted") {
+	if (table_name === "int_lead_cohort") {
 		return {
 			lead_id: [{ kind: "not_null" }],
 			lead_created_date: [{ kind: "not_null" }],
@@ -321,7 +315,7 @@ function build_base_model_tests(table_name: (typeof DefinitionsCopy.tables)[numb
 		} satisfies Partial<Record<string, readonly ColumnTestSpec[]>>
 	}
 
-	if (table_name === "funnel_uncohorted") {
+	if (table_name === "fct_funnel_events") {
 		return {
 			object_id: [{ kind: "not_null" }],
 			object_type: [{ kind: "not_null" }, { kind: "accepted_values", values: ["Lead", "Opportunity", "Deal"] }],
@@ -358,27 +352,69 @@ function build_model_specs() {
 
 const model_specs = build_model_specs()
 const alphabetized_metric_specs = Object.freeze([...metric_specs].sort((left, right) => left.name.localeCompare(right.name)))
+const model_field_names = Object.freeze(Array.from(new Set(model_specs.flatMap((model) => model.columns))))
 
 function describe_field(field: string) {
 	const metric_id = resolve_metric_id(field)
 	if (metric_id) return MetricDefinitions[metric_id].description
-	if (field === "month") return TermById.month.description
-	if (field === "data") return TermById.data.description
-	if (field === "lead_id") return "Stable lead identifier for the cohort-anchored record."
-	if (field === "spend") return "Booked marketing spend amount for the posting date and classification dimensions."
-	if (field === "spend_date") return "Posting date for booked marketing spend."
-	return `Governed field used in the ${field.includes("funnel_") ? "reporting" : "playbook"} contract.`
+	const term = Object.prototype.hasOwnProperty.call(TermById, field) ? TermById[field as TermId] : null
+	if (term) return term.description
+	throw new Error(`Missing canonical definition for surfaced field: ${field}`)
+}
+
+function build_doc_name(kind: "model" | "metric" | "field", name: string) {
+	return `playbook_${kind}_${name}`
+}
+
+function build_doc_ref(kind: "model" | "metric" | "field", name: string) {
+	return `"{{ doc('${build_doc_name(kind, name)}') }}"`
+}
+
+function build_doc_block(doc_name: string, lines: readonly string[]) {
+	return [`{% docs ${doc_name} %}`, ...lines, "{% enddocs %}"].join("\n")
+}
+
+function build_model_doc_markdown(model: ModelSpec) {
+	const lines = [
+		model.description,
+		"",
+		`- Grain: ${model.grain}`,
+		`- Anchor: ${model.anchor}`,
+	]
+	if (model.dependsOn?.length) lines.push(`- Upstream models: ${model.dependsOn.map((name) => `\`${name}\``).join(", ")}.`)
+	return build_doc_block(build_doc_name("model", model.name), lines)
+}
+
+function build_metric_doc_markdown(metric: MetricSpec) {
+	const lines = [
+		metric.description,
+		"",
+		`- Label: ${metric.label}`,
+		`- Model: \`${metric.model}\``,
+		`- Anchor: \`${metric.anchor}\``,
+		`- Time dimension: \`${metric.timeDimension}\``,
+		`- Calculation method: \`${metric.calculationMethod}\``,
+		`- Expression: \`${metric.expression}\``,
+		`- Dimensions: ${metric.dimensions.map((dimension) => `\`${dimension}\``).join(", ")}.`,
+	]
+	if (metric.dependsOn?.length) lines.push(`- Depends on: ${metric.dependsOn.map((name) => `\`${name}\``).join(", ")}.`)
+	if (metric.guardrail) lines.push(`- Guardrail: ${metric.guardrail}`)
+	return build_doc_block(build_doc_name("metric", metric.name), lines)
+}
+
+function build_field_doc_markdown(field: string) {
+	return build_doc_block(build_doc_name("field", field), [describe_field(field)])
 }
 
 function build_test_yaml(test: ColumnTestSpec) {
-	if (test.kind === "not_null") return ["      - not_null"]
-	return ["      - accepted_values:", `          values: ${yaml_inline_list(test.values)}`]
+	if (test.kind === "not_null") return ["          - not_null"]
+	return ["          - accepted_values:", `              values: ${yaml_inline_list(test.values)}`]
 }
 
 function build_column_yaml(column: string, tests: readonly ColumnTestSpec[] | undefined) {
-	const lines = [`    - name: ${column}`, `      description: ${yaml_string(describe_field(column))}`]
+	const lines = [`      - name: ${column}`, `        description: ${build_doc_ref("field", column)}`]
 	if (tests?.length) {
-		lines.push("      tests:")
+		lines.push("        tests:")
 		for (const test of tests) lines.push(...build_test_yaml(test))
 	}
 	return join_lines(lines)
@@ -388,7 +424,7 @@ function build_model_yaml(model: ModelSpec) {
 	const dependency_lines = model.dependsOn?.length ? [`      upstream_models: ${yaml_inline_list(model.dependsOn)}`] : []
 	return [
 		`  - name: ${model.name}`,
-		`    description: ${yaml_string(model.description)}`,
+		`    description: ${build_doc_ref("model", model.name)}`,
 		"    meta:",
 		`      playbook_role: ${yaml_string(model.role)}`,
 		`      owner: ${yaml_string(metric_owner)}`,
@@ -404,7 +440,7 @@ function build_metric_yaml(metric: MetricSpec) {
 	const lines = [
 		`  - name: ${metric.name}`,
 		`    label: ${yaml_string(metric.label)}`,
-		`    description: ${yaml_string(metric.description)}`,
+		`    description: ${build_doc_ref("metric", metric.name)}`,
 		`    model: ref(${yaml_string(metric.model)})`,
 		`    timestamp: ${metric.timeDimension}`,
 		`    calculation_method: ${metric.calculationMethod}`,
@@ -414,14 +450,13 @@ function build_metric_yaml(metric: MetricSpec) {
 		`      playbook_anchor: ${yaml_string(metric.anchor)}`,
 		`      owner: ${yaml_string(metric_owner)}`,
 	]
-	if (metric.filters?.length) lines.push(`      filters: ${yaml_inline_list(metric.filters)}`)
 	if (metric.dependsOn?.length) lines.push(`      depends_on: ${yaml_inline_list(metric.dependsOn)}`)
 	if (metric.guardrail) lines.push(`      guardrail: ${yaml_string(metric.guardrail)}`)
 	return lines.join("\n")
 }
 
 function build_skill_markdown() {
-	const monthly_roi_preset = PgPresets.find((preset) => preset.id === "funnel_monthly_roi")
+	const monthly_roi_preset = PgPresets.find((preset) => preset.id === "agg_funnel_monthly_roi")
 	const source_family_count = new Set(Sources.map((source) => source.source_l2)).size
 	const source_leaf_count = new Set(Sources.map((source) => source.source_l3)).size
 
@@ -432,10 +467,11 @@ function build_skill_markdown() {
 		"",
 		"## Bundle order",
 		"- Read this file first.",
-		"- Define model contracts in `models.yml`, then publish governed KPIs in `metrics.yml`.",
+		"- Keep long-form descriptions in `docs.md`.",
+		"- Publish models and governed metrics in `models.yml` using `doc()` references back to `docs.md`.",
 		"",
 		"## Primary surfaces",
-		...model_specs.map((model) => `- \`${model.name}\`: ${model.description} Grain: ${model.grain} Anchor: ${model.anchor}.`),
+		...model_specs.map((model) => `- \`${model.name}\`: ${model.description} Grain: ${trim_terminal_period(model.grain)}. Anchor: ${trim_terminal_period(model.anchor)}.`),
 		"",
 		"## Guardrails",
 		"- Never compare event-time and cohort-time metrics as peers without naming the anchor explicitly.",
@@ -444,36 +480,48 @@ function build_skill_markdown() {
 		"- If Finance totals, semantic definitions, and model outputs disagree, stop and return the reconciliation gap.",
 		"",
 		"## Metric policy",
-		"- `metrics.yml` should publish canonical metric ids from `MetricDefinitions`, not new aliases for event-time views.",
-		"- Decision-grade defaults:",
-		...decision_metric_ids.map((metric_id) => build_metric_definition_line(metric_id)),
-		"- Directional metrics until the required inputs and reconciliation are explicit:",
-		...directional_metric_ids.map((metric_id) => build_metric_definition_line(metric_id)),
+		"- `models.yml` should publish canonical metric ids from `MetricDefinitions`, while `docs.md` carries the shared long-form descriptions.",
+		"- Publish only the starter metrics that are fully modeled in this bundle:",
+		...alphabetized_metric_specs.map((metric) => build_metric_policy_line(metric)),
+		"- Leave CAC, payback, and incrementality outputs out of the starter bundle until their required inputs are modeled and reconciled.",
 		"",
 		"## Source taxonomy contract",
 		`- Allowed ` + "`source_l1`" + ` values: ${source_l1_values.map((value) => `\`${value}\``).join(", ")}.`,
 		`- Governed taxonomy coverage: ${String(source_family_count)} source families and ${String(source_leaf_count)} leaf channels.`,
 		"",
 		"## Recommended marts",
-		"- `funnel_monthly` is the clean event-time view for monthly funnel trend reporting.",
-		"- `funnel_monthly_roi` is the aligned monthly surface for spend plus cohort outcomes.",
-		"- Keep `metrics.yml` on the canonical KPI contract and use marts plus model metadata to carry time-anchor context.",
-		...(monthly_roi_preset ? [`- Use the ` + "`funnel_monthly_roi`" + ` SQL scaffold as the transformation baseline: ${monthly_roi_preset.description}`] : []),
+		"- `agg_funnel_monthly` is the clean event-time view for monthly funnel trend reporting.",
+		"- `agg_funnel_monthly_roi` is the aligned monthly surface for spend plus cohort outcomes.",
+		"- Keep `docs.md` as the reusable documentation layer and use marts plus `models.yml` metadata to carry time-anchor context.",
+		...(monthly_roi_preset ? [`- Use the ` + "`agg_funnel_monthly_roi`" + ` SQL scaffold as the transformation baseline: ${monthly_roi_preset.description}`] : []),
 		"",
 		"## Working vocabulary",
 		...skill_glossary_term_ids.map((term_id) => `- \`${term_id}\` (${TermById[term_id].alias}): ${TermById[term_id].description}`),
 		"",
 		"## Publish rule",
-		"- Add the mart contract before the metric definition.",
+		"- Add the doc block before the model or metric definition that references it.",
 	].join("\n")
 }
 
-function build_metrics_yml() {
+function build_docs_markdown() {
+	const model_doc_blocks = model_specs.map((model) => build_model_doc_markdown(model))
+	const metric_doc_blocks = alphabetized_metric_specs.map((metric) => build_metric_doc_markdown(metric))
+	const field_doc_blocks = model_field_names.map((field) => build_field_doc_markdown(field))
+
 	return [
-		"version: 2",
+		"# docs.md",
+		"## Usage",
+		"- Keep reusable long-form descriptions here.",
+		"- Reference these blocks from `models.yml` with dbt `doc()` calls.",
 		"",
-		"metrics:",
-		...alphabetized_metric_specs.map((metric) => build_metric_yaml(metric)),
+		"## Model docs",
+		...interleave_blocks(model_doc_blocks),
+		"",
+		"## Metric docs",
+		...interleave_blocks(metric_doc_blocks),
+		"",
+		"## Field docs",
+		...interleave_blocks(field_doc_blocks),
 	].join("\n")
 }
 
@@ -483,6 +531,9 @@ function build_models_yml() {
 		"",
 		"models:",
 		...model_specs.map((model) => build_model_yaml(model)),
+		"",
+		"metrics:",
+		...alphabetized_metric_specs.map((metric) => build_metric_yaml(metric)),
 	].join("\n")
 }
 
@@ -494,11 +545,13 @@ export const DbtFileIds = Object.freeze(DbtFileDefinitions.map((file) => file.id
 export const DefaultDbtFileId: DbtFileId = "skill_md"
 
 export function parse_ai_dbt_file_preference(value: string | null): DbtFileId {
-	return typeof value === "string" && DbtFileIds.includes(value as DbtFileId) ? (value as DbtFileId) : DefaultDbtFileId
+	if (typeof value !== "string") return DefaultDbtFileId
+	const normalized_value = value === "metrics_yml" ? "docs_md" : value
+	return DbtFileIds.includes(normalized_value as DbtFileId) ? (normalized_value as DbtFileId) : DefaultDbtFileId
 }
 
 export function build_dbt_file_content(file_id: DbtFileId) {
-	if (file_id === "metrics_yml") return build_metrics_yml()
+	if (file_id === "docs_md") return build_docs_markdown()
 	if (file_id === "models_yml") return build_models_yml()
 	return build_skill_markdown()
 }

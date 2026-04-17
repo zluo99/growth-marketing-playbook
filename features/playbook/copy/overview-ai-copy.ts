@@ -27,7 +27,7 @@ type OverviewAICard = {
 	}
 }
 
-const overview_ai_bundle_files = "`skill.md`, `metrics.yml`, and `models.yml`"
+const overview_ai_bundle_files = "`skill.md`, `docs.md`, and `models.yml`"
 
 export const OverviewAICopy: OverviewAICard = {
 	id: "ai-analyst",

@@ -229,8 +229,8 @@ export function OverviewOverlayLetters({
 
 	if (layout === "inline") {
 		return (
-			<span className={cn("relative inline-block whitespace-normal break-words", className)} data-overview-overlay={role}>
-				<span className="relative z-10">
+			<span className={cn("relative block min-w-0 max-w-full whitespace-normal break-words", className)} data-overview-overlay={role}>
+				<span className="relative z-10 block min-w-0 max-w-full">
 					<span className={cn("whitespace-pre-wrap", resolved_title_class_name)}>{title_line}</span>
 					{separator_line ? (
 						<span className={cn("whitespace-pre-wrap", resolved_separator_class_name)}>{separator_line}</span>
@@ -242,14 +242,17 @@ export function OverviewOverlayLetters({
 	}
 
 	return (
-		<div className={cn("relative flex flex-col whitespace-normal break-words", className)} data-overview-overlay={role}>
-			<span className="relative z-10">
+		<div className={cn("relative flex min-w-0 max-w-full flex-col whitespace-normal break-words", className)} data-overview-overlay={role}>
+			<span className="relative z-10 block min-w-0 max-w-full">
 				<span
 					className={cn("block whitespace-pre-wrap", resolved_title_class_name)}
 				>
 					{title_line}
 				</span>
-				<span className={cn("block whitespace-pre-wrap", resolved_subtitle_class_name)}>{subtitle_line}</span>
+				<span className={cn("block whitespace-pre-wrap", resolved_subtitle_class_name)}>
+					{separator_line ? <span className={cn("whitespace-pre-wrap", resolved_separator_class_name)}>{separator_line}</span> : null}
+					{subtitle_line}
+				</span>
 			</span>
 		</div>
 	)

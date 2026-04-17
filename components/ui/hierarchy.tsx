@@ -131,14 +131,42 @@ function collect_default_open_keys<Row>(nodes: readonly HierarchyNode<Row>[]) {
 
 function render_section_header<Row>(level: HierarchyLevel<Row> | undefined, opts?: { is_terminal?: boolean }) {
 	if (!level?.header) return null
+	const header_class = opts?.is_terminal ? ui.hierarchy.sectionHeaderDeep : ui.hierarchy.sectionHeader
 
 	return (
-		<div className={opts?.is_terminal ? ui.hierarchy.sectionHeaderDeep : ui.hierarchy.sectionHeader}>
+		<div className={header_class}>
 			<div className={ui.hierarchy.sectionLabel}>
-				{level.header}
-				{level.sectionAction}
+				{level.sectionAction ? <span className="shrink-0">{level.sectionAction}</span> : null}
+				<span className="min-w-0 break-words">{level.header}</span>
 			</div>
 		</div>
+	)
+}
+
+export function HierarchyDisclosureGlyph({ open }: { open: boolean }) {
+	return (
+		<span className={ui.hierarchy.disclosureGlyph} aria-hidden="true">
+			<span className={ui.hierarchy.disclosureBar} />
+			{open ? null : <span className={ui.hierarchy.disclosureBarVertical} />}
+		</span>
+	)
+}
+
+export function HierarchyDisclosure({ open }: { open: boolean }) {
+	const reduce_motion = useReducedMotionBool()
+	const transition_duration_ms = reduce_motion ? uiMotion.frameworks.hierarchy.disclosure.reducedDurationMs : uiMotion.frameworks.hierarchy.disclosure.durationMs
+
+	return (
+		<span
+			className={cn(ui.hierarchy.disclosureButton, open ? ui.hierarchy.disclosureButtonOpen : null)}
+			style={{
+				transitionDuration: `${transition_duration_ms}ms`,
+				transitionTimingFunction: uiMotion.frameworks.hierarchy.disclosure.timingFunction,
+			}}
+			aria-hidden="true"
+		>
+			<HierarchyDisclosureGlyph open={open} />
+		</span>
 	)
 }
 
@@ -219,9 +247,7 @@ export function Hierarchy<Row>({
 							onClick={() => toggle_group(node.key)}
 							className={cn(ui.hierarchy.groupRow, is_open ? ui.hierarchy.groupRowOpen : null)}
 						>
-							<span className={cn(ui.hierarchy.groupToggle, ui.motion.durationFast)} aria-hidden="true">
-								<span className={ui.hierarchy.symbol}>{is_open ? "-" : "+"}</span>
-							</span>
+							<HierarchyDisclosure open={is_open} />
 
 							<div className={cn(ui.hierarchy.groupValueWrap, ui.hierarchy.valueWrap)}>
 								<div className={ui.hierarchy.value}>{node.label}</div>
@@ -250,8 +276,8 @@ export function Hierarchy<Row>({
 					</div>
 				)
 			})
-		}
-		,[getLeafLayout, getLeafProps, levels, open_groups, reduce_motion, renderDetail, toggle_group]
+		},
+		[getLeafLayout, getLeafProps, levels, open_groups, reduce_motion, renderDetail, toggle_group]
 	)
 
 	return (

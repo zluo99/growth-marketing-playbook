@@ -131,7 +131,7 @@ push({
 	badge: "AI Analyst",
 	meta: "AI setup",
 	scrollTarget: SearchTargets.overview.aiAnalystCard,
-	keywords: ["overview", "ai", "analyst", "dbt", "skill.md", "metrics.yml", "models.yml", "semantic layer"],
+	keywords: ["overview", "ai", "analyst", "dbt", "skill.md", "docs.md", "models.yml", "metrics", "semantic layer"],
 	priority: 20,
 })
 

@@ -1,4 +1,4 @@
-type PgPresetId = "funnel_monthly" | "funnel_monthly_roi" | "funnel_weekly"
+type PgPresetId = "agg_funnel_monthly" | "agg_funnel_monthly_roi" | "agg_funnel_weekly"
 type PgPreset<K extends string> = { id: K; description: string; code: string }
 
 type PgCopy = {
@@ -59,10 +59,10 @@ export const PgCopy: PgCopy = {
 
 export const PgPresets = [
 	{
-		id: "funnel_monthly",
+		id: "agg_funnel_monthly",
 		description: "Monthly funnel by source and vertical, with lead, opportunity, and deal counts plus deal ARR.",
 		code: `
--- file: funnel_monthly.sql
+-- file: agg_funnel_monthly.sql
 SELECT
 	DATE(SUBSTR(object_created_date, 1, 7) || '-01') AS month
 	, source_l1
@@ -73,18 +73,18 @@ SELECT
 	, COUNT(DISTINCT CASE WHEN object_type = 'Opportunity' THEN object_id END) AS opportunities
 	, COUNT(DISTINCT CASE WHEN object_type = 'Deal' THEN object_id END) AS deals
 	, SUM(CASE WHEN object_type = 'Deal' THEN arr ELSE NULL END) AS arr
-FROM funnel_uncohorted
+FROM fct_funnel_events
 GROUP BY 1, 2, 3, 4, 5
 ORDER BY 1, 2, 3, 4, 5
 ;`.trim(),
 	},
 	{
-		id: "funnel_monthly_roi",
+		id: "agg_funnel_monthly_roi",
 		description: "Monthly spend and lead-cohort outcomes by source and vendor, with conversion rates, ARR, and LTV.",
 		code: `
--- file: funnel_monthly_roi.sql
+-- file: agg_funnel_monthly_roi.sql
 SELECT
-	'funnel_spend' AS data
+	'fct_marketing_spend' AS data
 	, DATE(SUBSTR(spend_date, 1, 7) || '-01') AS month
 	, spend_type
 	, source_l1
@@ -99,13 +99,13 @@ SELECT
 	, NULL AS deals_from_leads
 	, NULL AS arr_from_leads
 	, NULL AS ltv_from_leads
-FROM funnel_spend
+FROM fct_marketing_spend
 GROUP BY 1, 2, 3, 4, 5, 6, 7
 
 UNION ALL
 
 SELECT
-	'funnel_cohorted' AS data
+	'int_lead_cohort' AS data
 	, DATE(SUBSTR(lead_created_date, 1, 7) || '-01') AS month
 	, NULL AS spend_type
 	, source_l1
@@ -120,16 +120,16 @@ SELECT
 	, SUM(deals_from_leads) AS deals_from_leads
 	, SUM(arr_from_leads) AS arr_from_leads
 	, SUM(ltv_from_leads) AS ltv_from_leads
-FROM funnel_cohorted
+FROM int_lead_cohort
 GROUP BY 1, 2, 3, 4, 5, 6, 7
 ORDER BY 1, 2, 3, 4, 5, 6, 7
 ;`.trim(),
 	},
 	{
-		id: "funnel_weekly",
+		id: "agg_funnel_weekly",
 		description: "Weekly funnel by source and vertical for 2020, with Sunday week starts.",
 		code: `
--- file: funnel_weekly.sql
+-- file: agg_funnel_weekly.sql
 -- Week starts Sunday. Filter source data to full-year 2020.
 SELECT
 	DATE(
@@ -144,7 +144,7 @@ SELECT
 	, COUNT(DISTINCT CASE WHEN object_type = 'Opportunity' THEN object_id END) AS opportunities
 	, COUNT(DISTINCT CASE WHEN object_type = 'Deal' THEN object_id END) AS deals
 	, SUM(CASE WHEN object_type = 'Deal' THEN arr ELSE NULL END) AS arr
-FROM funnel_uncohorted
+FROM fct_funnel_events
 WHERE DATE(object_created_date) >= DATE('2020-01-01')
 	AND DATE(object_created_date) <= DATE('2020-12-31')
 GROUP BY 1, 2, 3, 4, 5

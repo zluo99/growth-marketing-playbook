@@ -62,11 +62,23 @@ export const uiMotion = {
 		easing,
 	},
 	intro: {
+		typing: {
+			wordRateWpm: 480,
+			subtitlePauseMs: 450,
+			scrollHintDelayMs: 1000,
+			cursorBlinkMs: 1000,
+		},
+		hint: {
+			fadeProgressSpan: 0.16,
+		},
 		overlay: {
 			// portion of scroll progress reserved for cascading letters
 			letterStaggerSpan: 0.22,
 			// use the emphasis curve for a tight but smooth finish
 			letterEase: easing.emphasis,
+			// crossfade into the docked target before the route flips
+			targetFadeStart: 0.86,
+			targetFadeEnd: 0.98,
 		},
 	},
 	nav: {
@@ -87,6 +99,11 @@ export const uiMotion = {
 			expand: { type: "tween", duration: durations.base, ease: easing.standard } satisfies Transition,
 			reduced: transitions.enterReduced,
 			offsetY: 4,
+			disclosure: {
+				durationMs: Math.round(durations.fast * 1000),
+				reducedDurationMs: Math.round(durations.reduced * 1000),
+				timingFunction: `cubic-bezier(${easing.standard.join(",")})`,
+			},
 		},
 		dropdownInline: {
 			shrink: { type: "tween", duration: durations.medium, ease: easing.standard } satisfies Transition,

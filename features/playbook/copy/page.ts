@@ -33,6 +33,10 @@ type FooterCopy = {
 	linkedinLabel: string
 }
 
+type IntroOverlayCopy = {
+	scrollHint: string
+}
+
 type HeaderNavCopy = {
 	homeButtonAria: string
 	homeImageAlt: string
@@ -156,6 +160,9 @@ export const PageCopy = {
 		emailLabel: "Email",
 		linkedinLabel: "LinkedIn",
 	},
+	introOverlay: {
+		scrollHint: "Scroll down to continue",
+	},
 } as const satisfies {
 	headerContent: HeaderContentCopy
 	headerTabsNav: TabsNavCopy
@@ -163,5 +170,6 @@ export const PageCopy = {
 	bodySearch: SearchCopy
 	systemStates: SystemStateCopy
 	footer: FooterCopy
+	introOverlay: IntroOverlayCopy
 }
 

@@ -13,6 +13,7 @@ import { clamp_value, cn } from "@/lib/utils"
 
 import PbBody from "@/features/playbook/components/page/body"
 import PbFooter from "@/features/playbook/components/page/footer"
+import { PageCopy } from "@/features/playbook/copy/page"
 import { OverviewOverlayLetters } from "@/features/playbook/tabs/overview-intro"
 import { overview_tab_separator, overview_tab_subtitle, overview_tab_title } from "@/features/playbook/definitions/tabs"
 
@@ -21,12 +22,14 @@ import { overview_tab_separator, overview_tab_subtitle, overview_tab_title } fro
 /* -------------------------------------------------------------------------- */
 
 type LetterDelta = { dx: number; dy: number; sx: number; sy: number } | null
+type IntroTypingPhase = "idle" | "title" | "subtitle" | "scroll_hint"
 
 /* -------------------------------------------------------------------------- */
 /* Constants: intro                                                           */
 /* -------------------------------------------------------------------------- */
 
-const intro_scroll_distance_px = 520
+const intro_scroll_distance_desktop_px = 360
+const intro_scroll_distance_compact_px = 320
 const intro_complete_threshold = 0.985
 const intro_completion_hold_ms = 900
 let intro_completed_once = false
@@ -40,10 +43,8 @@ const intro_separator_length = intro_separator_chars.length
 const intro_subtitle_length = intro_subtitle_chars.length
 
 const total_intro_letters = intro_title_length + intro_separator_length + intro_subtitle_length
-
-const intro_typing_wpm = 360
-const intro_typing_delay_ms = 700
-const intro_typing_interval_ms = Math.max(16, Math.round(60000 / (intro_typing_wpm * 5)))
+const intro_scroll_hint_text = PageCopy.introOverlay.scrollHint
+const intro_scroll_hint_length = Array.from(intro_scroll_hint_text).length
 const intro_overlay_scale = 1
 
 /* -------------------------------------------------------------------------- */
@@ -74,6 +75,17 @@ function bezier_ease_value(t: number, curve: readonly [number, number, number, n
 	return cubic_bezier_value(guess, 0, y1, y2, 1)
 }
 
+function get_intro_scroll_distance_px() {
+	if (typeof window === "undefined") return intro_scroll_distance_desktop_px
+	const is_compact_width = window.matchMedia("(max-width: 767px)").matches
+	const is_compact_height = window.matchMedia("(max-height: 820px)").matches
+	return is_compact_width || is_compact_height ? intro_scroll_distance_compact_px : intro_scroll_distance_desktop_px
+}
+
+function get_intro_typing_interval_ms() {
+	return Math.max(16, Math.round(60000 / (uiMotion.intro.typing.wordRateWpm * 5)))
+}
+
 /* -------------------------------------------------------------------------- */
 /* Components                                                                 */
 /* -------------------------------------------------------------------------- */
@@ -94,6 +106,8 @@ function OverviewIntroOverlay({ active, onComplete }: { active: boolean; onCompl
 	const [overlay_origin, set_overlay_origin] = React.useState<{ x: number; y: number; width?: number } | null>(null)
 	const [typed_title_count, set_typed_title_count] = React.useState(0)
 	const [typed_subtitle_count, set_typed_subtitle_count] = React.useState(0)
+	const [typed_scroll_hint_count, set_typed_scroll_hint_count] = React.useState(0)
+	const [active_typing_phase, set_active_typing_phase] = React.useState<IntroTypingPhase>("idle")
 	const [scroll_enabled, set_scroll_enabled] = React.useState(false)
 	const scroll_enabled_ref = React.useRef(false)
 
@@ -118,6 +132,8 @@ function OverviewIntroOverlay({ active, onComplete }: { active: boolean; onCompl
 		set_overlay_origin(null)
 		set_typed_title_count(0)
 		set_typed_subtitle_count(0)
+		set_typed_scroll_hint_count(0)
+		set_active_typing_phase("idle")
 		set_scroll_enabled(false)
 		set_progress(0)
 	}, [active])
@@ -128,63 +144,91 @@ function OverviewIntroOverlay({ active, onComplete }: { active: boolean; onCompl
 		let title_timer: number | null = null
 		let subtitle_timer: number | null = null
 		let subtitle_delay_timer: number | null = null
+		let scroll_hint_timer: number | null = null
+		let scroll_hint_delay_timer: number | null = null
 
 		const clear_all = () => {
 			if (title_timer != null) window.clearInterval(title_timer)
 			if (subtitle_timer != null) window.clearInterval(subtitle_timer)
 			if (subtitle_delay_timer != null) window.clearTimeout(subtitle_delay_timer)
+			if (scroll_hint_timer != null) window.clearInterval(scroll_hint_timer)
+			if (scroll_hint_delay_timer != null) window.clearTimeout(scroll_hint_delay_timer)
 			title_timer = null
 			subtitle_timer = null
 			subtitle_delay_timer = null
+			scroll_hint_timer = null
+			scroll_hint_delay_timer = null
 		}
 
-		const start_subtitle = () => {
+		const typing_interval_ms = get_intro_typing_interval_ms()
+		const set_count_for_phase = (phase: IntroTypingPhase, count: number) => {
+			if (phase === "title") set_typed_title_count(count)
+			if (phase === "subtitle") set_typed_subtitle_count(count)
+			if (phase === "scroll_hint") set_typed_scroll_hint_count(count)
+		}
+
+		const set_timer_for_phase = (phase: IntroTypingPhase, timer: number | null) => {
+			if (phase === "title") title_timer = timer
+			if (phase === "subtitle") subtitle_timer = timer
+			if (phase === "scroll_hint") scroll_hint_timer = timer
+		}
+
+		const clear_timer_for_phase = (phase: IntroTypingPhase) => {
+			const timer = phase === "title" ? title_timer : phase === "subtitle" ? subtitle_timer : scroll_hint_timer
+			if (timer != null) window.clearInterval(timer)
+			set_timer_for_phase(phase, null)
+		}
+
+		const start_phase = (phase: IntroTypingPhase, length: number, on_complete?: () => void) => {
 			if (cancelled) return
-			if (intro_subtitle_length === 0) {
+			if (phase === "idle") return
+			if (length === 0) {
+				on_complete?.()
+				return
+			}
+
+			let typed_count = 0
+			set_active_typing_phase(phase)
+			const timer = window.setInterval(() => {
+				if (cancelled) {
+					clear_all()
+					return
+				}
+				typed_count += 1
+				set_count_for_phase(phase, typed_count)
+				if (typed_count >= length) {
+					clear_timer_for_phase(phase)
+					set_active_typing_phase("idle")
+					on_complete?.()
+				}
+			}, typing_interval_ms)
+			set_timer_for_phase(phase, timer)
+		}
+
+		const start_scroll_hint = () =>
+			start_phase("scroll_hint", intro_scroll_hint_length)
+
+		const start_subtitle = () =>
+			start_phase("subtitle", intro_subtitle_length, () => {
 				set_scroll_enabled(true)
-				return
-			}
-			let subtitle_idx = 0
-			subtitle_timer = window.setInterval(() => {
-				if (cancelled) {
-					clear_all()
-					return
-				}
-				subtitle_idx += 1
-				set_typed_subtitle_count(subtitle_idx)
-				if (subtitle_idx >= intro_subtitle_length) {
-					clear_all()
-					set_scroll_enabled(true)
-				}
-			}, intro_typing_interval_ms)
-		}
+				scroll_hint_delay_timer = window.setTimeout(start_scroll_hint, uiMotion.intro.typing.scrollHintDelayMs)
+			})
 
-		const start_title = () => {
-			if (intro_title_length === 0) {
-				subtitle_delay_timer = window.setTimeout(start_subtitle, intro_typing_delay_ms)
-				return
-			}
-			let title_idx = 0
-			title_timer = window.setInterval(() => {
-				if (cancelled) {
-					clear_all()
-					return
-				}
-				title_idx += 1
-				set_typed_title_count(title_idx)
-				if (title_idx >= intro_title_length) {
-					if (title_timer != null) window.clearInterval(title_timer)
-					title_timer = null
-					subtitle_delay_timer = window.setTimeout(start_subtitle, intro_typing_delay_ms)
-				}
-			}, intro_typing_interval_ms)
-		}
+		const start_title = () =>
+			start_phase("title", intro_title_length, () => {
+				subtitle_delay_timer = window.setTimeout(start_subtitle, uiMotion.intro.typing.subtitlePauseMs)
+			})
 
-		start_title()
+		if (intro_title_length === 0) {
+			subtitle_delay_timer = window.setTimeout(start_subtitle, uiMotion.intro.typing.subtitlePauseMs)
+		} else {
+			start_title()
+		}
 
 		return () => {
 			cancelled = true
 			clear_all()
+			set_active_typing_phase("idle")
 		}
 	}, [active, reduce_motion])
 
@@ -270,7 +314,7 @@ function OverviewIntroOverlay({ active, onComplete }: { active: boolean; onCompl
 	const apply_delta = React.useCallback(
 		(delta: number) => {
 			if (!scroll_enabled_ref.current) return
-			const next = clamp_value(target_ref.current + delta / intro_scroll_distance_px, 0, 1)
+			const next = clamp_value(target_ref.current + delta / get_intro_scroll_distance_px(), 0, 1)
 			target_ref.current = next
 			animate_to_target()
 		},
@@ -402,9 +446,14 @@ function OverviewIntroOverlay({ active, onComplete }: { active: boolean; onCompl
 	React.useLayoutEffect(() => {
 		if (typeof document === "undefined") return
 		const root = document.documentElement
-		const next = active && !reduce_motion ? "0" : "1"
+		const fade_start = uiMotion.intro.overlay.targetFadeStart
+		const fade_end = uiMotion.intro.overlay.targetFadeEnd
+		const next =
+			active && !reduce_motion
+				? clamp_value((progress - fade_start) / Math.max(1e-6, fade_end - fade_start), 0, 1).toFixed(4)
+				: "1"
 		root.style.setProperty("--overview-intro-target-opacity", next)
-	}, [active, reduce_motion])
+	}, [active, progress, reduce_motion])
 
 	React.useLayoutEffect(() => {
 		if (typeof document === "undefined") return
@@ -427,6 +476,11 @@ function OverviewIntroOverlay({ active, onComplete }: { active: boolean; onCompl
 	if (!active || reduce_motion) return null
 
 	const overlay_opacity = clamp_value(1 - progress, 0, 1)
+	const scroll_hint_opacity =
+		scroll_enabled && typed_scroll_hint_count > 0 ? clamp_value(1 - progress / uiMotion.intro.hint.fadeProgressSpan, 0, 1) : 0
+	const scroll_hint_text = Array.from(intro_scroll_hint_text)
+		.slice(0, typed_scroll_hint_count)
+		.join("")
 	const overlay_style: React.CSSProperties = overlay_origin
 		? { left: overlay_origin.x, top: overlay_origin.y, width: overlay_origin.width }
 		: { left: 0, top: 0, opacity: 0 }
@@ -443,7 +497,8 @@ function OverviewIntroOverlay({ active, onComplete }: { active: boolean; onCompl
 							reserveSeparator
 							keyPrefix="overview-intro"
 							className={cn("flex flex-col", ui.gap.md)}
-							subtitleClassName={ui.margin.topMd}
+							subtitleClassName={cn(ui.margin.topMd, ui.intro.overviewInlineSupportingCopy)}
+							separatorClassName={ui.intro.overviewInlineSupportingCopy}
 							renderLetter={({ char, index, props }) => {
 								const delta = deltas[index]
 								const base = base_positions[index]
@@ -460,21 +515,19 @@ function OverviewIntroOverlay({ active, onComplete }: { active: boolean; onCompl
 								const is_title_letter = index < intro_title_length
 								const is_separator = index >= intro_title_length && index < intro_title_length + intro_separator_length
 								const is_subtitle_letter = index >= intro_title_length + intro_separator_length
-								const title_done = typed_title_count >= intro_title_length
-								const subtitle_done = typed_subtitle_count >= intro_subtitle_length
-								const is_typing_title = !title_done
-								const is_typing_subtitle = title_done && !subtitle_done
-								const cursor_index = is_typing_title
-									? Math.max(0, typed_title_count - 1)
-									: is_typing_subtitle
-										? intro_title_length + intro_separator_length + Math.max(0, typed_subtitle_count - 1)
-										: -1
-								const show_cursor = cursor_index === index && (is_typing_title || is_typing_subtitle)
+								const show_cursor =
+									(active_typing_phase === "title" && is_title_letter && index === Math.max(0, typed_title_count - 1) && typed_title_count > 0) ||
+									(
+										active_typing_phase === "subtitle" &&
+										is_subtitle_letter &&
+										index === intro_title_length + intro_separator_length + Math.max(0, typed_subtitle_count - 1) &&
+										typed_subtitle_count > 0
+									)
 								const typed =
 									is_title_letter
 										? index < typed_title_count
 										: is_separator
-											? title_done
+											? typed_title_count >= intro_title_length
 											: is_subtitle_letter
 												? index - (intro_title_length + intro_separator_length) < typed_subtitle_count
 												: false
@@ -503,15 +556,45 @@ function OverviewIntroOverlay({ active, onComplete }: { active: boolean; onCompl
 										{...props}
 										ref={set_letter_ref(index)}
 										style={wrapper_style}
-										className={cn(props.className, "will-change-transform")}
+										className={cn(props.className, "relative will-change-transform")}
 									>
 										<span style={{ opacity: typed ? 1 : 0 }}>{char}</span>
-										{show_cursor ? <span className="intro-typing-cursor">_</span> : null}
+										{show_cursor ? (
+											<span
+												className={cn(ui.intro.overviewTypingCursor, "intro-typing-cursor")}
+												style={{ animationDuration: `${uiMotion.intro.typing.cursorBlinkMs}ms` }}
+											>
+												_
+											</span>
+										) : null}
 									</span>
 								)
 							}}
 						/>
 					</div>
+				</div>
+
+				<div
+					aria-hidden="true"
+					className={cn(
+						"pointer-events-none absolute inset-x-0 bottom-6 flex justify-center px-6 sm:bottom-8",
+						ui.text.muted.fg,
+						ui.intro.overviewScrollHint,
+						ui.motion.durationOpacity
+					)}
+					style={{ opacity: scroll_hint_opacity }}
+				>
+					<span className="relative select-none">
+						{scroll_hint_text}
+						{active_typing_phase === "scroll_hint" ? (
+							<span
+								className={cn(ui.intro.overviewTypingCursor, "intro-typing-cursor")}
+								style={{ animationDuration: `${uiMotion.intro.typing.cursorBlinkMs}ms` }}
+							>
+								_
+							</span>
+						) : null}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -553,10 +636,10 @@ export default function Page() {
 						touch-action: none;
 					}
 					[data-overview-overlay='target'] [data-overview-letter] {
-						opacity: 0;
+						opacity: var(--overview-intro-target-opacity, 1);
 					}
 					[data-overview-overlay='target'] [data-overview-separator='true'] {
-						opacity: var(--overview-intro-progress-opacity, 0);
+						opacity: var(--overview-intro-target-opacity, 1);
 					}
 					@keyframes intro-cursor-blink {
 						0%,
