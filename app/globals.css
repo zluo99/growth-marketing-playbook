@@ -1,0 +1,285 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "../components/tokens/primitives.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* -------------------------------------------------------------------------- */
+/* Custom: Theme                                                              */
+/* -------------------------------------------------------------------------- */
+
+:root {
+	--font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+	--app-max-w: 80rem;
+	--app-pad-x: 1rem;
+	--app-pad-y: 1.25rem;
+
+	--radius: 0.625rem;
+	--radius-control: 0.5rem;
+
+	--surface-bg: oklch(1 0 0);
+	--surface-bg-hover: rgba(0, 0, 0, 0.04);
+	--surface-bg-muted: oklch(0.97 0 0);
+	--surface-fg: oklch(0.145 0 0);
+	--surface-fg-muted: oklch(0.556 0 0);
+	--surface-fg-muted-soft: color-mix(in oklch, var(--surface-fg-muted) 38%, var(--surface-bg) 62%);
+
+	--brand-bg: oklch(0.205 0 0);
+	--brand-fg: oklch(0.985 0 0);
+
+	--border: oklch(0.86 0 0);
+	--border-hover: rgba(0, 0, 0, 0.42);
+	--ring: oklch(0.708 0 0);
+
+	color-scheme: light;
+}
+
+@media (min-width: 640px) {
+	:root {
+		--app-pad-x: 1.5rem;
+		--app-pad-y: 1.5rem;
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+/* Custom: Theme                                                              */
+/* -------------------------------------------------------------------------- */
+
+.dark {
+	--surface-bg: oklch(0.145 0 0);
+	--surface-bg-hover: rgba(255, 255, 255, 0.1);
+	--surface-bg-muted: oklch(0.269 0 0);
+	--surface-fg: oklch(0.985 0 0);
+	--surface-fg-muted: oklch(0.708 0 0);
+	--surface-fg-muted-soft: color-mix(in oklch, var(--surface-fg-muted) 34%, var(--surface-bg) 66%);
+
+	--brand-bg: oklch(0.922 0 0);
+	--brand-fg: oklch(0.205 0 0);
+
+	--border: oklch(1 0 0 / 18%);
+	--border-hover: rgba(255, 255, 255, 0.34);
+	--ring: oklch(0.556 0 0);
+
+	color-scheme: dark;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Custom: Theme                                                              */
+/* -------------------------------------------------------------------------- */
+
+@theme inline {
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+
+	--color-background: var(--surface-bg);
+	--color-foreground: var(--surface-fg);
+
+	--color-card: var(--surface-bg);
+	--color-card-foreground: var(--surface-fg);
+
+	--color-popover: var(--surface-bg);
+	--color-popover-foreground: var(--surface-fg);
+
+	--color-primary: var(--brand-bg);
+	--color-primary-foreground: var(--brand-fg);
+
+	--color-secondary: var(--surface-bg-muted);
+	--color-secondary-foreground: var(--surface-fg);
+
+	--color-muted: var(--surface-bg-muted);
+	--color-muted-foreground: var(--surface-fg-muted);
+	--color-muted-foreground-soft: var(--surface-fg-muted-soft);
+	--color-muted-foreground-na: var(--surface-fg-muted);
+
+	--color-border: var(--border);
+	--color-input: var(--border);
+
+	--color-ring: var(--ring);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Custom: Theme                                                              */
+/* -------------------------------------------------------------------------- */
+
+@layer base {
+	*,
+	*::before,
+	*::after {
+		@apply border-border;
+	}
+
+	html {
+		overflow-x: clip;
+		overscroll-behavior-y: auto;
+		scrollbar-gutter: stable;
+		text-rendering: geometricPrecision;
+		-webkit-text-size-adjust: 100%;
+	}
+
+	@supports not (scrollbar-gutter: stable) {
+		body {
+			overflow-y: scroll;
+		}
+	}
+
+	body {
+		@apply bg-background text-foreground;
+		font-family: var(--font-sans);
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		overflow-x: clip;
+		overscroll-behavior-y: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	:where(.overflow-auto, .overflow-x-auto, .overflow-y-auto, .overflow-scroll, .overflow-x-scroll, .overflow-y-scroll) {
+		-webkit-overflow-scrolling: touch;
+	}
+
+	::selection {
+		background: Highlight;
+		color: HighlightText;
+	}
+
+	:where(a) {
+		color: inherit;
+		text-decoration: inherit;
+	}
+
+	:where(img, svg, video, canvas) {
+		display: block;
+		max-width: 100%;
+	}
+
+	:where(pre, code, kbd, samp) {
+		font-variant-ligatures: none;
+	}
+
+	:where(pre) {
+		tab-size: 2;
+	}
+
+	:where(hr) {
+		border: 0;
+		border-top: 1px solid var(--border);
+	}
+
+	:where(table) {
+		border-collapse: collapse;
+		border-spacing: 0;
+	}
+
+	:where([hidden]) {
+		display: none !important;
+	}
+
+	:where(:focus-visible) {
+		outline: none;
+	}
+
+	:where(a, button, summary, [role="button"], input[type="button"], input[type="submit"], input[type="reset"]) {
+		cursor: pointer;
+	}
+
+	:where(button:disabled, [aria-disabled="true"]) {
+		cursor: not-allowed;
+	}
+
+	:where(summary) {
+		list-style: none;
+	}
+
+	:where(summary::-webkit-details-marker) {
+		display: none;
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+/* Custom: Theme                                                              */
+/* -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto !important;
+		transition-duration: var(--motion-duration-base) !important;
+		animation-duration: var(--motion-duration-base) !important;
+		animation-iteration-count: 1 !important;
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+/* Components                                                                 */
+/* -------------------------------------------------------------------------- */
+
+.app-shell {
+	min-height: 100svh;
+	min-height: 100dvh;
+	padding-top: max(var(--app-pad-y), env(safe-area-inset-top));
+	padding-right: max(var(--app-pad-x), env(safe-area-inset-right));
+	padding-left: max(var(--app-pad-x), env(safe-area-inset-left));
+	padding-bottom: env(safe-area-inset-bottom);
+}
+
+.app-container {
+	margin: 0 auto;
+	width: 100%;
+	max-width: var(--app-max-w);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Components                                                                 */
+/* -------------------------------------------------------------------------- */
+
+@keyframes shimmer {
+	from { background-position: -200% 0; }
+	to   { background-position:  200% 0; }
+}
+
+.ui-control,
+.ui-control-ghost {
+	border: 1px solid var(--border);
+	border-radius: var(--radius-control);
+	transition:
+		border-color var(--motion-duration-base),
+		box-shadow var(--motion-duration-base),
+		background-color var(--motion-duration-base),
+		color var(--motion-duration-base),
+		opacity var(--motion-duration-base),
+		transform var(--motion-duration-base);
+	transition-timing-function: var(--motion-ease-standard);
+}
+
+.ui-control {
+	background: transparent;
+	color: inherit;
+}
+
+.ui-control-ghost {
+	background: transparent;
+	border-color: transparent;
+	box-shadow: none;
+	color: inherit;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.ui-control:hover,
+	.ui-control-ghost:hover {
+		background: var(--surface-bg-hover);
+		border-color: var(--border-hover);
+		box-shadow: var(--shadow-sm);
+		color: var(--surface-fg);
+	}
+}
+
+.ui-control:disabled,
+.ui-control-ghost:disabled,
+.ui-control[aria-disabled="true"],
+.ui-control-ghost[aria-disabled="true"] {
+	opacity: 0.55;
+	pointer-events: none;
+	transform: none;
+}

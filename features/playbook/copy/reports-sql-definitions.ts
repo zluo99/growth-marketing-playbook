@@ -1,0 +1,92 @@
+import type { MetricId } from "@/features/playbook/definitions/metrics"
+
+type DefinitionsPanelId = `${number}`
+
+type DefinitionsPanel = {
+	id: DefinitionsPanelId
+	title: string
+	body: string
+	columns?: { table: string; description: string; columns: string }
+}
+
+type DefinitionsTable = {
+	name: string
+	description: string
+	columns: string
+	grain?: string
+	signatureColumns?: readonly string[]
+}
+
+type DefinitionsCard = {
+	title: string
+	body: string
+	icon: "sparkles"
+	panels: readonly DefinitionsPanel[]
+	tables: readonly DefinitionsTable[]
+	dimensions: readonly MetricId[]
+	measures: readonly MetricId[]
+}
+
+export const DefinitionsCopy: DefinitionsCard = {
+	title: "Core definitions",
+	body: "Align with Finance first, then publish governed fields into the `semantic_model` and `attribution_model`.",
+	icon: "sparkles",
+	panels: [
+		{
+			id: "1",
+			title: "Attributes to standardize",
+			body: "Treat attributes as governance, not preference. If they drift, every metric turns into reconciliation work.",
+		},
+		{
+			id: "2",
+			title: "Typical measures",
+			body: "Measures capture outcomes, unit economics, and operating efficiency.",
+		},
+		{
+			id: "3",
+			title: "Available tables",
+			body: "If these tables already exist, start here.",
+			columns: {
+				table: "Table",
+				description: "Description",
+				columns: "Columns",
+			},
+		},
+	],
+	tables: [
+		{
+			name: "int_lead_cohort",
+			description: "Cohorted outcomes anchored to lead creation (Lead -> Opportunity -> Deal), with `arr` from the same lead cohorts.",
+			columns: "lead_id, lead_created_date, source_l1, source_l2, source_l3, vendor, vertical, opportunities_from_leads, deals_from_leads, arr_from_leads, ltv_from_leads",
+			grain: "One row per lead cohort entity anchored at `lead_created_date`.",
+			signatureColumns: ["lead_id", "lead_created_date", "opportunities_from_leads", "deals_from_leads", "arr_from_leads"] as const,
+		},
+		{
+			name: "fct_funnel_events",
+			description: "Object-level funnel events (Lead -> Opportunity -> Deal). Keep `arr` on deal records.",
+			columns: "object_id, object_type, object_created_date, source_l1, source_l2, source_l3, vendor, vertical, arr",
+			grain: "One row per CRM object event (`object_id`, `object_type`) by creation date.",
+			signatureColumns: ["object_id", "object_type", "object_created_date", "source_l1", "source_l2"] as const,
+		},
+		{
+			name: "fct_marketing_spend",
+			description: "Marketing spend by date, classified by `spend_type`, `source`, and `vendor`.",
+			columns: "spend_date, spend_type, source_l1, source_l2, source_l3, vendor, spend",
+			grain: "One row per spend posting event by `spend_date` and classification dimensions.",
+			signatureColumns: ["spend_date", "spend_type", "source_l1", "source_l2", "source_l3"] as const,
+		},
+	],
+	dimensions: [
+		"object_id",
+		"object_type",
+		"object_created_date",
+		"lead_created_date",
+		"source_l1",
+		"source_l2",
+		"source_l3",
+		"vendor",
+		"vertical",
+	],
+	measures: ["leads", "opportunities", "deals", "arr", "roas", "cost_per_lead", "cost_per_opportunity", "cost_per_deal"],
+} as const
+
