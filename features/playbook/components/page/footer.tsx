@@ -180,22 +180,24 @@ export default function PbFooter() {
 					</span>
 				</div>
 
-				<div className={cn("ml-auto flex items-stretch", ui.gap.xs)}>
-					<FooterIconLink href={`mailto:${email}`} label={footer_copy.emailLabel} tooltip={email} icon={<Mail className={ui.iconNude.lg} aria-hidden="true" />} />
-					<FooterIconLink
-						href={linkedin_url}
-						label={footer_copy.linkedinLabel}
-						tooltip={footer_copy.linkedinLabel}
-						icon={<Linkedin className={ui.iconNude.lg} aria-hidden="true" />}
-						openInNewTab
-					/>
-					<FooterIconLink
-						href={github_url}
-						label={footer_copy.githubLabel}
-						tooltip={footer_copy.githubLabel}
-						icon={<Github className={ui.iconNude.lg} aria-hidden="true" />}
-						openInNewTab
-					/>
+				<div className={cn("ml-auto flex flex-col items-end sm:flex-row sm:items-stretch", ui.gap.xs)}>
+					<div className={cn("flex items-stretch", ui.gap.xs)}>
+						<FooterIconLink href={`mailto:${email}`} label={footer_copy.emailLabel} tooltip={email} icon={<Mail className={ui.iconNude.lg} aria-hidden="true" />} />
+						<FooterIconLink
+							href={linkedin_url}
+							label={footer_copy.linkedinLabel}
+							tooltip={footer_copy.linkedinLabel}
+							icon={<Linkedin className={ui.iconNude.lg} aria-hidden="true" />}
+							openInNewTab
+						/>
+						<FooterIconLink
+							href={github_url}
+							label={footer_copy.githubLabel}
+							tooltip={footer_copy.githubLabel}
+							icon={<Github className={ui.iconNude.lg} aria-hidden="true" />}
+							openInNewTab
+						/>
+					</div>
 					<ThemesBar />
 				</div>
 			</div>
