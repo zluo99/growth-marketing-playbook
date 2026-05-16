@@ -35,6 +35,18 @@ export const metadata: Metadata = {
 	metadataBase: site_url,
 	title: BrandCopy.title,
 	description: BrandCopy.byline,
+	robots: { index: true, follow: true },
+	openGraph: {
+		title: BrandCopy.title,
+		description: BrandCopy.byline,
+		type: "website",
+		url: site_url,
+	},
+	twitter: {
+		card: "summary",
+		title: BrandCopy.title,
+		description: BrandCopy.byline,
+	},
 }
 
 export const viewport = {

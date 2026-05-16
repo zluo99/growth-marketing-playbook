@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "npm run test:seed",
     "test:seed": "tsc -p tsconfig.seed-tests.json && node .tmp-seed-tests/tests/seed/seed-invariants.test.js",
     "ci": "npm run lint && npm run typecheck && npm run build"
   },

@@ -950,5 +950,4 @@ export const Sources: readonly Source[] = source_rows.map((r): Source => {
 
 export const listSources = () => Sources
 
-// TODO: restore data-integrity checks as a CI test rather than runtime console.warn
 
